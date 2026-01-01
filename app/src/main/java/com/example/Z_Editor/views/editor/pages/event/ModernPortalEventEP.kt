@@ -84,7 +84,7 @@ private val PORTAL_DEFINITIONS = listOf(
     PortalWorldDef("egypt", "主线埃及", listOf("ra", "tomb_raiser", "pharaoh")),
     PortalWorldDef("egypt_2", "埃及2号", listOf("explorer")),
     PortalWorldDef("pirate", "主线海盗", listOf("pirate_captain", "seagull", "barrelroller")),
-    PortalWorldDef("cowboy", "主线西部", listOf("piano", "prospector", "poncho_plate")),
+    PortalWorldDef("west", "主线西部", listOf("piano", "prospector", "poncho_plate")),
     PortalWorldDef("future", "主线未来", listOf("future_protector", "mech_cone", "football_mech")),
     PortalWorldDef("future_2", "未来2号", listOf("future_jetpack", "mech_cone", "future_armor1")),
     PortalWorldDef("dark", "主线黑暗", listOf("dark_juggler")),
