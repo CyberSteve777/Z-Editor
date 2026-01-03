@@ -41,6 +41,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -170,6 +171,7 @@ fun NumberInputInt(
     value: Int,
     onValueChange: (Int) -> Unit,
     label: String,
+    color: Color = Color.Blue,
     modifier: Modifier = Modifier
 ) {
     var text by remember(value) { mutableStateOf(value.toString()) }
@@ -185,6 +187,10 @@ fun NumberInputInt(
                 onValueChange(num)
             }
         },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = color,
+            focusedLabelColor = color
+        ),
         label = { Text(label, fontSize = 12.sp) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true,
@@ -198,6 +204,7 @@ fun NumberInputDouble(
     value: Double,
     onValueChange: (Double) -> Unit,
     label: String,
+    color: Color = Color(0xFF1976D2),
     modifier: Modifier = Modifier
 ) {
     var text by remember(value) { mutableStateOf(value.toString()) }
@@ -211,6 +218,10 @@ fun NumberInputDouble(
                 onValueChange(num)
             }
         },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = color,
+            focusedLabelColor = color
+        ),
         label = { Text(label, fontSize = 12.sp) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true,

@@ -57,6 +57,8 @@ fun InvalidEventEP(
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
 
+    val themeColor = Color(0xFFD32F2F)
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
@@ -75,7 +77,7 @@ fun InvalidEventEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFD32F2F),
+                    containerColor = themeColor,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -86,7 +88,7 @@ fun InvalidEventEP(
             EditorHelpDialog(
                 title = "失效事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFFD32F2F)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -110,7 +112,7 @@ fun InvalidEventEP(
             Icon(
                 Icons.Default.Warning,
                 null,
-                tint = Color(0xFFD32F2F),
+                tint = themeColor,
                 modifier = Modifier.size(80.dp)
             )
             Spacer(Modifier.height(16.dp))
@@ -127,7 +129,7 @@ fun InvalidEventEP(
 
             Button(
                 onClick = { onDeleteReference(rtid) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
+                colors = ButtonDefaults.buttonColors(containerColor = themeColor),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(Icons.Default.DeleteForever, null)

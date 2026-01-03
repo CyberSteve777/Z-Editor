@@ -405,3 +405,25 @@ data class BeachStageEventData(
     @SerializedName("TimeBetweenGroups") var timeBetweenGroups: Double = 0.5,
     @SerializedName("WaveStartMessage") var waveStartMessage: String = ""
 )
+
+// === 黑洞事件 ===
+data class BlackHoleEventData(
+    @SerializedName("ColNumPlantIsDragged") var colNumPlantIsDragged: Int = 0
+)
+
+// === 寒风事件 ===
+data class FrostWindWaveActionPropsData(
+    @SerializedName("Winds") var winds: MutableList<FrostWindData> = mutableListOf()
+)
+
+data class FrostWindData(
+    @SerializedName("Direction") var direction: String = "right",
+    @SerializedName("Row") var row: Int = 2
+)
+
+// === 恐龙召唤事件 ===
+data class DinoWaveActionPropsData(
+    @SerializedName("DinoRow") var dinoRow: Int = 2,
+    @SerializedName("DinoType") var dinoType: String = "raptor",
+    @SerializedName("DinoWaveDuration") var dinoWaveDuration: Int = 2
+)

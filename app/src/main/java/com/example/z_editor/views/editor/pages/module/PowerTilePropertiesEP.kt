@@ -248,13 +248,6 @@ fun PowerTilePropertiesEP(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        "1. 选择分组",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Gray
-                    )
-                    Spacer(Modifier.height(8.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -268,11 +261,11 @@ fun PowerTilePropertiesEP(
                                     .height(40.dp)
                                     .clip(RoundedCornerShape(8.dp))
                                     .background(
-                                        if (isSelected) group.color else group.color.copy(alpha = 0.2f)
+                                        if (isSelected) group.color.copy(alpha = 0.8f) else group.color.copy(alpha = 0.2f)
                                     )
                                     .border(
-                                        width = if (isSelected) 2.dp else 0.dp,
-                                        color = if (isSelected) Color.Black.copy(alpha = 0.5f) else Color.Transparent,
+                                        width = if (isSelected) 1.dp else 0.dp,
+                                        color = if (isSelected) Color.Gray else Color.Transparent,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .clickable { selectedGroup = group },
@@ -280,7 +273,7 @@ fun PowerTilePropertiesEP(
                             ) {
                                 Text(
                                     text = group.label.substringBefore(" "),
-                                    color =Color.Black.copy(0.6f),
+                                    color = Color.Black.copy(0.6f),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp
                                 )
@@ -289,14 +282,6 @@ fun PowerTilePropertiesEP(
                     }
 
                     Spacer(Modifier.height(16.dp))
-
-                    Text(
-                        "2. 设置默认参数",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Gray
-                    )
-                    Spacer(Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         NumberInputDouble(
                             value = globalDelayInput,
@@ -308,13 +293,12 @@ fun PowerTilePropertiesEP(
                 }
             }
 
-            // 2. 网格编辑区
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1.8f) // 9:5
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(2.dp, Color(0xFF00796B), RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(6.dp))
+                    .border(1.dp, Color(0xFF00796B), RoundedCornerShape(6.dp))
                     .background(Color(0xFFE0F2F1))
             ) {
                 Column(Modifier.fillMaxSize()) {
@@ -408,10 +392,13 @@ fun PowerTilePropertiesEP(
                                 moduleDataState.value.copy(linkedTiles = mutableListOf())
                             sync()
                         },
-                        colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFFEBEE),
+                            contentColor = Color.Red
+                        ),
                     ) {
                         Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp))
-                        Text("清空")
+                        Text("清空所有配置", fontSize = 14.sp)
                     }
                 }
             }

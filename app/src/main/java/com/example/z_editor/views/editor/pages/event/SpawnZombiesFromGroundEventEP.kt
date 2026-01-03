@@ -316,7 +316,8 @@ fun SpawnZombiesFromGroundEventEP(
                                     sync(actionDataState.value.copy(columnStart = it))
                                 },
                                 label = "起始列 (ColumnStart)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = Color(0xFF936457)
                             )
                             NumberInputInt(
                                 value = actionDataState.value.columnEnd,
@@ -324,7 +325,8 @@ fun SpawnZombiesFromGroundEventEP(
                                     sync(actionDataState.value.copy(columnEnd = it))
                                 },
                                 label = "结束列 (ColumnEnd)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = Color(0xFF936457)
                             )
                         }
                         Spacer(Modifier.height(8.dp))
@@ -572,7 +574,8 @@ fun SpawnZombiesFromGroundEventEP(
                                 sync(actionDataState.value.copy(additionalPlantFood = finalVal))
                             },
                             label = countLabel,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color(0xFF936457)
                         )
 
                         // 解释文本

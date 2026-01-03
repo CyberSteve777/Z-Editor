@@ -231,6 +231,8 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
         )
     }
 
+    val themeColor = Color(0xFF1976D2)
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
@@ -256,7 +258,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1976D2),
+                    containerColor = themeColor,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -267,7 +269,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
             EditorHelpDialog(
                 title = "自然出怪事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF1976D2)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -347,7 +349,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                             Icon(
                                 Icons.Default.Layers,
                                 null,
-                                tint = Color(0xFF1976D2),
+                                tint = themeColor,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(8.dp))
@@ -355,7 +357,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                                 "批量设置等级",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
-                                color = Color(0xFF1976D2)
+                                color = themeColor
                             )
                             Spacer(Modifier.weight(1f))
                             // 当前值显示
@@ -363,7 +365,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                                 text = "${batchLevelFloat.roundToInt()} 阶",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp,
-                                color = Color(0xFF1976D2)
+                                color = themeColor
                             )
                         }
 
@@ -389,9 +391,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                             Button(
                                 onClick = { showBatchConfirmDialog = true },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(
-                                        0xFF1976D2
-                                    )
+                                    containerColor = themeColor
                                 ),
                                 contentPadding = PaddingValues(horizontal = 12.dp),
                                 modifier = Modifier.height(36.dp)
@@ -525,7 +525,8 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                                 sync(actionDataState.value.copy(additionalPlantFood = finalVal))
                             },
                             label = countLabel,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            color = themeColor
                         )
 
                         // 解释文本

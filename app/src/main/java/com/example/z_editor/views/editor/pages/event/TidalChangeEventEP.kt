@@ -228,7 +228,8 @@ fun TidalChangeEventEP(
                             sync()
                         },
                         label = "变更位置 (ChangeAmount)",
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color(0xFF00ACC1)
                     )
                 }
             }

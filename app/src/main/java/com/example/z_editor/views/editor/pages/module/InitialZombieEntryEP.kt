@@ -88,9 +88,9 @@ import com.google.gson.Gson
 private val gson = Gson()
 
 private val ZOMBIE_CONDITIONS = listOf(
-    "icecubed" to "冰块封装",
-    "freeze" to "冰冻状态",
-    "stun" to "眩晕状态"
+    "icecubed" to "冰块封装 (icecubed)",
+    "freeze" to "冰冻状态 (freeze)",
+    "stun" to "眩晕状态 (stun)"
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -258,8 +258,7 @@ fun InitialZombieEntryEP(
                                     DropdownMenuItem(
                                         text = {
                                             Column {
-                                                Text(label, fontSize = 14.sp)
-                                                Text(value, fontSize = 10.sp, color = Color.Gray)
+                                                Text(label)
                                             }
                                         },
                                         onClick = {

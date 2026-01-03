@@ -191,7 +191,7 @@ fun StormZombieSpawnerPropsEP(
                                     sync()
                                 }
                             )
-                            Text("沙尘暴", fontSize = 12.sp)
+                            Text("沙尘暴", fontSize = 15.sp)
                         }
                         Spacer(Modifier.width(12.dp))
                         Row(
@@ -209,7 +209,7 @@ fun StormZombieSpawnerPropsEP(
                                     sync()
                                 }
                             )
-                            Text("暴风雪", fontSize = 12.sp)
+                            Text("暴风雪", fontSize = 15.sp)
                         }
                         Spacer(Modifier.width(12.dp))
                         Row(
@@ -228,7 +228,7 @@ fun StormZombieSpawnerPropsEP(
                                     sync()
                                 }
                             )
-                            Text("极寒风暴", fontSize = 12.sp)
+                            Text("极寒风暴", fontSize = 15.sp)
                         }
                     }
 
@@ -240,7 +240,8 @@ fun StormZombieSpawnerPropsEP(
                                 sync()
                             },
                             label = "起始列 (ColumnStart)",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFFFF9800)
                         )
                         NumberInputInt(
                             value = stormDataState.value.columnEnd,
@@ -249,7 +250,8 @@ fun StormZombieSpawnerPropsEP(
                                 sync()
                             },
                             label = "结束列 (ColumnEnd)",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFFFF9800)
                         )
                     }
                     Text(
@@ -279,14 +281,16 @@ fun StormZombieSpawnerPropsEP(
                         value = stormDataState.value.groupSize,
                         onValueChange = { stormDataState.value.groupSize = it; sync() },
                         label = "每组数量 (GroupSize)",
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color(0xFFFF9800)
                     )
 
                     NumberInputInt(
                         value = stormDataState.value.timeBetweenGroups,
                         onValueChange = { stormDataState.value.timeBetweenGroups = it; sync() },
                         label = "组间间隔 (TimeBetweenGroups)",
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color(0xFFFF9800)
                     )
                 }
             }

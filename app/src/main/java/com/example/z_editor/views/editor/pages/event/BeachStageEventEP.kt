@@ -78,6 +78,9 @@ fun BeachStageEventEP(
         ZombieRepository.search(name, ZombieTag.All).firstOrNull() to realName
     }
 
+
+    val themeColor = Color(0xFF00ACC1)
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
@@ -101,7 +104,7 @@ fun BeachStageEventEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF00ACC1),
+                    containerColor = themeColor,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -113,7 +116,7 @@ fun BeachStageEventEP(
             EditorHelpDialog(
                 title = "退潮突袭事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF00ACC1)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -147,9 +150,9 @@ fun BeachStageEventEP(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Water, null, tint = Color(0xFF00ACC1))
+                            Icon(Icons.Default.Water, null, tint = themeColor)
                             Spacer(Modifier.width(12.dp))
-                            Text("突袭单位配置", color = Color(0xFF00ACC1), fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                            Text("突袭单位配置", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         }
 
                         Spacer(Modifier.height(16.dp))
@@ -159,7 +162,7 @@ fun BeachStageEventEP(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
-                                .border(1.dp, Color(0xFF00ACC1).copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .border(1.dp, themeColor.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable {
                                     onRequestZombieSelection { selectedId ->
@@ -187,7 +190,7 @@ fun BeachStageEventEP(
                                     modifier = Modifier.fillMaxSize().clip(CircleShape),
                                     filterQuality = FilterQuality.Medium,
                                     placeholder = {
-                                        Text(displayName.take(1), fontWeight = FontWeight.Bold, color = Color(0xFF00ACC1))
+                                        Text(displayName.take(1), fontWeight = FontWeight.Bold, color = themeColor)
                                     }
                                 )
                             }
@@ -199,7 +202,7 @@ fun BeachStageEventEP(
                                 Text(realTypeName, fontSize = 12.sp, color = Color.Gray)
                             }
 
-                            Icon(Icons.Default.Edit, "更改", tint = Color(0xFF00ACC1))
+                            Icon(Icons.Default.Edit, "更改", tint = themeColor)
                         }
                     }
                 }
@@ -212,7 +215,7 @@ fun BeachStageEventEP(
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("生成数量控制", color = Color(0xFF00ACC1), fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text("生成数量控制", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         Spacer(Modifier.height(12.dp))
 
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -220,13 +223,15 @@ fun BeachStageEventEP(
                                 value = actionDataState.value.zombieCount,
                                 onValueChange = { sync(actionDataState.value.copy(zombieCount = it)) },
                                 label = "总数量 (ZombieCount)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = themeColor
                             )
                             NumberInputInt(
                                 value = actionDataState.value.groupSize,
                                 onValueChange = { sync(actionDataState.value.copy(groupSize = it)) },
                                 label = "每批数量 (GroupSize)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = themeColor
                             )
                         }
                     }
@@ -240,7 +245,7 @@ fun BeachStageEventEP(
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("位置与时间参数", color = Color(0xFF00ACC1), fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text("位置与时间参数", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         Spacer(Modifier.height(12.dp))
 
                         // 列范围
@@ -249,13 +254,15 @@ fun BeachStageEventEP(
                                 value = actionDataState.value.columnStart,
                                 onValueChange = { sync(actionDataState.value.copy(columnStart = it)) },
                                 label = "起始列 (Start)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = themeColor
                             )
                             NumberInputInt(
                                 value = actionDataState.value.columnEnd,
                                 onValueChange = { sync(actionDataState.value.copy(columnEnd = it)) },
                                 label = "结束列 (End)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = themeColor
                             )
                         }
 
@@ -267,13 +274,15 @@ fun BeachStageEventEP(
                                 value = actionDataState.value.timeBetweenGroups,
                                 onValueChange = { sync(actionDataState.value.copy(timeBetweenGroups = it)) },
                                 label = "批次间隔 (秒)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = themeColor
                             )
                             NumberInputDouble(
                                 value = actionDataState.value.timeBeforeFullSpawn,
                                 onValueChange = { sync(actionDataState.value.copy(timeBeforeFullSpawn = it)) },
                                 label = "生成前摇 (秒)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = themeColor
                             )
                         }
                     }
@@ -287,13 +296,17 @@ fun BeachStageEventEP(
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("红色字幕警告信息", color = Color(0xFF00ACC1), fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text("红色字幕警告信息", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         Spacer(Modifier.height(8.dp))
 
                         OutlinedTextField(
                             value = actionDataState.value.waveStartMessage,
                             onValueChange = { sync(actionDataState.value.copy(waveStartMessage = it)) },
                             label = { Text("WaveStartMessage") },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = themeColor,
+                                focusedLabelColor = themeColor
+                            ),
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
                         )

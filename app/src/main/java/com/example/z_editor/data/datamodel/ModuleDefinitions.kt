@@ -3,8 +3,11 @@ package com.example.z_editor.data.datamodel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.FactCheck
+import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.AddRoad
 import androidx.compose.material.icons.filled.Air
+import androidx.compose.material.icons.filled.AirplanemodeActive
+import androidx.compose.material.icons.filled.BlurCircular
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BrightnessHigh
 import androidx.compose.material.icons.filled.Dangerous
@@ -15,6 +18,7 @@ import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.LinearScale
 import androidx.compose.material.icons.filled.LocalFlorist
 import androidx.compose.material.icons.filled.MovieFilter
+import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Redeem
 import androidx.compose.material.icons.filled.Storm
 import androidx.compose.material.icons.filled.Timeline
@@ -74,6 +78,9 @@ sealed class EditorSubScreen {
     data class ParachuteRainDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class TidalChangeDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class BeachStageEventDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class BlackHoleDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class FrostWindDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class DinoEventDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class InvalidEvent(val rtid: String, val waveIndex: Int) : EditorSubScreen()
 }
 
@@ -91,6 +98,24 @@ data class EventMetadata(
 
 object EventRegistry {
     private val registry = mapOf(
+        "BlackHoleWaveActionProps" to EventMetadata(
+            title = "黑洞吸引",
+            description = "生成黑洞吸引所有植物",
+            icon = Icons.Default.BlurCircular,
+            color = Color(0xFF7C30D9),
+            defaultAlias = "BlackHoleEvent",
+            defaultObjClass = "BlackHoleWaveActionProps",
+            initialDataFactory = { BlackHoleEventData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, BlackHoleEventData::class.java)
+                    "${data.colNumPlantIsDragged} 列"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
         "SpawnZombiesFromGroundSpawnerProps" to EventMetadata(
             title = "地底出怪",
             description = "从地下出现的出怪事件",
@@ -114,7 +139,7 @@ object EventRegistry {
             description = "最基础的自然出怪事件",
             icon = Icons.Default.Groups,
             color = Color(0xFF2196F3),
-            defaultAlias = "JitteredWave",
+            defaultAlias = "Jittered",
             defaultObjClass = "SpawnZombiesJitteredWaveActionProps",
             initialDataFactory = { WaveActionData() },
             summaryProvider = { obj ->
@@ -122,6 +147,24 @@ object EventRegistry {
                     val gson = Gson()
                     val data = gson.fromJson(obj.objData, WaveActionData::class.java)
                     "${data.zombies.size} 僵尸"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
+        "FrostWindWaveActionProps" to EventMetadata(
+            title = "寒风侵袭",
+            description = "在指定行吹起寒风冻结植物",
+            icon = Icons.Default.AcUnit,
+            color = Color(0xFF0288D1),
+            defaultAlias = "FrostWindEvent",
+            defaultObjClass = "FrostWindWaveActionProps",
+            initialDataFactory = { FrostWindWaveActionPropsData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, FrostWindWaveActionPropsData::class.java)
+                    "${data.winds.size} 股寒风"
                 } catch (_: Exception) {
                     "解析错误"
                 }
@@ -176,6 +219,29 @@ object EventRegistry {
                     val gson = Gson()
                     val data = gson.fromJson(obj.objData, ModifyConveyorWaveActionData::class.java)
                     "+${data.addList.size} / -${data.removeList.size}"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
+        "DinoWaveActionProps" to EventMetadata(
+            title = "恐龙召唤",
+            description = "在指定行召唤一只恐龙协助僵尸",
+            icon = Icons.Default.Pets,
+            color = Color(0xFF91B900),
+            defaultAlias = "DinoTimeEvent",
+            defaultObjClass = "DinoWaveActionProps",
+            initialDataFactory = { DinoWaveActionPropsData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, DinoWaveActionPropsData::class.java)
+                    val typeMap = mapOf(
+                        "raptor" to "迅猛龙", "stego" to "剑龙",
+                        "ptero" to "翼龙", "tyranno" to "霸王龙",
+                        "ankylo" to "甲龙"
+                    )
+                    "${typeMap[data.dinoType] ?: data.dinoType} ${data.dinoRow + 1}"
                 } catch (_: Exception) {
                     "解析错误"
                 }
@@ -238,7 +304,7 @@ object EventRegistry {
         "ParachuteRainZombieSpawnerProps" to EventMetadata(
             title = "空降突袭",
             description = "僵尸依靠降落伞或绳索从天而降",
-            icon = Icons.Default.Air,
+            icon = Icons.Default.AirplanemodeActive,
             color = Color(0xFFFF9800),
             defaultAlias = "ParachuteRainEvent",
             defaultObjClass = "ParachuteRainZombieSpawnerProps",

@@ -45,13 +45,19 @@ object ObjectOrderRegistry {
 
         "SpawnZombiesJitteredWaveActionProps",
         "SpawnZombiesFromGroundSpawnerProps",
+
         "StormZombieSpawnerProps",
         "RaidingPartyZombieSpawnerProps",
         "SpawnModernPortalsWaveActionProps",
-        "ModifyConveyorWaveActionProps",
+
+        "BlackHoleWaveActionProps",
+        "FrostWindWaveActionProps",
+        "DinoWaveActionProps",
 
         "TidalChangeWaveActionProps",
-        "BeachStageEventZombieSpawnerProps"
+        "BeachStageEventZombieSpawnerProps",
+
+        "ModifyConveyorWaveActionProps",
     )
 
     // 为了性能，转为 Map 加速查找

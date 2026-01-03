@@ -72,6 +72,9 @@ import com.example.z_editor.data.datamodel.WaveManagerModuleData
 import com.example.z_editor.views.editor.LevelSettingsTab
 import com.example.z_editor.views.editor.WaveTimelineTab
 import com.example.z_editor.views.editor.pages.event.BeachStageEventEP
+import com.example.z_editor.views.editor.pages.event.BlackHoleEventEP
+import com.example.z_editor.views.editor.pages.event.DinoEventEP
+import com.example.z_editor.views.editor.pages.event.FrostWindEventEP
 import com.example.z_editor.views.editor.pages.event.InvalidEventEP
 import com.example.z_editor.views.editor.pages.event.ModifyConveyorEventEP
 import com.example.z_editor.views.editor.pages.event.ParachuteRainEventEP
@@ -669,10 +672,7 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                                             val obj = parsedData!!.objectMap[alias]
                                             when (obj?.objClass) {
                                                 "SpawnZombiesJitteredWaveActionProps" -> currentSubScreen =
-                                                    EditorSubScreen.JitteredWaveDetail(
-                                                        rtid,
-                                                        waveIdx
-                                                    )
+                                                    EditorSubScreen.JitteredWaveDetail(rtid, waveIdx)
 
                                                 "SpawnZombiesFromGroundSpawnerProps" -> currentSubScreen =
                                                     EditorSubScreen.GroundWaveDetail(rtid, waveIdx)
@@ -681,10 +681,7 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                                                     EditorSubScreen.PortalDetail(rtid, waveIdx)
 
                                                 "ModifyConveyorWaveActionProps" -> currentSubScreen =
-                                                    EditorSubScreen.ModifyConveyorDetail(
-                                                        rtid,
-                                                        waveIdx
-                                                    )
+                                                    EditorSubScreen.ModifyConveyorDetail(rtid, waveIdx)
 
                                                 "StormZombieSpawnerProps" -> currentSubScreen =
                                                     EditorSubScreen.StormDetail(rtid, waveIdx)
@@ -700,6 +697,15 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
 
                                                 "BeachStageEventZombieSpawnerProps" -> currentSubScreen =
                                                     EditorSubScreen.BeachStageEventDetail(rtid, waveIdx)
+
+                                                "BlackHoleWaveActionProps" -> currentSubScreen =
+                                                    EditorSubScreen.BlackHoleDetail(rtid, waveIdx)
+
+                                                "FrostWindWaveActionProps" -> currentSubScreen =
+                                                    EditorSubScreen.FrostWindDetail(rtid, waveIdx)
+
+                                                "DinoWaveActionProps" -> currentSubScreen =
+                                                    EditorSubScreen.DinoEventDetail(rtid, waveIdx)
 
                                                 else -> currentSubScreen =
                                                     EditorSubScreen.UnknownDetail(rtid)
@@ -1036,6 +1042,30 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                 onBack = { navigateBackToMain() },
                 rootLevelFile = rootLevelFile!!,
                 scrollState = getScrollState("TidalChangeDetail")
+            )
+
+            // 黑洞事件详情
+            is EditorSubScreen.BlackHoleDetail -> BlackHoleEventEP(
+                rtid = targetState.rtid,
+                onBack = { navigateBackToMain() },
+                rootLevelFile = rootLevelFile!!,
+                scrollState = getScrollState("BlackHoleDetail")
+            )
+
+            // 寒风事件详情
+            is EditorSubScreen.FrostWindDetail -> FrostWindEventEP(
+                rtid = targetState.rtid,
+                onBack = { navigateBackToMain() },
+                rootLevelFile = rootLevelFile!!,
+                scrollState = getScrollState("FrostWindDetail")
+            )
+
+            // 恐龙事件详情
+            is EditorSubScreen.DinoEventDetail -> DinoEventEP(
+                rtid = targetState.rtid,
+                onBack = { navigateBackToMain() },
+                rootLevelFile = rootLevelFile!!,
+                scrollState = getScrollState("DinoEventDetail")
             )
 
             is EditorSubScreen.InvalidEvent -> InvalidEventEP(

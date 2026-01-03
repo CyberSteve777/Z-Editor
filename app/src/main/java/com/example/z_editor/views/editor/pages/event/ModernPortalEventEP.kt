@@ -76,14 +76,12 @@ import com.google.gson.Gson
 
 private val gson = Gson()
 
-// === 1. 重构裂缝数据定义 ===
 data class PortalWorldDef(
     val typeCode: String,
     val name: String,
-    val representativeZombies: List<String> // 硬编码的僵尸 ID
+    val representativeZombies: List<String>
 )
 
-// === 2. 硬编码裂缝数据与对应的僵尸 ===
 private val PORTAL_DEFINITIONS = listOf(
     PortalWorldDef("egypt", "主线埃及", listOf("ra", "tomb_raiser", "pharaoh")),
     PortalWorldDef("egypt_2", "埃及2号", listOf("explorer")),
@@ -201,6 +199,8 @@ fun SpawnModernPortalsWaveActionPropsEP(
         )
     }
 
+    val themeColor = Color(0xFFFF9800)
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
@@ -224,7 +224,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFFF9800),
+                    containerColor = themeColor,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -235,7 +235,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
             EditorHelpDialog(
                 title = "时空裂缝事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFFFF9800)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -292,7 +292,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                         Spacer(Modifier.height(12.dp))
 
                         LazyVerticalGrid(
-                            columns = GridCells.Adaptive(minSize = 100.dp), // 更小的宽度，一行能放3个左右
+                            columns = GridCells.Adaptive(minSize = 120.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.height(260.dp)
@@ -333,7 +333,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                             Icon(
                                 Icons.Default.Settings,
                                 null,
-                                tint = Color(0xFFFF9800),
+                                tint = themeColor,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(Modifier.width(8.dp))
@@ -342,7 +342,6 @@ fun SpawnModernPortalsWaveActionPropsEP(
 
                         Spacer(Modifier.height(16.dp))
 
-                        // IgnoreGraveStone
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -373,7 +372,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                                 },
                                 colors = SwitchDefaults.colors(
                                     checkedThumbColor = Color.White,
-                                    checkedTrackColor = Color(0xFFFF9800)
+                                    checkedTrackColor = themeColor
                                 ),
                                 modifier = Modifier.scale(0.8f)
                             )
@@ -410,7 +409,6 @@ fun MinimalPortalCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // 左侧：名字 + 选中标记
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = def.name,
@@ -421,7 +419,6 @@ fun MinimalPortalCard(
                 )
             }
 
-            // 右侧：信息按钮 (独立点击区域)
             IconButton(
                 onClick = onInfoClick,
                 modifier = Modifier.size(32.dp)

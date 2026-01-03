@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Air
+import androidx.compose.material.icons.filled.AirplanemodeActive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,8 +30,8 @@ import com.google.gson.Gson
 private val gson = Gson()
 
 private val PRESET_PARACHUTE_ZOMBIES = listOf(
-    "lostcity_lostpilot" to "失落飞行员",
-    "zcrop_helpdesk" to "Z公司服务台"
+    "lostcity_lostpilot" to "失落飞行员 (lostcity_lostpilot)",
+    "zcrop_helpdesk" to "Z公司服务台 (zcrop_helpdesk)"
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,7 +106,7 @@ fun ParachuteRainEventEP(
                 )
                 HelpSection(
                     title = "生成逻辑",
-                    body = "事件触发后，僵尸会分批次从天而降。可以控制总数量和每批次之间的时间间隔。僵尸会随机降落在选择的列数。"
+                    body = "事件触发后，僵尸会分批次从天而降。可以控制总数量和每批次之间的时间间隔。僵尸会随机降落在选择的列数。若到达了下落总前摇时间剩下的僵尸会立即出现。"
                 )
                 HelpSection(
                     title = "字幕信息",
@@ -131,7 +132,7 @@ fun ParachuteRainEventEP(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Air, null, tint = Color(0xFFFF9800))
+                            Icon(Icons.Default.AirplanemodeActive, null, tint = Color(0xFFFF9800))
                             Spacer(Modifier.width(12.dp))
                             Text("空降单位配置", color = Color(0xFFFF9800), fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         }
@@ -155,7 +156,10 @@ fun ParachuteRainEventEP(
                                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                                 },
                                 singleLine = true,
-                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFFFF9800),
+                                    focusedLabelColor = Color(0xFFFF9800)
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .menuAnchor()
@@ -169,8 +173,7 @@ fun ParachuteRainEventEP(
                                     DropdownMenuItem(
                                         text = {
                                             Column {
-                                                Text(label, fontWeight = FontWeight.Bold)
-                                                Text(code, fontSize = 10.sp, color = Color.Gray)
+                                                Text(label)
                                             }
                                         },
                                         onClick = {
@@ -202,13 +205,15 @@ fun ParachuteRainEventEP(
                                 value = actionDataState.value.spiderCount,
                                 onValueChange = { sync(actionDataState.value.copy(spiderCount = it)) },
                                 label = "总数量 (Total)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = Color(0xFFFF9800)
                             )
                             NumberInputInt(
                                 value = actionDataState.value.groupSize,
                                 onValueChange = { sync(actionDataState.value.copy(groupSize = it)) },
                                 label = "每批数量 (GroupSize)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = Color(0xFFFF9800)
                             )
                         }
                     }
@@ -231,13 +236,15 @@ fun ParachuteRainEventEP(
                                 value = actionDataState.value.columnStart,
                                 onValueChange = { sync(actionDataState.value.copy(columnStart = it)) },
                                 label = "起始列 (Start)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = Color(0xFFFF9800)
                             )
                             NumberInputInt(
                                 value = actionDataState.value.columnEnd,
                                 onValueChange = { sync(actionDataState.value.copy(columnEnd = it)) },
                                 label = "结束列 (End)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = Color(0xFFFF9800)
                             )
                         }
 
@@ -249,13 +256,15 @@ fun ParachuteRainEventEP(
                                 value = actionDataState.value.timeBetweenGroups,
                                 onValueChange = { sync(actionDataState.value.copy(timeBetweenGroups = it)) },
                                 label = "批次间隔 (秒)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = Color(0xFFFF9800)
                             )
                             NumberInputDouble(
                                 value = actionDataState.value.zombieFallTime,
                                 onValueChange = { sync(actionDataState.value.copy(zombieFallTime = it)) },
                                 label = "降落耗时 (秒)",
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                color = Color(0xFFFF9800)
                             )
                         }
 
@@ -265,7 +274,8 @@ fun ParachuteRainEventEP(
                             value = actionDataState.value.timeBeforeFullSpawn,
                             onValueChange = { sync(actionDataState.value.copy(timeBeforeFullSpawn = it)) },
                             label = "完全生成前摇时间 (TimeBeforeFullSpawn)",
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color(0xFFFF9800)
                         )
                     }
                 }
@@ -285,6 +295,10 @@ fun ParachuteRainEventEP(
                             value = actionDataState.value.waveStartMessage,
                             onValueChange = { sync(actionDataState.value.copy(waveStartMessage = it)) },
                             label = { Text("WaveStartMessage") },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFFFF9800),
+                                focusedLabelColor = Color(0xFFFF9800)
+                            ),
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
                         )

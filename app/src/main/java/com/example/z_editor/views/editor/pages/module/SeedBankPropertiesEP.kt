@@ -237,8 +237,8 @@ fun SeedBankPropertiesEP(
                                     seedBankDataState.value.copy(overrideSeedSlotsCount = clamped)
                                 syncData()
                             },
-                            label = "卡槽数量 (0-9)",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            label = "卡槽数量 (0-9)"
                         )
                     }
                     Text(

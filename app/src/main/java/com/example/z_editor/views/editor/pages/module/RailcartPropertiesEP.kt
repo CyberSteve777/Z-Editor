@@ -179,8 +179,9 @@ fun RailcartPropertiesEP(
         "railcart_worldcup" to "世界杯矿车 (railcart_worldcup)",
     )
 
-    val currentTypeDisplay = cartTypeOptions.find { it.first == moduleDataState.value.railcartType }?.second
-        ?: moduleDataState.value.railcartType
+    val currentTypeDisplay =
+        cartTypeOptions.find { it.first == moduleDataState.value.railcartType }?.second
+            ?: moduleDataState.value.railcartType
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
@@ -278,7 +279,8 @@ fun RailcartPropertiesEP(
                                 DropdownMenuItem(
                                     text = { Text(display) },
                                     onClick = {
-                                        moduleDataState.value = moduleDataState.value.copy(railcartType = code)
+                                        moduleDataState.value =
+                                            moduleDataState.value.copy(railcartType = code)
                                         sync()
                                         typeExpanded = false
                                     }
@@ -354,8 +356,8 @@ fun RailcartPropertiesEP(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1.8f)
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(2.dp, Color(0xFF8D6E63), RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(6.dp))
+                    .border(1.dp, Color(0xFF8D6E63), RoundedCornerShape(6.dp))
                     .background(Color(0xFFD7CCC8))
             ) {
                 Column(Modifier.fillMaxSize()) {
@@ -404,37 +406,47 @@ fun RailcartPropertiesEP(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(1.dp)
             ) {
-                Column {
-                    Text(
-                        "轨道段数: ${moduleDataState.value.rails.size}",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                    Text(
-                        "矿车数量: ${moduleDataState.value.railcarts.size}",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                }
-
-                TextButton(
-                    onClick = {
-                        for (c in 0..8) {
-                            railsGrid[c] = BooleanArray(5)
-                        }
-                        cartSet.clear()
-                        sync()
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("清空所有配置")
+                    Column {
+                        Text(
+                            "轨道段数: ${moduleDataState.value.rails.size}",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                        Text(
+                            "矿车数量: ${moduleDataState.value.railcarts.size}",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    }
+
+                    TextButton(
+                        onClick = {
+                            for (c in 0..8) {
+                                railsGrid[c] = BooleanArray(5)
+                            }
+                            cartSet.clear()
+                            sync()
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFFEBEE),
+                            contentColor = Color.Red
+                        ),
+                    ) {
+                        Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("清空所有配置", fontSize = 14.sp)
+                    }
                 }
             }
         }

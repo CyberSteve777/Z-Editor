@@ -231,13 +231,15 @@ fun ConveyorSeedBankPropertiesEP(
                             value = item.maxPacketsDelay,
                             onValueChange = { item.maxPacketsDelay = it },
                             label = "阈值",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                         NumberInputInt(
                             value = item.delay,
                             onValueChange = { item.delay = it },
                             label = "延迟",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                     }
                 }
@@ -275,13 +277,15 @@ fun ConveyorSeedBankPropertiesEP(
                             value = item.maxPacketsSpeed,
                             onValueChange = { item.maxPacketsSpeed = it },
                             label = "阈值",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                         NumberInputInt(
                             value = item.speed,
                             onValueChange = { item.speed = it },
                             label = "速度",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                     }
                 }
@@ -495,7 +499,12 @@ fun PlantDetailDialog(
             ) {
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    NumberInputInt(tempWeight, { tempWeight = it }, "初始权重", Modifier.weight(1f))
+                    NumberInputInt(
+                        value = tempWeight,
+                        onValueChange = { tempWeight = it },
+                        label = "初始权重",
+                        modifier = Modifier.weight(1f),
+                        color = Color(0xFF1976D2))
 
                     NumberInputInt(
                         value = tempLevel,
@@ -503,7 +512,8 @@ fun PlantDetailDialog(
                             tempLevel = input.coerceIn(0, 5)
                         },
                         label = "植物等级",
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        color = Color(0xFF1976D2)
                     )
                 }
                 Text(
@@ -525,16 +535,18 @@ fun PlantDetailDialog(
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         NumberInputInt(
-                            tempMaxCount,
-                            { tempMaxCount = it },
-                            "最大数量阈值",
-                            Modifier.weight(1f)
+                            value = tempMaxCount,
+                            onValueChange = { tempMaxCount = it },
+                            label = "最大数量阈值",
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                         NumberInputDouble(
-                            tempMaxWeightFactor,
-                            { tempMaxWeightFactor = it },
-                            "达标后权重倍率",
-                            Modifier.weight(1f)
+                            value = tempMaxWeightFactor,
+                            onValueChange = { tempMaxWeightFactor = it },
+                            label = "达标后权重倍率",
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                     }
                     Text(
@@ -557,16 +569,18 @@ fun PlantDetailDialog(
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         NumberInputInt(
-                            tempMinCount,
-                            { tempMinCount = it },
-                            "最小数量阈值",
-                            Modifier.weight(1f)
+                            value = tempMinCount,
+                            onValueChange = { tempMinCount = it },
+                            label = "最小数量阈值",
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                         NumberInputDouble(
-                            tempMinWeightFactor,
-                            { tempMinWeightFactor = it },
-                            "未达标权重倍率",
-                            Modifier.weight(1f)
+                            value = tempMinWeightFactor,
+                            onValueChange = { tempMinWeightFactor = it },
+                            label = "未达标权重倍率",
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                     }
                     Text(

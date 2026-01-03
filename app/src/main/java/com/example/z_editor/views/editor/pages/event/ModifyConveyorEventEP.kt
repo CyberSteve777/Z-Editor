@@ -454,10 +454,11 @@ fun ModifyConveyorPlantDialog(
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     NumberInputInt(
-                        tempWeight,
-                        { tempWeight = it },
-                        "变更后权重",
-                        Modifier.weight(1f)
+                        value =  tempWeight,
+                        onValueChange = { tempWeight = it },
+                        label = "变更后权重",
+                        modifier = Modifier.weight(1f),
+                        color = Color(0xFF1976D2),
                     )
 
                     NumberInputInt(
@@ -467,7 +468,8 @@ fun ModifyConveyorPlantDialog(
                             tempLevel = if (clamped == 0) null else clamped
                         },
                         label = "植物等级",
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        color = Color(0xFF1976D2)
                     )
                 }
                 Text(
@@ -489,16 +491,18 @@ fun ModifyConveyorPlantDialog(
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         NumberInputInt(
-                            tempMaxCount,
-                            { tempMaxCount = it },
-                            "最大数量",
-                            Modifier.weight(1f)
+                            value = tempMaxCount,
+                            onValueChange = { tempMaxCount = it },
+                            label = "最大数量",
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                         NumberInputDouble(
-                            tempMaxWeightFactor,
-                            { tempMaxWeightFactor = it },
-                            "达标权重倍率",
-                            Modifier.weight(1f)
+                            value = tempMaxWeightFactor,
+                            onValueChange = { tempMaxWeightFactor = it },
+                            label = "达标权重倍率",
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                     }
                     Text(
@@ -521,16 +525,18 @@ fun ModifyConveyorPlantDialog(
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         NumberInputInt(
-                            tempMinCount,
-                            { tempMinCount = it },
-                            "最小数量",
-                            Modifier.weight(1f)
+                            value = tempMinCount,
+                            onValueChange = { tempMinCount = it },
+                            label = "最小数量",
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                         NumberInputDouble(
-                            tempMinWeightFactor,
-                            { tempMinWeightFactor = it },
-                            "未达标权重倍率",
-                            Modifier.weight(1f)
+                            value = tempMinWeightFactor,
+                            onValueChange = { tempMinWeightFactor = it },
+                            label = "未达标权重倍率",
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFF1976D2)
                         )
                     }
                     Text(

@@ -4,8 +4,10 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -16,15 +18,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -33,9 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.datamodel.LevelParser
+import com.example.z_editor.data.datamodel.BlackHoleEventData
 import com.example.z_editor.data.datamodel.PvzLevelFile
-import com.example.z_editor.data.datamodel.RaidingPartyEventData
+import com.example.z_editor.data.datamodel.RtidParser
 import com.example.z_editor.views.editor.EditorHelpDialog
 import com.example.z_editor.views.editor.HelpSection
 import com.example.z_editor.views.editor.NumberInputInt
@@ -45,49 +48,56 @@ private val gson = Gson()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RaidingPartyEventEP(
+fun BlackHoleEventEP(
     rtid: String,
-    rootLevelFile: PvzLevelFile,
     onBack: () -> Unit,
+    rootLevelFile: PvzLevelFile,
     scrollState: ScrollState
 ) {
-    val currentAlias = LevelParser.extractAlias(rtid)
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
+    val currentAlias = RtidParser.parse(rtid)?.alias ?: "BlackHoleEvent"
 
+    // 状态管理
     val eventDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-        val initialData = try {
-            gson.fromJson(obj?.objData, RaidingPartyEventData::class.java)
+        val data = try {
+            if (obj != null) {
+                gson.fromJson(obj.objData, BlackHoleEventData::class.java)
+            } else {
+                BlackHoleEventData()
+            }
         } catch (_: Exception) {
-            RaidingPartyEventData()
+            BlackHoleEventData()
         }
-        mutableStateOf(initialData)
+        mutableStateOf(data)
     }
 
+    // 同步函数
     fun sync() {
-        rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
-            it.objData = gson.toJsonTree(eventDataState.value)
+        val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
+        if (obj != null) {
+            obj.objData = gson.toJsonTree(eventDataState.value)
         }
     }
+
+    val themeColor = Color(0xFF7C30D9)
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(onTap = {
-                focusManager.clearFocus() // 点击空白处清除焦点
-            })
+            detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
             TopAppBar(
                 title = {
                     Column {
                         Text("编辑 $currentAlias", fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("事件类型：海盗登船", fontSize = 15.sp, fontWeight = FontWeight.Normal)
+                        Text("事件类型：黑洞吸引", fontSize = 15.sp, fontWeight = FontWeight.Normal)
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
                     }
                 },
                 actions = {
@@ -96,7 +106,7 @@ fun RaidingPartyEventEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFFF9800),
+                    containerColor = themeColor,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -105,20 +115,21 @@ fun RaidingPartyEventEP(
     ) { padding ->
         if (showHelpDialog) {
             EditorHelpDialog(
-                title = "海盗登船事件说明",
+                title = "黑洞事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFFFF9800)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
-                    body = "常见于海盗港湾的事件，能分批依次生成若干只飞索僵尸进攻。"
+                    body = "功夫世界特有事件。时空黑洞会随事件生成，将所有植物向右吸动。"
                 )
                 HelpSection(
-                    title = "僵尸设置",
-                    body = "本事件修改自由度较低，僵尸强制写死为海盗飞索，阶级也只能默认随地图阶级序列。"
+                    title = "吸引配置",
+                    body = "可以输入植物被吸引拖拽的列数，表示植物会受黑洞影响向右移多少格。"
                 )
             }
         }
+
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -129,68 +140,30 @@ fun RaidingPartyEventEP(
         ) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(2.dp)
+                elevation = CardDefaults.cardElevation(2.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+                Column(modifier = Modifier.padding(20.dp)) {
                     Text(
-                        "生成参数配置",
-                        color = Color(0xFFFF9800),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        text = "吸引配置",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = themeColor,
+                        fontWeight = FontWeight.Bold
                     )
 
-                    NumberInputInt(
-                        value = eventDataState.value.groupSize,
-                        onValueChange = {
-                            eventDataState.value = eventDataState.value.copy(groupSize = it)
-                            sync()
-                        },
-                        label = "每组的僵尸数 (GroupSize)",
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFFFF9800)
-                    )
-                    Text(
-                        "每一组所包含的僵尸数量",
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
+                    Spacer(Modifier.height(16.dp))
 
                     NumberInputInt(
-                        value = eventDataState.value.swashbucklerCount,
-                        onValueChange = {
-                            eventDataState.value = eventDataState.value.copy(swashbucklerCount = it)
+                        value = eventDataState.value.colNumPlantIsDragged,
+                        onValueChange = { newValue ->
+                            eventDataState.value = eventDataState.value.copy(
+                                colNumPlantIsDragged = newValue
+                            )
                             sync()
                         },
-                        label = "总僵尸数 (SwashbucklerCount)",
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFFFF9800)
-                    )
-                    Text(
-                        "该事件总共生成的僵尸数量",
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-
-                    NumberInputInt(
-                        value = eventDataState.value.timeBetweenGroups,
-                        onValueChange = {
-                            eventDataState.value = eventDataState.value.copy(timeBetweenGroups = it)
-                            sync()
-                        },
-                        label = "组间间隔 (TimeBetweenGroups)",
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFFFF9800)
-                    )
-                    Text(
-                        "两批突袭之间的时间间隔",
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(start = 4.dp)
+                        color = themeColor,
+                        label = "拖拽列数 (ColNumPlantIsDragged)",
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
