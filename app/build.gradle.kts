@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.Z_Editor"
+    namespace = "com.example.z_editor"
     compileSdk = 36
 
     defaultConfig {
