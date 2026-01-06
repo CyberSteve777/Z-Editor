@@ -4,7 +4,7 @@
       "objclass": "LevelDefinition",
       "objdata": {
         "Description": "本关为自选卡示例关",
-        "LevelNumber": 1,
+        "LevelNumber": 2,
         "Loot": "RTID(DefaultLoot@LevelModules)",
         "Modules": [
           "RTID(StandardIntro@LevelModules)",
@@ -15,7 +15,7 @@
           "RTID(NewWaves@CurrentLevel)",
           "RTID(DefaultCustomLevel@LevelModules)"
         ],
-        "Name": "示例自选卡",
+        "Name": "自选卡示例",
         "StageModule": "RTID(ModernStage@LevelModules)",
         "StartingSun": 200,
         "VictoryModule": "RTID(VictoryOutro@LevelModules)"
@@ -49,16 +49,6 @@
             "StartingWave": 3,
             "ZombiePool": [
               "RTID(tutorial@ZombieTypes)",
-              "RTID(tutorial_armor1@ZombieTypes)",
-              "RTID(tutorial_armor2@ZombieTypes)"
-            ]
-          },
-          {},
-          {
-            "PointIncrementPerWave": 40,
-            "StartingPoints": 200,
-            "StartingWave": 4,
-            "ZombiePool": [
               "RTID(tutorial_armor1@ZombieTypes)",
               "RTID(tutorial_armor2@ZombieTypes)"
             ]

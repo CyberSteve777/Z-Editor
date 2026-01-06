@@ -39,8 +39,7 @@ enum class PlantTag(val label: String, val iconName: String?, val category: Plan
     Physics("物理属性", "Plant_Physics.png", PlantCategory.Attribute),
 
     // --- 其他植物 (Other) ---
-    Original("一代植物", null, PlantCategory.Other),
-    Other("其他植物", null, PlantCategory.Other)
+    Original("一代植物", null, PlantCategory.Other)
 }
 
 
@@ -86,7 +85,7 @@ object PlantRepository {
                     icon = raw.icon,
                     tags = raw.tags?.mapNotNull { tagStr ->
                         PlantTag.entries.find { it.name.equals(tagStr, ignoreCase = true) }
-                    } ?: listOf(PlantTag.Other)
+                    } ?: listOf(PlantTag.All)
                 )
             }
 
@@ -94,7 +93,7 @@ object PlantRepository {
             reader.close()
         } catch (e: Exception) {
             e.printStackTrace()
-            allPlants = listOf(PlantInfo("error", "数据加载失败", listOf(PlantTag.Other), null))
+            allPlants = listOf(PlantInfo("error", "数据加载失败", listOf(PlantTag.All), null))
         }
     }
 

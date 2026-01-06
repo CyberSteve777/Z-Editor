@@ -43,7 +43,7 @@ enum class ZombieTag(val label: String, val iconName: String?, val category: Zom
     Elite("精英僵尸", "Zombie_Elite.png", ZombieCategory.Size),
 
     // --- 其他 ---
-    Other("其它僵尸", null, ZombieCategory.Other);
+    Evildave("适配iz", null, ZombieCategory.Other),
 }
 
 data class ZombieInfo(
@@ -53,7 +53,6 @@ data class ZombieInfo(
     val icon: String?
 )
 
-// 中间解析类
 private data class RawZombieData(
     val id: String,
     val name: String,
@@ -65,6 +64,8 @@ object ZombieRepository {
     private var allZombies = listOf<ZombieInfo>()
     private var isLoaded = false
 
+    private val uiConfiguredAliases = HashSet<String>()
+
     fun init(context: Context) {
         if (isLoaded) return
         try {
@@ -75,20 +76,21 @@ object ZombieRepository {
             val rawList: List<RawZombieData> = gson.fromJson(reader, listType)
 
             allZombies = rawList.map { raw ->
+                uiConfiguredAliases.add(raw.id)
                 ZombieInfo(
                     id = raw.id,
                     name = raw.name,
                     icon = raw.icon,
                     tags = raw.tags?.mapNotNull { tagStr ->
                         ZombieTag.entries.find { it.name.equals(tagStr, ignoreCase = true) }
-                    } ?: listOf(ZombieTag.Other)
+                    } ?: listOf(ZombieTag.All)
                 )
             }
             isLoaded = true
             reader.close()
         } catch (e: Exception) {
             e.printStackTrace()
-            allZombies = listOf(ZombieInfo("error", "加载失败", listOf(ZombieTag.Other), null))
+            allZombies = listOf(ZombieInfo("error", "加载失败", listOf(ZombieTag.All), null))
         }
     }
 
@@ -110,10 +112,19 @@ object ZombieRepository {
         }
     }
 
-    fun getName(id: String): String = allZombies.find { it.id == id }?.name ?: id
+    fun getName(id: String): String {
+        val uiName = allZombies.find { it.id == id }?.name
+        if (uiName != null) return uiName
+        return id
+    }
 
     fun isElite(id: String): Boolean {
         val zombie = allZombies.find { it.id == id } ?: return false
         return zombie.tags.contains(ZombieTag.Elite)
+    }
+
+    fun isValid(id: String): Boolean {
+        if (uiConfiguredAliases.contains(id)) return true
+        return ZombiePropertiesRepository.isValidAlias(id)
     }
 }

@@ -407,7 +407,7 @@ fun RailcartPropertiesEP(
                                             Box(
                                                 modifier = Modifier
                                                     .fillMaxSize(0.8f)
-                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .clip(RoundedCornerShape(0.dp))
                                                     .background(Color.Transparent),
                                                 contentAlignment = Alignment.Center
                                             ) {

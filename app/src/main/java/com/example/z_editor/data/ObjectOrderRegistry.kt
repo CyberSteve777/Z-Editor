@@ -27,7 +27,7 @@ object ObjectOrderRegistry {
         "StarChallengeModuleProperties",
 
         "StarChallengeBeatTheLevelProps",
-        "StarChallengeSaveMowerProps",
+        "StarChallengeSaveMowersProps",
         "StarChallengePlantFoodNonuseProps",
         "StarChallengePlantsSurviveProps",
         "StarChallengeZombieDistanceProps",
@@ -55,12 +55,19 @@ object ObjectOrderRegistry {
         "RaidingPartyZombieSpawnerProps",
         "SpawnModernPortalsWaveActionProps",
 
-        "BlackHoleWaveActionProps",
+        "SpiderRainZombieSpawnerProps",
+        "ParachuteRainZombieSpawnerProps",
+        "BassRainZombieSpawnerProps",
+
         "FrostWindWaveActionProps",
         "DinoWaveActionProps",
 
         "TidalChangeWaveActionProps",
         "BeachStageEventZombieSpawnerProps",
+
+        "BlackHoleWaveActionProps",
+
+        "SpawnGravestonesWaveActionProps",
 
         "ModifyConveyorWaveActionProps",
     )
@@ -75,6 +82,48 @@ object ObjectOrderRegistry {
      */
     fun getPriority(objClass: String): Int {
         return ORDER_MAP[objClass] ?: Int.MAX_VALUE
+    }
+
+    private val naturalStringComparator = Comparator<String> { s1, s2 ->
+        var i = 0
+        var j = 0
+        while (i < s1.length && j < s2.length) {
+            val c1 = s1[i]
+            val c2 = s2[j]
+
+            // 如果两个字符都是数字，提取完整的数字部分进行数值比较
+            if (c1.isDigit() && c2.isDigit()) {
+                var num1 = 0L
+                while (i < s1.length && s1[i].isDigit()) {
+                    // 防止 Long 溢出，只取前18位（足够处理Alias中的数字）
+                    if (num1 < 100000000000000000L) {
+                        num1 = num1 * 10 + (s1[i] - '0')
+                    }
+                    i++
+                }
+
+                var num2 = 0L
+                while (j < s2.length && s2[j].isDigit()) {
+                    if (num2 < 100000000000000000L) {
+                        num2 = num2 * 10 + (s2[j] - '0')
+                    }
+                    j++
+                }
+
+                if (num1 != num2) {
+                    return@Comparator num1.compareTo(num2)
+                }
+            } else {
+                // 如果不是数字，或者一个是数字一个不是，按普通字符比较
+                if (c1 != c2) {
+                    return@Comparator c1.compareTo(c2)
+                }
+                i++
+                j++
+            }
+        }
+        // 如果前面都一样，长度短的排前面
+        s1.length - s2.length
     }
 
     /**
@@ -99,7 +148,7 @@ object ObjectOrderRegistry {
             else -> {
                 val alias1 = o1.aliases?.firstOrNull() ?: ""
                 val alias2 = o2.aliases?.firstOrNull() ?: ""
-                alias1.compareTo(alias2)
+                naturalStringComparator.compare(alias1, alias2)
             }
         }
     }

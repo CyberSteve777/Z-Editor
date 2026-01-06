@@ -3,19 +3,20 @@
     {
       "objclass": "LevelDefinition",
       "objdata": {
-        "Description": "本关为传送带示例关",
-        "LevelNumber": 3,
+        "Description": "本关为坚不可摧示例关",
+        "LevelNumber": 4,
         "Loot": "RTID(DefaultLoot@LevelModules)",
         "Modules": [
-          "RTID(StandardIntro@LevelModules)",
           "RTID(ZombiesDeadWinCon@LevelModules)",
-          "RTID(ConveyorBelt@CurrentLevel)",
+          "RTID(SeedBank@CurrentLevel)",
           "RTID(DefaultZombieWinCondition@LevelModules)",
           "RTID(NewWaves@CurrentLevel)",
+          "RTID(LastStand@CurrentLevel)",
           "RTID(ChallengeModule@CurrentLevel)",
           "RTID(DefaultCustomLevel@LevelModules)"
         ],
-        "Name": "示例传送带",
+        "MusicType": "MiniGame_A",
+        "Name": "坚不可摧示例",
         "StageModule": "RTID(ModernStage@LevelModules)",
         "StartingSun": 200,
         "VictoryModule": "RTID(VictoryOutro@LevelModules)"
@@ -23,60 +24,25 @@
     },
     {
       "aliases": [
-        "ConveyorBelt"
+        "SeedBank"
       ],
-      "objclass": "ConveyorSeedBankProperties",
+      "objclass": "SeedBankProperties",
       "objdata": {
-        "DropDelayConditions": [
-          {
-            "Delay": 7,
-            "MaxPackets": 0
-          },
-          {
-            "Delay": 9,
-            "MaxPackets": 5
-          },
-          {
-            "Delay": 10,
-            "MaxPackets": 7
-          },
-          {
-            "Delay": 14,
-            "MaxPackets": 9
-          }
-        ],
-        "InitialPlantList": [
-          {
-            "MaxCount": 0,
-            "MaxWeightFactor": 1.0,
-            "MinCount": 0,
-            "MinWeightFactor": 1.0,
-            "PlantType": "lightningreed",
-            "Weight": 30
-          },
-          {
-            "MaxCount": 2,
-            "MaxWeightFactor": 0.5,
-            "MinCount": 0,
-            "MinWeightFactor": 1.0,
-            "PlantType": "shrinkingviolet",
-            "Weight": 20
-          },
-          {
-            "MaxCount": 5,
-            "MaxWeightFactor": 0.0,
-            "MinCount": 0,
-            "MinWeightFactor": 1.0,
-            "PlantType": "snapdragon",
-            "Weight": 30
-          }
-        ],
-        "SpeedConditions": [
-          {
-            "MaxPackets": 0,
-            "Speed": 100
-          }
-        ]
+        "OverrideSeedSlotsCount": 8,
+        "PlantBlackList": [],
+        "PlantWhiteList": [],
+        "PresetPlantList": [],
+        "SelectionMethod": "chooser"
+      }
+    },
+    {
+      "aliases": [
+        "LastStand"
+      ],
+      "objclass": "LastStandMinigameProperties",
+      "objdata": {
+        "StartingPlantfood": 2,
+        "StartingSun": 3000
       }
     },
     {
@@ -99,8 +65,7 @@
       ],
       "objclass": "StarChallengeBeatTheLevelProps",
       "objdata": {
-        "Description": "使用传送带上的植物打败敌人",
-        "DescriptiveName": "[EGYPT_CHALLENGE_ZERO_NAME]"
+        "Description": "建立防线，阻挡僵尸们的进攻"
       }
     },
     {
@@ -114,23 +79,15 @@
             "PointIncrementPerWave": 40,
             "StartingPoints": 200,
             "StartingWave": 3,
+            "ZombieLevel": [],
             "ZombiePool": [
               "RTID(tutorial@ZombieTypes)",
               "RTID(tutorial_armor1@ZombieTypes)",
               "RTID(tutorial_armor2@ZombieTypes)"
             ]
-          },
-          {},
-          {
-            "PointIncrementPerWave": 40,
-            "StartingPoints": 200,
-            "StartingWave": 4,
-            "ZombiePool": [
-              "RTID(tutorial_armor1@ZombieTypes)",
-              "RTID(tutorial_armor2@ZombieTypes)"
-            ]
           }
         ],
+        "ManualStartup": true,
         "WaveManagerProps": "RTID(WaveManagerProps@CurrentLevel)"
       }
     },
@@ -149,15 +106,13 @@
             "RTID(Wave1@CurrentLevel)"
           ],
           [
-            "RTID(Wave2@CurrentLevel)",
-            "RTID(Wave2ModConveyor0@CurrentLevel)"
+            "RTID(Wave2@CurrentLevel)"
           ],
           [
             "RTID(Wave3@CurrentLevel)"
           ],
           [
-            "RTID(Wave4@CurrentLevel)",
-            "RTID(Wave4ModConveyor0@CurrentLevel)"
+            "RTID(Wave4@CurrentLevel)"
           ],
           [
             "RTID(Wave5@CurrentLevel)"
@@ -172,8 +127,7 @@
             "RTID(Wave8@CurrentLevel)"
           ],
           [
-            "RTID(Wave9@CurrentLevel)",
-            "RTID(Wave9ModConveyor0@CurrentLevel)"
+            "RTID(Wave9@CurrentLevel)"
           ],
           [
             "RTID(Wave10@CurrentLevel)"
@@ -193,15 +147,6 @@
         "AdditionalPlantfood": 0,
         "Zombies": [
           {
-            "Row": "3",
-            "Type": "RTID(tutorial@ZombieTypes)"
-          },
-          {
-            "Row": "2",
-            "Type": "RTID(tutorial@ZombieTypes)"
-          },
-          {
-            "Row": "1",
             "Type": "RTID(tutorial@ZombieTypes)"
           }
         ]
@@ -219,15 +164,6 @@
           },
           {
             "Type": "RTID(tutorial@ZombieTypes)"
-          },
-          {
-            "Type": "RTID(tutorial@ZombieTypes)"
-          },
-          {
-            "Type": "RTID(tutorial@ZombieTypes)"
-          },
-          {
-            "Type": "RTID(tutorial@ZombieTypes)"
           }
         ]
       }
@@ -238,19 +174,13 @@
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
-        "AdditionalPlantfood": 0,
+        "AdditionalPlantfood": 1,
         "Zombies": [
           {
             "Type": "RTID(tutorial_armor1@ZombieTypes)"
           },
           {
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
-          },
-          {
             "Type": "RTID(tutorial@ZombieTypes)"
-          },
-          {
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
           }
         ]
       }
@@ -261,27 +191,14 @@
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
-        "AdditionalPlantfood": 1,
         "Zombies": [
           {
-            "Row": "1",
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
-          },
-          {
             "Row": "2",
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
-          },
-          {
-            "Row": "3",
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
-          },
-          {
-            "Row": "4",
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
+            "Type": "RTID(tutorial@ZombieTypes)"
           },
           {
             "Row": "5",
-            "Type": "RTID(tutorial@ZombieTypes)"
+            "Type": "RTID(tutorial_armor1@ZombieTypes)"
           }
         ]
       }
@@ -295,24 +212,20 @@
         "AdditionalPlantfood": 0,
         "Zombies": [
           {
-            "Row": "4",
+            "Row": "5",
             "Type": "RTID(tutorial@ZombieTypes)"
           },
           {
             "Row": "4",
-            "Type": "RTID(tutorial@ZombieTypes)"
+            "Type": "RTID(tutorial_armor1@ZombieTypes)"
           },
           {
-            "Row": "4",
-            "Type": "RTID(tutorial@ZombieTypes)"
-          },
-          {
-            "Row": "3",
+            "Row": "2",
             "Type": "RTID(tutorial_armor1@ZombieTypes)"
           },
           {
             "Row": "1",
-            "Type": "RTID(tutorial_armor2@ZombieTypes)"
+            "Type": "RTID(tutorial@ZombieTypes)"
           }
         ]
       }
@@ -325,27 +238,15 @@
       "objdata": {
         "Zombies": [
           {
-            "Row": "5",
-            "Type": "RTID(tutorial_armor2@ZombieTypes)"
-          },
-          {
-            "Row": "4",
-            "Type": "RTID(tutorial_armor2@ZombieTypes)"
+            "Row": "1",
+            "Type": "RTID(tutorial_armor1@ZombieTypes)"
           },
           {
             "Row": "3",
-            "Type": "RTID(tutorial_armor2@ZombieTypes)"
+            "Type": "RTID(tutorial_armor1@ZombieTypes)"
           },
           {
-            "Row": "2",
-            "Type": "RTID(modern_newspaper@ZombieTypes)"
-          },
-          {
-            "Row": "1",
-            "Type": "RTID(tutorial@ZombieTypes)"
-          },
-          {
-            "Row": "2",
+            "Row": "5",
             "Type": "RTID(tutorial_armor1@ZombieTypes)"
           }
         ]
@@ -359,12 +260,16 @@
       "objdata": {
         "Zombies": [
           {
-            "Row": "1",
-            "Type": "RTID(modern_newspaper@ZombieTypes)"
+            "Row": "4",
+            "Type": "RTID(tutorial_armor2@ZombieTypes)"
           },
           {
-            "Row": "3",
-            "Type": "RTID(modern_newspaper@ZombieTypes)"
+            "Row": "2",
+            "Type": "RTID(tutorial@ZombieTypes)"
+          },
+          {
+            "Row": "1",
+            "Type": "RTID(tutorial_armor1@ZombieTypes)"
           }
         ]
       }
@@ -375,23 +280,23 @@
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
-        "AdditionalPlantfood": 1,
+        "AdditionalPlantfood": 0,
         "Zombies": [
           {
             "Row": "3",
             "Type": "RTID(tutorial_armor2@ZombieTypes)"
           },
           {
+            "Row": "1",
+            "Type": "RTID(tutorial@ZombieTypes)"
+          },
+          {
             "Row": "3",
             "Type": "RTID(tutorial@ZombieTypes)"
           },
           {
-            "Row": "1",
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
-          },
-          {
-            "Row": "5",
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
+            "Row": "3",
+            "Type": "RTID(tutorial@ZombieTypes)"
           }
         ]
       }
@@ -402,7 +307,7 @@
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
-        "AdditionalPlantfood": 0,
+        "AdditionalPlantfood": 1,
         "Zombies": [
           {
             "Row": "5",
@@ -411,6 +316,9 @@
           {
             "Row": "1",
             "Type": "RTID(tutorial_armor2@ZombieTypes)"
+          },
+          {
+            "Type": "RTID(tutorial@ZombieTypes)"
           },
           {
             "Row": "2",
@@ -432,16 +340,8 @@
             "Type": "RTID(tutorial_armor1@ZombieTypes)"
           },
           {
-            "Row": "5",
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
-          },
-          {
-            "Row": "5",
-            "Type": "RTID(tutorial_armor1@ZombieTypes)"
-          },
-          {
             "Row": "4",
-            "Type": "RTID(modern_newspaper@ZombieTypes)"
+            "Type": "RTID(tutorial@ZombieTypes)"
           },
           {
             "Row": "4",
@@ -449,15 +349,15 @@
           },
           {
             "Row": "3",
-            "Type": "RTID(tutorial@ZombieTypes)"
+            "Type": "RTID(tutorial_armor2@ZombieTypes)"
           },
           {
             "Row": "3",
-            "Type": "RTID(modern_newspaper@ZombieTypes)"
+            "Type": "RTID(tutorial@ZombieTypes)"
           },
           {
             "Row": "2",
-            "Type": "RTID(modern_newspaper@ZombieTypes)"
+            "Type": "RTID(tutorial_armor2@ZombieTypes)"
           },
           {
             "Row": "2",
@@ -466,55 +366,6 @@
           {
             "Row": "1",
             "Type": "RTID(tutorial_armor1@ZombieTypes)"
-          }
-        ]
-      }
-    },
-    {
-      "aliases": [
-        "Wave4ModConveyor0"
-      ],
-      "objclass": "ModifyConveyorWaveActionProps",
-      "objdata": {
-        "Add": [
-          {
-            "MaxDelivered": 1,
-            "Type": "RTID(intensivecarrot@PlantTypes)",
-            "Weight": 20
-          }
-        ],
-        "Remove": []
-      }
-    },
-    {
-      "aliases": [
-        "Wave2ModConveyor0"
-      ],
-      "objclass": "ModifyConveyorWaveActionProps",
-      "objdata": {
-        "Add": [
-          {
-            "MaxCount": 0,
-            "MaxWeightFactor": 1.0,
-            "MinCount": 5,
-            "MinWeightFactor": 2.0,
-            "Type": "RTID(endurian@PlantTypes)",
-            "Weight": 10
-          }
-        ],
-        "Remove": []
-      }
-    },
-    {
-      "aliases": [
-        "Wave9ModConveyor0"
-      ],
-      "objclass": "ModifyConveyorWaveActionProps",
-      "objdata": {
-        "Add": [],
-        "Remove": [
-          {
-            "Type": "RTID(endurian@PlantTypes)"
           }
         ]
       }

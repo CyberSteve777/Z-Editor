@@ -68,11 +68,11 @@ fun WaveManagerPropertiesEP(
     var jamExpanded by remember { mutableStateOf(false) }
     val jamOptions = listOf(
         null to "默认/无 (None)",
-        "pop" to "流行 (Pop)",
-        "rap" to "说唱 (Rap)",
-        "metal" to "重金属 (Metal)",
-        "punk" to "朋克 (Punk)",
-        "8bit" to "街机 (8-Bit)"
+        "jam_pop" to "流行 (Pop)",
+        "jam_rap" to "说唱 (Rap)",
+        "jam_metal" to "重金属 (Metal)",
+        "jam_punk" to "朋克 (Punk)",
+        "jam_8bit" to "街机 (8-Bit)"
     )
     var selectedJamCode by remember { mutableStateOf(waveManager.levelJam) }
     val selectedJamLabel =

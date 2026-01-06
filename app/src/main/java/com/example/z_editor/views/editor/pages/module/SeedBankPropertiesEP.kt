@@ -24,6 +24,8 @@ import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.EmojiPeople
+import androidx.compose.material.icons.filled.FlipCameraAndroid
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Yard
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -60,7 +62,6 @@ import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SeedBankData
 import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -72,46 +73,30 @@ private val gson = Gson()
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SeedBankPropertiesEP(
+    rtid: String,
     rootLevelFile: PvzLevelFile,
     levelDef: LevelDefinitionData,
     onBack: () -> Unit,
     onRequestPlantSelection: ((String) -> Unit) -> Unit,
-    onRequestZombieSelection: ((String) -> Unit) -> Unit, // 新增参数：请求选择僵尸
+    onRequestZombieSelection: ((String) -> Unit) -> Unit,
     scrollState: ScrollState
 ) {
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
-
-    val targetModuleRtid = remember(levelDef.modules) {
-        levelDef.modules.find { rtid ->
-            val info = RtidParser.parse(rtid)
-            val alias = info?.alias ?: ""
-            rootLevelFile.objects.find { it.aliases?.contains(alias) == true }?.objClass == "SeedBankProperties" ||
-                    ReferenceRepository.getObjClass(alias) == "SeedBankProperties"
-        }
-    }
-
-    val currentAlias = if (targetModuleRtid != null) {
-        RtidParser.parse(targetModuleRtid)?.alias ?: "SeedBank"
-    } else {
-        "SeedBank"
-    }
+    val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
 
     val seedBankDataState = remember {
-        val localObj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-        val data = if (localObj != null) {
-            try {
-                gson.fromJson(localObj.objData, SeedBankData::class.java)
-            } catch (_: Exception) {
-                SeedBankData()
-            }
-        } else {
+        val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
+        val data = try {
+            gson.fromJson(obj?.objData, SeedBankData::class.java)
+        } catch (_: Exception) {
             SeedBankData()
         }
         mutableStateOf(data)
     }
 
     val isZombieMode = seedBankDataState.value.zombieMode == true
+    val isReversedZombie = seedBankDataState.value.seedPacketType == "UIIZombieSeedPacket"
 
     fun syncData() {
         rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
@@ -127,7 +112,13 @@ fun SeedBankPropertiesEP(
         },
         topBar = {
             TopAppBar(
-                title = { Text(if(isZombieMode) "种子库 (我是僵尸)" else "种子库配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
+                title = {
+                    Text(
+                        if (isZombieMode) "种子库 (我是僵尸)" else "种子库配置",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
@@ -139,7 +130,7 @@ fun SeedBankPropertiesEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = if(isZombieMode) Color(0xFF654B80) else Color(0xFF388E3C), // 僵尸模式变色
+                    containerColor = if (isZombieMode) Color(0xFF654B80) else Color(0xFF388E3C), // 僵尸模式变色
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -150,12 +141,27 @@ fun SeedBankPropertiesEP(
             EditorHelpDialog(
                 title = "种子库模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = if(isZombieMode) Color(0xFF654B80) else Color(0xFF388E3C)
+                themeColor = if (isZombieMode) Color(0xFF654B80) else Color(0xFF388E3C)
             ) {
-                // ... (原有帮助保持不变)
+                HelpSection(
+                    title = "简要介绍",
+                    body = "种子库可以允许玩家选择已有的植物，在庭院模块下通过定义全局阶级可以实现全植物可用。"
+                )
+                HelpSection(
+                    title = "预选植物",
+                    body = "选择方式为自选时，开始游戏前会让玩家在种子库补齐植物到卡槽总数。选择方式为预选时，玩家会带着预选设置页的植物直接开始游戏。"
+                )
+                HelpSection(
+                    title = "黑白名单",
+                    body = "白名单为空时不作限制，若白名单有植物则只能从白名单内选择。黑名单为额外禁用植物，优先级高于白名单。"
+                )
+                HelpSection(
+                    title = "进阶玩法",
+                    body = "当选择模式是preset时，将选卡模块放在传送带模块前面可以让传送带中文消耗阳光种植，放在后面可以让预选卡种植不消耗阳光。"
+                )
                 HelpSection(
                     title = "我是僵尸模式",
-                    body = "启用我是僵尸模式后，种子库将转变为僵尸选择器。此时选卡模式强制为 Preset，且等级和卡槽设置将被禁用。"
+                    body = "启用我是僵尸模式后，种子库将转变为僵尸选择器。此时选卡模式强制为 Preset。如果关卡中同时存在植物卡槽模式和僵尸卡槽模式，需锁定至相同阶级。"
                 )
             }
         }
@@ -177,7 +183,11 @@ fun SeedBankPropertiesEP(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Yard, null, tint = if(isZombieMode) Color.Gray else Color(0xFF388E3C))
+                        Icon(
+                            Icons.Default.Yard,
+                            null,
+                            tint = if (isZombieMode) Color.Gray else Color(0xFF388E3C)
+                        )
                         Spacer(Modifier.width(12.dp))
                         Text("基础规则", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
@@ -215,12 +225,11 @@ fun SeedBankPropertiesEP(
                         NumberInputInt(
                             value = seedBankDataState.value.globalLevel ?: 0,
                             onValueChange = { input ->
-                                if (!isZombieMode) {
-                                    val clamped = input.coerceIn(0, 5)
-                                    val finalVal = if (clamped == 0) null else clamped
-                                    seedBankDataState.value = seedBankDataState.value.copy(globalLevel = finalVal)
-                                    syncData()
-                                }
+                                val clamped = input.coerceIn(0, 5)
+                                val finalVal = if (clamped == 0) null else clamped
+                                seedBankDataState.value =
+                                    seedBankDataState.value.copy(globalLevel = finalVal)
+                                syncData()
                             },
                             label = "植物等级 (0-5)",
                             modifier = Modifier.weight(1f)
@@ -229,21 +238,13 @@ fun SeedBankPropertiesEP(
                         NumberInputInt(
                             value = seedBankDataState.value.overrideSeedSlotsCount ?: 0,
                             onValueChange = { input ->
-                                if (!isZombieMode) {
-                                    val clamped = input.coerceIn(0, 9)
-                                    seedBankDataState.value = seedBankDataState.value.copy(overrideSeedSlotsCount = clamped)
-                                    syncData()
-                                }
+                                val clamped = input.coerceIn(0, 9)
+                                seedBankDataState.value =
+                                    seedBankDataState.value.copy(overrideSeedSlotsCount = clamped)
+                                syncData()
                             },
                             modifier = Modifier.weight(1f),
                             label = "卡槽数量 (0-9)"
-                        )
-                    }
-                    if (isZombieMode) {
-                        Text(
-                            text = "我是僵尸模式下，等级与卡槽设置不可用",
-                            fontSize = 12.sp,
-                            color = Color(0xFFD32F2F)
                         )
                     }
                 }
@@ -259,7 +260,8 @@ fun SeedBankPropertiesEP(
                     accentColor = Color(0xFF654B80),
                     isZombie = true,
                     onListChanged = { newList ->
-                        seedBankDataState.value = seedBankDataState.value.copy(presetPlantList = newList)
+                        seedBankDataState.value =
+                            seedBankDataState.value.copy(presetPlantList = newList)
                         syncData()
                     },
                     onAddRequest = onRequestZombieSelection
@@ -273,7 +275,8 @@ fun SeedBankPropertiesEP(
                     accentColor = Color(0xFF1976D2),
                     isZombie = false,
                     onListChanged = { newList ->
-                        seedBankDataState.value = seedBankDataState.value.copy(presetPlantList = newList)
+                        seedBankDataState.value =
+                            seedBankDataState.value.copy(presetPlantList = newList)
                         syncData()
                     },
                     onAddRequest = onRequestPlantSelection
@@ -287,7 +290,8 @@ fun SeedBankPropertiesEP(
                     accentColor = Color(0xFF388E3C), // 绿
                     isZombie = false,
                     onListChanged = { newList ->
-                        seedBankDataState.value = seedBankDataState.value.copy(plantWhiteList = newList)
+                        seedBankDataState.value =
+                            seedBankDataState.value.copy(plantWhiteList = newList)
                         syncData()
                     },
                     onAddRequest = onRequestPlantSelection
@@ -301,11 +305,32 @@ fun SeedBankPropertiesEP(
                     accentColor = Color(0xFFD32F2F), // 红
                     isZombie = false,
                     onListChanged = { newList ->
-                        seedBankDataState.value = seedBankDataState.value.copy(plantBlackList = newList)
+                        seedBankDataState.value =
+                            seedBankDataState.value.copy(plantBlackList = newList)
                         syncData()
                     },
                     onAddRequest = onRequestPlantSelection
                 )
+            }
+
+            if (isZombieMode) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF3E5F5)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(modifier = Modifier.padding(16.dp)) {
+                        Icon(Icons.Default.Info, null, tint = Color(0xFF654B80))
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "只有一部分僵尸为iz适配了卡槽和阳光，在僵尸选择页面里的其它分类里可以找到。",
+                                fontSize = 12.sp,
+                                color = Color(0xFF654B80),
+                                lineHeight = 16.sp
+                            )
+                        }
+                    }
+                }
             }
 
             // === 第三部分：底部开关 ===
@@ -314,38 +339,83 @@ fun SeedBankPropertiesEP(
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.EmojiPeople, null, tint = Color(0xFF654B80))
                             Spacer(Modifier.width(8.dp))
-                            Text("我是僵尸模式 (ZombieMode)", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(
+                                "我是僵尸模式",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
                         }
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            "启用后将转变为放置僵尸的玩法，选卡方式将被锁定。",
-                            fontSize = 12.sp,
+                            "启用后将转变为放置僵尸的玩法，选卡方式将被锁定",
+                            fontSize = 10.sp,
                             color = Color.Gray
                         )
                     }
                     Switch(
                         checked = isZombieMode,
                         onCheckedChange = { checked ->
-                            // 切换逻辑：更新 Boolean，同时处理关联属性
                             var newData = seedBankDataState.value.copy(zombieMode = checked)
                             if (checked) {
-                                // 开启僵尸模式：强制 Preset
                                 newData = newData.copy(selectionMethod = "preset")
+                            } else {
+                                newData = newData.copy(seedPacketType = null)
                             }
-                            // 如果关闭僵尸模式，保持原有 preset 设置，由用户自己切回 chooser 即可
                             seedBankDataState.value = newData
                             syncData()
                         }
                     )
+                }
+            }
+
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(2.dp)
+            ) {
+                if (isZombieMode) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.FlipCameraAndroid,
+                                    null,
+                                    tint = Color(0xFF654B80)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    "反转僵尸阵营",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                            }
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                "启用后放置的僵尸将变为植物阵营，可用于ZVZ",
+                                fontSize = 10.sp,
+                                color = Color.Gray
+                            )
+                        }
+                        Switch(
+                            checked = isReversedZombie,
+                            onCheckedChange = { checked ->
+                                val newData = seedBankDataState.value.copy(
+                                    seedPacketType = if (checked) "UIIZombieSeedPacket" else null
+                                )
+                                seedBankDataState.value = newData
+                                syncData()
+                            }
+                        )
+                    }
                 }
             }
 

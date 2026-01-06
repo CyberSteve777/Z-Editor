@@ -76,6 +76,7 @@ object LevelRepository {
         return rootDoc.listFiles()
             .filter { it.isFile && it.name?.endsWith(".json", ignoreCase = true) == true }
             .mapNotNull { it.name }
+            .sortedWith(naturalOrderComparator)
     }
 
     fun prepareInternalCache(context: Context, fileName: String): Boolean {
@@ -129,12 +130,10 @@ object LevelRepository {
     }
 
     fun deleteLevelCompletely(context: Context, fileName: String) {
-        // 删外部
         val rootUri = getRootUri(context) ?: return
         val rootDoc = DocumentFile.fromTreeUri(context, rootUri) ?: return
         rootDoc.findFile(fileName)?.delete()
 
-        // 删内部
         val internalFile = File(context.filesDir, fileName)
         if (internalFile.exists()) internalFile.delete()
     }
@@ -151,7 +150,6 @@ object LevelRepository {
 
     fun getTemplateList(context: Context): List<String> {
         return try {
-            // list 返回的是 String 数组
             context.assets.list("template")?.toList() ?: emptyList()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -187,5 +185,32 @@ object LevelRepository {
             e.printStackTrace()
             return false
         }
+    }
+
+    val naturalOrderComparator = Comparator<String> { s1, s2 ->
+        var i1 = 0
+        var i2 = 0
+        while (i1 < s1.length && i2 < s2.length) {
+            val c1 = s1[i1]
+            val c2 = s2[i2]
+            if (c1.isDigit() && c2.isDigit()) {
+                var num1 = 0L
+                while (i1 < s1.length && s1[i1].isDigit()) {
+                    num1 = num1 * 10 + (s1[i1] - '0')
+                    i1++
+                }
+                var num2 = 0L
+                while (i2 < s2.length && s2[i2].isDigit()) {
+                    num2 = num2 * 10 + (s2[i2] - '0')
+                    i2++
+                }
+                if (num1 != num2) return@Comparator num1.compareTo(num2)
+            } else {
+                if (c1 != c2) return@Comparator c1.compareTo(c2)
+                i1++
+                i2++
+            }
+        }
+        s1.length - s2.length
     }
 }

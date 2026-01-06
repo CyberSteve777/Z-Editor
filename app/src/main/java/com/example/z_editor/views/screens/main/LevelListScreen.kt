@@ -1,7 +1,8 @@
-package com.example.z_editor.views.screens
+package com.example.z_editor.views.screens.main
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -64,7 +66,8 @@ import androidx.core.net.toUri
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LevelListScreen(
-    onLevelClick: (String) -> Unit
+    onLevelClick: (String) -> Unit,
+    onAboutClick: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -308,17 +311,19 @@ fun LevelListScreen(
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        // 子标题显示路径
                         Text(
                             text = getReadablePath(folderUri),
                             fontSize = 12.sp,
                             color = Color.White.copy(alpha = 0.8f),
                             fontWeight = FontWeight.Normal,
-                            maxLines = 1 // 防止路径过长导致 UI 错乱
+                            maxLines = 1
                         )
                     }
                 },
                 actions = {
+                    IconButton(onClick = onAboutClick) {
+                        Icon(Icons.Default.Info, "软件介绍")
+                    }
                     IconButton(onClick = { reload() }) {
                         Icon(Icons.Default.Refresh, "刷新")
                     }
@@ -433,7 +438,7 @@ private fun getReadablePath(uriString: String?): String {
     if (uriString == null) return "未选择目录"
     return try {
         val uri = uriString.toUri()
-        val decodedPath = android.net.Uri.decode(uri.path)
+        val decodedPath = Uri.decode(uri.path)
         val segment = decodedPath.substringAfterLast(":")
         segment.replace("/", " > ")
     } catch (_: Exception) {

@@ -403,7 +403,7 @@ fun ChallengeEditDialog(
     }
 
     when (obj.objClass) {
-        "StarChallengeSaveMowerProps" -> {
+        "StarChallengeSaveMowersProps" -> {
             InfoOnlyDialog(
                 title = "不丢车挑战",
                 message = "该挑战没有可配置的参数\n\n通关时所有小推车必须完好无损，注意庭院模块下默认没有小推车",
@@ -1258,7 +1258,7 @@ private fun getChallengeDisplayName(objClass: String): String {
     return ChallengeRepository.getInfo(objClass)?.title
         ?: when (objClass) {
             "StarChallengeBeatTheLevelProps" -> "关卡提示文字"
-            "StarChallengeSaveMowerProps" -> "不丢车挑战"
+            "StarChallengeSaveMowersProps" -> "不丢车挑战"
             "StarChallengePlantFoodNonuseProps" -> "禁用能量豆挑战"
             "StarChallengePlantsSurviveProps" -> "幸存植物挑战"
             "StarChallengeZombieDistanceProps" -> "花坛线挑战"

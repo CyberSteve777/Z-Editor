@@ -1,4 +1,4 @@
-package com.example.z_editor.views.screens
+package com.example.z_editor.views.screens.select
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

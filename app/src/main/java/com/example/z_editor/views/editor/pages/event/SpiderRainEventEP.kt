@@ -8,7 +8,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.AirplanemodeActive
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,14 +31,14 @@ import com.google.gson.Gson
 
 private val gson = Gson()
 
-private val PRESET_PARACHUTE_ZOMBIES = listOf(
-    "lostcity_lostpilot" to "失落飞行员 (lostcity_lostpilot)",
-    "zcorp_helpdesk" to "Z公司服务台 (zcorp_helpdesk)"
+private val PRESET_SPIDER_ZOMBIES = listOf(
+    "future_imp" to "机器虫小鬼 (future_imp)",
+    "modern_superfanimp" to "粉丝小鬼 (modern_superfanimp)"
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ParachuteRainEventEP(
+fun SpiderRainEventEP(
     rtid: String,
     onBack: () -> Unit,
     rootLevelFile: PvzLevelFile,
@@ -47,6 +47,8 @@ fun ParachuteRainEventEP(
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
+
+    val themeColor = Color(0xFF9C27B0)
 
     val actionDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
@@ -65,8 +67,6 @@ fun ParachuteRainEventEP(
         }
     }
 
-    val themeColor = Color(0xFF9C27B0)
-
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
@@ -76,7 +76,7 @@ fun ParachuteRainEventEP(
                 title = {
                     Column {
                         Text("编辑 $currentAlias", fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("事件类型：空降突袭", fontSize = 14.sp, fontWeight = FontWeight.Normal)
+                        Text("事件类型：小鬼空降", fontSize = 14.sp, fontWeight = FontWeight.Normal)
                     }
                 },
                 navigationIcon = {
@@ -97,16 +97,15 @@ fun ParachuteRainEventEP(
             )
         }
     ) { padding ->
-        // 帮助弹窗
         if (showHelpDialog) {
             EditorHelpDialog(
-                title = "降落伞空降事件说明",
+                title = "小鬼空降事件说明",
                 onDismiss = { showHelpDialog = false },
                 themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
-                    body = "僵尸会从屏幕上方掉落突袭，通常用于失落之城的飞行员僵尸。僵尸的阶级随地图阶级序列。"
+                    body = "僵尸会从屏幕上方掉落突袭，通常用于未来世界的机器虫小鬼僵尸。僵尸的阶级随地图阶级序列。"
                 )
                 HelpSection(
                     title = "生成逻辑",
@@ -128,7 +127,7 @@ fun ParachuteRainEventEP(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // === 区域 1: 僵尸类型配置 (带下拉列表) ===
+            // === 区域 1: 僵尸类型配置 ===
             item {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -136,7 +135,7 @@ fun ParachuteRainEventEP(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.AirplanemodeActive, null, tint = themeColor)
+                            Icon(Icons.Default.BugReport, null, tint = themeColor)
                             Spacer(Modifier.width(12.dp))
                             Text("空降单位配置", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         }
@@ -173,7 +172,7 @@ fun ParachuteRainEventEP(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false }
                             ) {
-                                PRESET_PARACHUTE_ZOMBIES.forEach { (code, label) ->
+                                PRESET_SPIDER_ZOMBIES.forEach { (code, label) ->
                                     DropdownMenuItem(
                                         text = {
                                             Column {
@@ -254,6 +253,7 @@ fun ParachuteRainEventEP(
 
                         Spacer(Modifier.height(12.dp))
 
+                        // 时间参数
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             NumberInputDouble(
                                 value = actionDataState.value.timeBetweenGroups,
@@ -276,7 +276,7 @@ fun ParachuteRainEventEP(
                         NumberInputDouble(
                             value = actionDataState.value.timeBeforeFullSpawn,
                             onValueChange = { sync(actionDataState.value.copy(timeBeforeFullSpawn = it)) },
-                            label = "生成前摇时间 (TimeBeforeFullSpawn)",
+                            label = "完全生成前摇时间 (TimeBeforeFullSpawn)",
                             modifier = Modifier.fillMaxWidth(),
                             color = themeColor
                         )

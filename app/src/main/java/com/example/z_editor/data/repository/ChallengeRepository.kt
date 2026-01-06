@@ -42,7 +42,7 @@ object ChallengeRepository {
         ),
         ChallengeTypeInfo(
             title = "不丢车挑战",
-            objClass = "StarChallengeSaveMowerProps",
+            objClass = "StarChallengeSaveMowersProps",
             defaultAlias = "SaveMowers",
             description = "通关时所有小推车必须完好无损",
             icon = Icons.Default.CleaningServices,

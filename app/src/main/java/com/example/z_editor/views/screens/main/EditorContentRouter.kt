@@ -1,4 +1,4 @@
-package com.example.z_editor.views.screens
+package com.example.z_editor.views.screens.main
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
@@ -12,6 +12,7 @@ import com.example.z_editor.data.ParsedLevelData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.ReferenceRepository
+import com.example.z_editor.views.editor.pages.event.BassRainEventEP
 import com.example.z_editor.views.editor.pages.event.BeachStageEventEP
 import com.example.z_editor.views.editor.pages.event.BlackHoleEventEP
 import com.example.z_editor.views.editor.pages.event.DinoEventEP
@@ -20,9 +21,12 @@ import com.example.z_editor.views.editor.pages.event.InvalidEventEP
 import com.example.z_editor.views.editor.pages.event.ModifyConveyorEventEP
 import com.example.z_editor.views.editor.pages.event.ParachuteRainEventEP
 import com.example.z_editor.views.editor.pages.event.RaidingPartyEventEP
+import com.example.z_editor.views.editor.pages.event.SpawnGraveStonesEventEP
 import com.example.z_editor.views.editor.pages.event.SpawnModernPortalsWaveActionPropsEP
+import com.example.z_editor.views.editor.pages.event.SpawnZombiesFromGridItemSpawnerEventEP
 import com.example.z_editor.views.editor.pages.event.SpawnZombiesFromGroundEventEP
 import com.example.z_editor.views.editor.pages.event.SpawnZombiesJitteredWaveActionPropsEP
+import com.example.z_editor.views.editor.pages.event.SpiderRainEventEP
 import com.example.z_editor.views.editor.pages.event.StormZombieSpawnerPropsEP
 import com.example.z_editor.views.editor.pages.event.TidalChangeEventEP
 import com.example.z_editor.views.editor.pages.module.ConveyorSeedBankPropertiesEP
@@ -46,6 +50,13 @@ import com.example.z_editor.views.editor.tabs.IZombieTab
 import com.example.z_editor.views.editor.tabs.LevelSettingsTab
 import com.example.z_editor.views.editor.tabs.VaseBreakerTab
 import com.example.z_editor.views.editor.tabs.WaveTimelineTab
+import com.example.z_editor.views.screens.select.EventSelectionScreen
+import com.example.z_editor.views.screens.select.GridItemSelectionScreen
+import com.example.z_editor.views.screens.select.ModuleSelectionScreen
+import com.example.z_editor.views.screens.select.PlantSelectionScreen
+import com.example.z_editor.views.screens.select.StageSelectionScreen
+import com.example.z_editor.views.screens.select.ZombieSelectionScreen
+import com.example.z_editor.views.screens.select.ChallengeSelectionScreen
 
 /**
  * 路由分发器：只负责根据 targetState 渲染对应的页面
@@ -138,7 +149,17 @@ fun EditorContentRouter(
                                         waveIdx
                                     )
 
+                                    "SpiderRainZombieSpawnerProps" -> EditorSubScreen.SpiderRainDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
                                     "ParachuteRainZombieSpawnerProps" -> EditorSubScreen.ParachuteRainDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
+                                    "BassRainZombieSpawnerProps" -> EditorSubScreen.BassRainDetail(
                                         rtid,
                                         waveIdx
                                     )
@@ -167,6 +188,17 @@ fun EditorContentRouter(
                                         rtid,
                                         waveIdx
                                     )
+
+                                    "SpawnGravestonesWaveActionProps" -> EditorSubScreen.SpawnGravestonesDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
+                                    "SpawnZombiesFromGridItemSpawnerProps" -> EditorSubScreen.GridItemSpawnerDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
 
                                     else -> EditorSubScreen.UnknownDetail(rtid)
                                 }
@@ -247,6 +279,7 @@ fun EditorContentRouter(
         )
 
         is EditorSubScreen.SunDropper -> SunDropperPropertiesEP(
+            rtid = targetState.rtid,
             rootLevelFile = rootLevelFile,
             levelDef = parsedData.levelDef!!,
             onBack = actions.navigateBack,
@@ -254,6 +287,7 @@ fun EditorContentRouter(
         )
 
         is EditorSubScreen.SeedBank -> SeedBankPropertiesEP(
+            rtid = targetState.rtid,
             rootLevelFile = rootLevelFile,
             levelDef = parsedData.levelDef!!,
             onBack = actions.navigateBack,
@@ -263,6 +297,7 @@ fun EditorContentRouter(
         )
 
         is EditorSubScreen.ConveyorBelt -> ConveyorSeedBankPropertiesEP(
+            rtid = targetState.rtid,
             rootLevelFile = rootLevelFile,
             levelDef = parsedData.levelDef!!,
             onBack = actions.navigateBack,
@@ -345,8 +380,8 @@ fun EditorContentRouter(
         )
 
         is EditorSubScreen.WaveManagerModule -> WaveManagerModulePropertiesEP(
-            rootLevelFile = rootLevelFile,
             rtid = targetState.rtid,
+            rootLevelFile = rootLevelFile,
             onBack = actions.navigateBack,
             onRequestZombieSelection = actions.onLaunchZombieSelector,
             scrollState = getScrollState("WaveManagerModule")
@@ -408,7 +443,21 @@ fun EditorContentRouter(
             scrollState = getScrollState("RaidingDetail")
         )
 
+        is EditorSubScreen.SpiderRainDetail -> SpiderRainEventEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getLazyState(targetState.rtid)
+        )
+
         is EditorSubScreen.ParachuteRainDetail -> ParachuteRainEventEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getLazyState(targetState.rtid)
+        )
+
+        is EditorSubScreen.BassRainDetail -> BassRainEventEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
@@ -449,6 +498,23 @@ fun EditorContentRouter(
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
             scrollState = getScrollState("DinoEventDetail")
+        )
+
+        is EditorSubScreen.SpawnGravestonesDetail -> SpawnGraveStonesEventEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestGridItemSelection = actions.onLaunchGridItemSelector,
+            scrollState = getLazyState(targetState.rtid)
+        )
+
+        is EditorSubScreen.GridItemSpawnerDetail -> SpawnZombiesFromGridItemSpawnerEventEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestZombieSelection = actions.onLaunchZombieSelector,
+            onRequestGridItemSelection = actions.onLaunchGridItemSelector,
+            scrollState = getLazyState(targetState.rtid)
         )
 
         is EditorSubScreen.InvalidEvent -> InvalidEventEP(

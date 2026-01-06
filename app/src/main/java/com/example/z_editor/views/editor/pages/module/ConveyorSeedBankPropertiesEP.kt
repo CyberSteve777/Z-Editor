@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.LinearScale
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.AlertDialog
@@ -63,12 +64,11 @@ import com.example.z_editor.data.ConveyorBeltData
 import com.example.z_editor.data.DropDelayConditionData
 import com.example.z_editor.data.InitialPlantListData
 import com.example.z_editor.data.LevelDefinitionData
-import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.data.repository.PlantTag
 import com.example.z_editor.data.PvzLevelFile
-import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SpeedConditionData
+import com.example.z_editor.data.repository.PlantRepository
+import com.example.z_editor.data.repository.PlantTag
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -81,6 +81,7 @@ private val gson = Gson()
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConveyorSeedBankPropertiesEP(
+    rtid: String,
     rootLevelFile: PvzLevelFile,
     levelDef: LevelDefinitionData,
     onBack: () -> Unit,
@@ -89,36 +90,18 @@ fun ConveyorSeedBankPropertiesEP(
 ) {
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
-    val targetModuleRtid = remember(levelDef.modules) {
-        levelDef.modules.find { rtid ->
-            val info = RtidParser.parse(rtid)
-            val alias = info?.alias ?: ""
-            rootLevelFile.objects.find { it.aliases?.contains(alias) == true }?.objClass == "ConveyorBeltProperties" ||
-                    ReferenceRepository.getObjClass(alias) == "ConveyorBeltProperties"
-        }
-    }
-
-    val currentAlias = if (targetModuleRtid != null) {
-        RtidParser.parse(targetModuleRtid)?.alias ?: "ConveyorBelt"
-    } else {
-        "ConveyorBelt"
-    }
+    val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
 
     val conveyorDataState = remember {
-        val localObj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-
-        val data = if (localObj != null) {
-            try {
-                val parsed = gson.fromJson(localObj.objData, ConveyorBeltData::class.java)
-                if (parsed.speedConditions.isEmpty() && parsed.dropDelayConditions.isEmpty()) {
-                    createDefaultConveyorData()
-                } else {
-                    parsed
-                }
-            } catch (_: Exception) {
+        val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
+        val data = try {
+            val parsed = gson.fromJson(obj?.objData, ConveyorBeltData::class.java)
+            if (parsed.speedConditions.isEmpty() && parsed.dropDelayConditions.isEmpty()) {
                 createDefaultConveyorData()
+            } else {
+                parsed
             }
-        } else {
+        } catch (_: Exception) {
             createDefaultConveyorData()
         }
         mutableStateOf(data)
@@ -178,6 +161,10 @@ fun ConveyorSeedBankPropertiesEP(
                 HelpSection(
                     title = "传输速度",
                     body = "控制卡片在传送带上移动的物理速度，标准速度为 100。可以根据积压数量进行分段变速。"
+                )
+                HelpSection(
+                    title = "进阶玩法",
+                    body = "当选择模式是preset时，将选卡模块放在传送带模块前面可以让传送带中文消耗阳光种植，放在后面可以让预选卡种植不消耗阳光。"
                 )
             }
         }
@@ -348,7 +335,7 @@ fun ConveyorPlantListEditor(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.LocalShipping, null, tint = Color(0xFF1976D2))
+                Icon(Icons.Default.LinearScale, null, tint = Color(0xFF1976D2))
                 Spacer(Modifier.width(12.dp))
                 Text(
                     "传送带植物池",
@@ -413,7 +400,9 @@ fun PlantRow(
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val info = remember(plant.plantType) { PlantRepository.search(plant.plantType, PlantTag.All).firstOrNull() }
+        val info = remember(plant.plantType) {
+            PlantRepository.search(plant.plantType, PlantTag.All).firstOrNull()
+        }
         val displayName = PlantRepository.getName(plant.plantType)
 
         val placeholderContent = @Composable {
@@ -504,7 +493,8 @@ fun PlantDetailDialog(
                         onValueChange = { tempWeight = it },
                         label = "初始权重",
                         modifier = Modifier.weight(1f),
-                        color = Color(0xFF1976D2))
+                        color = Color(0xFF1976D2)
+                    )
 
                     NumberInputInt(
                         value = tempLevel,

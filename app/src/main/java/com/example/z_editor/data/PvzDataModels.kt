@@ -88,7 +88,8 @@ data class SeedBankData(
     @SerializedName("SelectionMethod") var selectionMethod: String = "chooser",
     @SerializedName("GlobalLevel") var globalLevel: Int? = null,
     @SerializedName("OverrideSeedSlotsCount") var overrideSeedSlotsCount: Int? = 8,
-    @SerializedName("ZombieMode") var zombieMode: Boolean? = null
+    @SerializedName("ZombieMode") var zombieMode: Boolean? = null,
+    @SerializedName("SeedPacketType") var seedPacketType: String? = null
 )
 
 // === 传送带模块 ===
@@ -312,6 +313,7 @@ data class ZombieSpawnData(
 
 // === 自然出怪事件 ===
 data class WaveActionData(
+    @SerializedName("NotificationEvents") var notificationEvents: MutableList<String>? = null,
     @SerializedName("AdditionalPlantfood") var additionalPlantFood: Int? = null,
     @SerializedName("SpawnPlantName") var spawnPlantName: MutableList<String>? = null,
     @SerializedName("Zombies") val zombies: MutableList<ZombieSpawnData> = mutableListOf()
@@ -365,10 +367,10 @@ data class ParachuteRainEventData(
     @SerializedName("ColumnEnd") var columnEnd: Int = 9,
     @SerializedName("GroupSize") var groupSize: Int = 1,
     @SerializedName("SpiderCount") var spiderCount: Int = 1,
-    @SerializedName("SpiderZombieName") var spiderZombieName: String = "lostcity_lostpilot",
+    @SerializedName("SpiderZombieName") var spiderZombieName: String = "",
     @SerializedName("TimeBeforeFullSpawn") var timeBeforeFullSpawn: Double = 1.0,
-    @SerializedName("TimeBetweenGroups") var timeBetweenGroups: Double = 0.5,
-    @SerializedName("ZombieFallTime") var zombieFallTime: Double = 1.0,
+    @SerializedName("TimeBetweenGroups") var timeBetweenGroups: Double = 1.5,
+    @SerializedName("ZombieFallTime") var zombieFallTime: Double = 4.5,
     @SerializedName("WaveStartMessage") var waveStartMessage: String = ""
 )
 
@@ -436,6 +438,36 @@ data class DinoWaveActionPropsData(
     @SerializedName("DinoWaveDuration") var dinoWaveDuration: Int = 2
 )
 
+// === 障碍物生成事件 ===
+data class SpawnGraveStonesData(
+    @SerializedName("GravestonePool") var gravestonePool: MutableList<GravestonePoolItem> = mutableListOf(),
+    @SerializedName("SpawnPositionsPool") var spawnPositionsPool: MutableList<SpawnPositionData> = mutableListOf()
+)
+
+data class GravestonePoolItem(
+    @SerializedName("Count") var count: Int = 1,
+    @SerializedName("Type") var type: String = ""
+)
+
+data class SpawnPositionData(
+    @SerializedName("mX") var mX: Int = 0,
+    @SerializedName("mY") var mY: Int = 0
+)
+
+// === 障碍物出怪事件 ===
+data class SpawnZombiesFromGridItemData(
+    @SerializedName("WaveStartMessage") var waveStartMessage: String? = null,
+    @SerializedName("ZombieSpawnWaitTime") var zombieSpawnWaitTime: Int = 0,
+    @SerializedName("GridTypes") var gridTypes: MutableList<String> = mutableListOf(),
+    @SerializedName("Zombies") var zombies: MutableList<GridItemSpawnerZombieData> = mutableListOf()
+)
+
+data class GridItemSpawnerZombieData(
+    @SerializedName("Type") var type: String = "",
+    @SerializedName("Level") var level: Int = 1
+)
+
+
 // ======================== 4. 特殊模式模块数据定义 ========================
 
 // === 罐子内容配置===
@@ -444,7 +476,13 @@ data class VaseBreakerPresetData(
     @SerializedName("MaxColumnIndex") var maxColumnIndex: Int = 8,
     @SerializedName("NumColoredPlantVases") var numColoredPlantVases: Int = 0,
     @SerializedName("NumColoredZombieVases") var numColoredZombieVases: Int = 0,
+    @SerializedName("GridSquareBlacklist") var gridSquareBlacklist: MutableList<GridSquareBlacklistData> = mutableListOf(),
     @SerializedName("Vases") var vases: MutableList<VaseDefinition> = mutableListOf()
+)
+
+data class GridSquareBlacklistData(
+    @SerializedName("mX") var mx: Int = 0,
+    @SerializedName("mY") var my: Int = 0
 )
 
 data class VaseDefinition(

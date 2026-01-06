@@ -352,8 +352,8 @@ fun StormZombieSpawnerPropsEP(
                                     Box(
                                         modifier = Modifier
                                             .size(40.dp)
-                                            .background(Color(0xFFBDBDBD), CircleShape)
-                                            .border(1.dp, Color.White, CircleShape),
+                                            .background(Color(0xFFBDBDBD), RoundedCornerShape(8.dp))
+                                            .border(1.dp, Color.White, RoundedCornerShape(8.dp)),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
@@ -377,9 +377,9 @@ fun StormZombieSpawnerPropsEP(
                                         contentDescription = displayName,
                                         modifier = Modifier
                                             .size(40.dp)
-                                            .clip(CircleShape)
+                                            .clip(RoundedCornerShape(8.dp))
                                             .background(Color.White)
-                                            .border(1.dp, Color.LightGray, CircleShape),
+                                            .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
                                         filterQuality = FilterQuality.Medium,
                                         placeholder = placeholderContent
                                     )
@@ -392,13 +392,11 @@ fun StormZombieSpawnerPropsEP(
 
                                     IconButton(
                                         onClick = {
-                                            val newList =
-                                                stormDataState.value.zombies.toMutableList()
+                                            val newList = stormDataState.value.zombies.toMutableList()
                                             val zombieToCopy = newList[index]
                                             newList.add(index + 1, zombieToCopy.copy())
 
-                                            stormDataState.value =
-                                                stormDataState.value.copy(zombies = newList)
+                                            stormDataState.value = stormDataState.value.copy(zombies = newList)
                                             sync()
                                             listRefreshTrigger++
                                         }
@@ -408,16 +406,14 @@ fun StormZombieSpawnerPropsEP(
 
                                     IconButton(
                                         onClick = {
-                                            val newList =
-                                                stormDataState.value.zombies.toMutableList()
+                                            val newList = stormDataState.value.zombies.toMutableList()
                                             newList.removeAt(index)
-                                            stormDataState.value =
-                                                stormDataState.value.copy(zombies = newList)
+                                            stormDataState.value = stormDataState.value.copy(zombies = newList)
                                             sync()
                                             listRefreshTrigger++
                                         }
                                     ) {
-                                        Icon(Icons.Default.Delete, null, tint = Color.Red.copy(alpha = 0.7f), modifier = Modifier.size(20.dp))
+                                        Icon(Icons.Default.Delete, null, tint = Color.LightGray, modifier = Modifier.size(20.dp))
                                     }
                                 }
                             }

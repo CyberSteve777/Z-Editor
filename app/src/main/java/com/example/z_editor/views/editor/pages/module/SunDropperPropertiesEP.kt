@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.LevelDefinitionData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.PvzObject
+import com.example.z_editor.data.RailcartPropertiesData
 import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SunDropperPropertiesData
@@ -64,13 +65,26 @@ private val gson = Gson()
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SunDropperPropertiesEP(
+    rtid: String,
     rootLevelFile: PvzLevelFile,
     levelDef: LevelDefinitionData,
     onBack: () -> Unit,
     scrollState: ScrollState
 ) {
+    val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
+
+    val sunDataState = remember {
+        val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
+        val data = try {
+            gson.fromJson(obj?.objData, SunDropperPropertiesData::class.java)
+        } catch (_: Exception) {
+            SunDropperPropertiesData()
+        }
+        mutableStateOf(data)
+    }
+
     val sunModuleIndex = remember(levelDef.modules) {
         levelDef.modules.indexOfFirst { rtid ->
             val alias = RtidParser.parse(rtid)?.alias ?: ""
@@ -81,22 +95,6 @@ fun SunDropperPropertiesEP(
     var isCustomMode by remember {
         val currentRtid = if (sunModuleIndex != -1) levelDef.modules[sunModuleIndex] else ""
         mutableStateOf(RtidParser.parse(currentRtid)?.source == "CurrentLevel")
-    }
-    val currentAlias =
-        if (sunModuleIndex != -1) RtidParser.parse(levelDef.modules[sunModuleIndex])?.alias
-            ?: "DefaultSunDropper" else "DefaultSunDropper"
-    val sunDataState = remember {
-        val localObj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-        val data = if (localObj != null) {
-            try {
-                gson.fromJson(localObj.objData, SunDropperPropertiesData::class.java)
-            } catch (_: Exception) {
-                SunDropperPropertiesData()
-            }
-        } else {
-            SunDropperPropertiesData()
-        }
-        mutableStateOf(data)
     }
 
     Scaffold(

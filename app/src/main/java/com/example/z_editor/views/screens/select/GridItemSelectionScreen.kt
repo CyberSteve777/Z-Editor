@@ -1,4 +1,4 @@
-package com.example.z_editor.views.screens
+package com.example.z_editor.views.screens.select
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,64 +45,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// === 数据结构保持不变 ===
-data class GridItemInfo(val typeName: String, val name: String, val category: GridItemCategory)
-
-enum class GridItemCategory(val label: String) {
-    Scene("场景布置"),
-    Trap("陷阱强化")
-}
-
-object GridItemRepository {
-    val allItems = listOf(
-        GridItemInfo("gravestone_egypt", "埃及墓碑", GridItemCategory.Scene),
-        GridItemInfo("gravestone_dark", "黑暗墓碑", GridItemCategory.Scene),
-        GridItemInfo("gravestoneSunOnDestruction", "阳光墓碑", GridItemCategory.Scene),
-        GridItemInfo("gravestonePlantfoodOnDestruction", "能量豆墓碑", GridItemCategory.Scene),
-
-        GridItemInfo("heian_box_sun", "阳光赛钱箱", GridItemCategory.Scene),
-        GridItemInfo("heian_box_plantfood", "能量豆赛钱箱", GridItemCategory.Scene),
-        GridItemInfo("heian_box_levelup", "升级赛钱箱", GridItemCategory.Scene),
-        GridItemInfo("heian_box_seedpacket", "种子赛钱箱", GridItemCategory.Scene),
-
-        GridItemInfo("slider_up", "上行冰河浮冰", GridItemCategory.Scene),
-        GridItemInfo("slider_down", "下行冰河浮冰", GridItemCategory.Scene),
-        GridItemInfo("slider_up_modern", "上行摩登浮标", GridItemCategory.Scene),
-        GridItemInfo("slider_down_modern", "下行摩登浮标", GridItemCategory.Scene),
-        GridItemInfo("lilipad", "莲叶", GridItemCategory.Scene),
-        GridItemInfo("goldtile", "黄金地砖", GridItemCategory.Scene),
-        GridItemInfo("fake_mold", "霉菌地面", GridItemCategory.Scene),
-        GridItemInfo("printer_small_paper", "小团纸屑", GridItemCategory.Scene),
-
-        GridItemInfo("boulder_trap_falling_forward", "滚石陷阱", GridItemCategory.Trap),
-        GridItemInfo("flame_spreader_trap", "火焰陷阱", GridItemCategory.Trap),
-        GridItemInfo("bufftile_shield", "护盾瓷砖", GridItemCategory.Trap),
-        GridItemInfo("bufftile_speed", "疾速瓷砖", GridItemCategory.Trap),
-        GridItemInfo("bufftile_attack", "攻击瓷砖", GridItemCategory.Trap),
-        GridItemInfo("zombie_bound_tile", "僵尸跳板", GridItemCategory.Trap),
-        GridItemInfo("zombie_changer", "僵尸改造机", GridItemCategory.Trap),
-
-        GridItemInfo("zombiepotion_speed", "疾速药水", GridItemCategory.Trap),
-        GridItemInfo("zombiepotion_toughness", "坚韧药水", GridItemCategory.Trap),
-        GridItemInfo("zombiepotion_invisible", "隐身药水", GridItemCategory.Trap),
-        GridItemInfo("zombiepotion_poison", "剧毒药水", GridItemCategory.Trap),
-    )
-
-    fun getByCategory(category: GridItemCategory): List<GridItemInfo> {
-        return allItems.filter { it.category == category }
-    }
-
-    fun getName(typeName: String): String {
-        return allItems.find { it.typeName == typeName }?.name ?: typeName
-    }
-}
+import com.example.z_editor.data.repository.GridItemCategory
+import com.example.z_editor.data.repository.GridItemInfo
+import com.example.z_editor.data.repository.GridItemRepository
+import com.example.z_editor.views.components.AssetImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +67,6 @@ fun GridItemSelectionScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(GridItemCategory.Scene) }
 
-    // 过滤逻辑：同时匹配 分类 和 搜索词
     val displayList = remember(searchQuery, selectedCategory) {
         GridItemRepository.getByCategory(selectedCategory).filter {
             searchQuery.isBlank() ||
@@ -122,7 +75,7 @@ fun GridItemSelectionScreen(
         }
     }
 
-    val themeColor = Color(0xFF795548) // 褐色主题，对应障碍物/泥土
+    val themeColor = Color(0xFF795548)
 
     Scaffold(
         topBar = {
@@ -136,7 +89,6 @@ fun GridItemSelectionScreen(
                         .statusBarsPadding()
                         .padding(bottom = 0.dp)
                 ) {
-                    // --- 顶部搜索栏区域 (完全复刻 StageSelectionScreen) ---
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -267,6 +219,29 @@ fun GridItemSelectionCard(item: GridItemInfo, onClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            AssetImage(
+                path = "images/griditems/${item.icon}",
+                contentDescription = item.name,
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                filterQuality = FilterQuality.Medium,
+                placeholder = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFF5EEE8)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = item.name.take(1),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF795548)
+                        )
+                    }
+                }
+            )
             Text(
                 text = item.name,
                 fontWeight = FontWeight.Bold,

@@ -439,7 +439,7 @@ fun ZombiePoolEditor(
                 }
 
                 IconButton(onClick = { onRemove(index) }) {
-                    Icon(Icons.Default.Delete, null, tint = Color.Red.copy(alpha = 0.7f))
+                    Icon(Icons.Default.Delete, null, tint = Color.LightGray)
                 }
             }
         }

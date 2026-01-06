@@ -1,4 +1,4 @@
-package com.example.z_editor.views.screens
+package com.example.z_editor.views.screens.select
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -65,17 +66,13 @@ fun ModuleSelectionScreen(
 ) {
     val allModules = remember { ModuleRegistry.getAllKnownModules() }
 
-    // 状态管理
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(ModuleCategory.Base) }
 
-    // 核心过滤逻辑：分类 + 搜索
     val filteredModules = remember(selectedCategory, searchQuery) {
         allModules.entries
             .filter { (_, meta) ->
-                // 1. 匹配分类
                 val categoryMatch = meta.category == selectedCategory
-                // 2. 匹配搜索 (标题、描述、别名)
                 val searchMatch = if (searchQuery.isBlank()) true else {
                     meta.title.contains(searchQuery, ignoreCase = true) ||
                             meta.description.contains(searchQuery, ignoreCase = true) ||
@@ -86,7 +83,6 @@ fun ModuleSelectionScreen(
             .toList()
     }
 
-    // 主题色 (保持编辑器风格的深绿色)
     val themeColor = Color(0xFF388E3C)
 
     Scaffold(
@@ -151,7 +147,7 @@ fun ModuleSelectionScreen(
                         indicator = { tabPositions ->
                             TabRowDefaults.SecondaryIndicator(
                                 Modifier.tabIndicatorOffset(tabPositions[ModuleCategory.entries.indexOf(selectedCategory)]),
-                                color = Color.White, // 指示器为白色
+                                color = Color.White,
                                 height = 3.dp
                             )
                         },
@@ -213,7 +209,11 @@ fun ModuleSelectionScreen(
                         ModuleSelectionCard(
                             meta = meta,
                             isAlreadyAdded = isAlreadyAdded,
-                            onClick = { if (!isAlreadyAdded) onModuleSelected(meta) }
+                            onClick = {
+                                if (!isAlreadyAdded || meta.allowMultiple) {
+                                    onModuleSelected(meta)
+                                }
+                            }
                         )
                     }
                 }
@@ -228,16 +228,18 @@ fun ModuleSelectionCard(
     isAlreadyAdded: Boolean,
     onClick: () -> Unit
 ) {
+    val isEnabled = !isAlreadyAdded || meta.allowMultiple
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(if (isAlreadyAdded) 0.6f else 1f)
+            .alpha(if (isEnabled) 1f else 0.6f)
             .clip(RoundedCornerShape(12.dp))
-            .clickable(enabled = !isAlreadyAdded, onClick = onClick),
+            .clickable(enabled = isEnabled, onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = if (isAlreadyAdded) Color(0xFFEEEEEE) else Color.White
+            containerColor = if (isEnabled) Color.White else Color(0xFFEEEEEE)
         ),
-        elevation = CardDefaults.cardElevation(if (isAlreadyAdded) 0.dp else 2.dp)
+        elevation = CardDefaults.cardElevation(if (isEnabled) 2.dp else 0.dp)
     ) {
         Row(
             modifier = Modifier
@@ -245,20 +247,19 @@ fun ModuleSelectionCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val iconBgColor = if (isEnabled) Color(0xFF388E3C).copy(alpha = 0.1f) else Color.Gray.copy(alpha = 0.1f)
+            val iconTint = if (isEnabled) Color(0xFF388E3C) else Color.Gray
+
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .background(
-                        if (isAlreadyAdded) Color.Gray.copy(alpha = 0.1f)
-                        else Color(0xFF388E3C).copy(alpha = 0.1f),
-                        RoundedCornerShape(8.dp)
-                    ),
+                    .background(iconBgColor, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = meta.icon,
                     contentDescription = null,
-                    tint = if (isAlreadyAdded) Color.Gray else Color(0xFF388E3C),
+                    tint = iconTint,
                     modifier = Modifier.size(28.dp)
                 )
             }
@@ -271,7 +272,7 @@ fun ModuleSelectionCard(
                         text = meta.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
-                        color = if (isAlreadyAdded) Color.Gray else Color.Black
+                        color = if (isEnabled) Color.Black else Color.Gray
                     )
                 }
                 Text(
@@ -283,12 +284,21 @@ fun ModuleSelectionCard(
             }
 
             if (isAlreadyAdded) {
-                Icon(
-                    Icons.Default.CheckCircle,
-                    contentDescription = "已添加",
-                    tint = Color(0xFF388E3C),
-                    modifier = Modifier.size(24.dp)
-                )
+                if (meta.allowMultiple) {
+                    Icon(
+                        Icons.Default.AddCircle,
+                        contentDescription = "可重复添加",
+                        tint = Color(0xFF388E3C),
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = "已添加",
+                        tint = Color(0xFF388E3C),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.AirplanemodeActive
 import androidx.compose.material.icons.filled.BlurCircular
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BrightnessHigh
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Dangerous
 import androidx.compose.material.icons.filled.EmojiPeople
@@ -25,11 +26,13 @@ import androidx.compose.material.icons.filled.MovieFilter
 import androidx.compose.material.icons.filled.NextPlan
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Redeem
+import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Storm
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Transform
 import androidx.compose.material.icons.filled.Tsunami
+import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material.icons.filled.Water
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WbSunny
@@ -82,12 +85,16 @@ sealed class EditorSubScreen {
     data class PortalDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class StormDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class RaidingDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class SpiderRainDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class ParachuteRainDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class BassRainDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class TidalChangeDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class BeachStageEventDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class BlackHoleDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class FrostWindDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class DinoEventDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class SpawnGravestonesDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class GridItemSpawnerDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class InvalidEvent(val rtid: String, val waveIndex: Int) : EditorSubScreen()
 }
 
@@ -105,27 +112,9 @@ data class EventMetadata(
 
 object EventRegistry {
     private val registry = mapOf(
-        "BlackHoleWaveActionProps" to EventMetadata(
-            title = "黑洞吸引",
-            description = "生成黑洞吸引所有植物",
-            icon = Icons.Default.BlurCircular,
-            color = Color(0xFF7C30D9),
-            defaultAlias = "BlackHoleEvent",
-            defaultObjClass = "BlackHoleWaveActionProps",
-            initialDataFactory = { BlackHoleEventData() },
-            summaryProvider = { obj ->
-                try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, BlackHoleEventData::class.java)
-                    "${data.colNumPlantIsDragged} 列"
-                } catch (_: Exception) {
-                    "解析错误"
-                }
-            }
-        ),
         "SpawnZombiesFromGroundSpawnerProps" to EventMetadata(
             title = "地底出怪",
-            description = "从地下出现的出怪事件",
+            description = "从地下生成僵尸的出怪事件",
             icon = Icons.Default.Groups,
             color = Color(0xFF936457),
             defaultAlias = "GroundSpawner",
@@ -308,11 +297,65 @@ object EventRegistry {
                 }
             }
         ),
+        "SpawnGravestonesWaveActionProps" to EventMetadata(
+            title = "障碍物生成",
+            description = "在场地的空位处生成障碍物",
+            icon = Icons.Filled.Unarchive,
+            color = Color(0xFF607D8B),
+            defaultAlias = "GravestonesEvent",
+            defaultObjClass = "SpawnGravestonesWaveActionProps",
+            initialDataFactory = { SpawnGraveStonesData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, SpawnGraveStonesData::class.java)
+                    "${data.gravestonePool.size} 种"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
+        "SpawnZombiesFromGridItemSpawnerProps" to EventMetadata(
+            title = "障碍物出怪",
+            description = "从指定的障碍物种类生成僵尸",
+            icon = Icons.Default.Groups,
+            color = Color(0xFF607D8B),
+            defaultAlias = "GraveSpawnEvent",
+            defaultObjClass = "SpawnZombiesFromGridItemSpawnerProps",
+            initialDataFactory = { SpawnZombiesFromGridItemData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, SpawnZombiesFromGridItemData::class.java)
+                    "${data.zombies.size} 僵尸"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
+        "SpiderRainZombieSpawnerProps" to EventMetadata(
+            title = "小鬼空降",
+            description = "僵尸依靠降落伞从天而降",
+            icon = Icons.Default.BugReport,
+            color = Color(0xFF9C27B0),
+            defaultAlias = "SpiderRainEvent",
+            defaultObjClass = "SpiderRainZombieSpawnerProps",
+            initialDataFactory = { ParachuteRainEventData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, ParachuteRainEventData::class.java)
+                    "${data.spiderCount} 僵尸"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
         "ParachuteRainZombieSpawnerProps" to EventMetadata(
-            title = "空降突袭",
-            description = "僵尸依靠降落伞或绳索从天而降",
+            title = "降落伞空降",
+            description = "僵尸依靠降落伞从天而降",
             icon = Icons.Default.AirplanemodeActive,
-            color = Color(0xFFFF9800),
+            color = Color(0xFF9C27B0),
             defaultAlias = "ParachuteRainEvent",
             defaultObjClass = "ParachuteRainZombieSpawnerProps",
             initialDataFactory = { ParachuteRainEventData() },
@@ -321,6 +364,42 @@ object EventRegistry {
                     val gson = Gson()
                     val data = gson.fromJson(obj.objData, ParachuteRainEventData::class.java)
                     "${data.spiderCount} 僵尸"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
+        "BassRainZombieSpawnerProps" to EventMetadata(
+            title = "贝斯/喷射空降",
+            description = "贝斯手或喷射器僵尸从天而降",
+            icon = Icons.Default.Speaker,
+            color = Color(0xFF9C27B0),
+            defaultAlias = "BassRainEvent",
+            defaultObjClass = "BassRainZombieSpawnerProps",
+            initialDataFactory = { ParachuteRainEventData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, ParachuteRainEventData::class.java)
+                    "${data.spiderCount} 僵尸"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
+        "BlackHoleWaveActionProps" to EventMetadata(
+            title = "黑洞吸引",
+            description = "生成黑洞吸引所有植物",
+            icon = Icons.Default.BlurCircular,
+            color = Color(0xFF7C30D9),
+            defaultAlias = "BlackHoleEvent",
+            defaultObjClass = "BlackHoleWaveActionProps",
+            initialDataFactory = { BlackHoleEventData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, BlackHoleEventData::class.java)
+                    "${data.colNumPlantIsDragged} 列"
                 } catch (_: Exception) {
                     "解析错误"
                 }
@@ -358,6 +437,7 @@ data class ModuleMetadata(
 
     val defaultAlias: String,
     val defaultSource: String = "CurrentLevel",
+    val allowMultiple: Boolean = false,
 
     val initialDataFactory: (() -> Any)? = null,
     val navigationFactory: (String) -> EditorSubScreen
@@ -382,6 +462,29 @@ object ModuleRegistry {
     )
 
     private val registry = mapOf(
+        "WaveManagerModuleProperties" to ModuleMetadata(
+            title = "波次管理器",
+            description = "管理关卡的波次事件总配置",
+            icon = Icons.Default.Timeline,
+            isCore = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "NewWaves",
+            initialDataFactory = {
+                WaveManagerModuleData(
+                    waveManagerProps = "RTID(WaveManagerProps@CurrentLevel)",
+                    dynamicZombies = mutableListOf(
+                        DynamicZombieGroup(
+                            pointIncrement = 0,
+                            startingPoints = 0,
+                            startingWave = 0,
+                            zombiePool = mutableListOf(),
+                            zombieLevel = mutableListOf()
+                        )
+                    )
+                )
+            },
+            navigationFactory = { rtid -> EditorSubScreen.WaveManagerModule(rtid) }
+        ),
         "CustomLevelModuleProperties" to ModuleMetadata(
             title = "庭院模块",
             description = "开启后关卡适配庭院框架",
@@ -429,7 +532,7 @@ object ModuleRegistry {
             icon = Icons.Default.Build,
             isCore = true,
             category = ModuleCategory.Mode,
-            defaultAlias = "LastStandMinigame",
+            defaultAlias = "LastStand",
             defaultSource = "CurrentLevel",
             initialDataFactory = { LastStandMinigamePropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.LastStandMinigame(rtid) }
@@ -469,7 +572,7 @@ object ModuleRegistry {
         ),
         "EvilDaveProperties" to ModuleMetadata(
             title = "我是僵尸",
-            description = "启用我是僵尸模式 (EvilDave)",
+            description = "启用我是僵尸模式，需手动配置僵尸卡槽和预置植物",
             icon = Icons.Default.EmojiPeople,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -505,6 +608,7 @@ object ModuleRegistry {
             description = "预设卡槽植物与选卡方式",
             icon = Icons.Default.Yard,
             isCore = true,
+            allowMultiple = true,
             category = ModuleCategory.Base,
             defaultAlias = "SeedBank",
             initialDataFactory = { SeedBankData() },
@@ -515,39 +619,18 @@ object ModuleRegistry {
             description = "预设传送带植物种类和权重",
             icon = Icons.Default.LinearScale,
             isCore = true,
+            allowMultiple = true,
             category = ModuleCategory.Base,
             defaultAlias = "ConveyorBelt",
             initialDataFactory = { ConveyorBeltData() },
             navigationFactory = { rtid -> EditorSubScreen.ConveyorBelt(rtid) }
-        ),
-        "WaveManagerModuleProperties" to ModuleMetadata(
-            title = "波次管理器",
-            description = "点数出怪的全局配置",
-            icon = Icons.Default.Timeline,
-            isCore = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "NewWaves",
-            initialDataFactory = {
-                WaveManagerModuleData(
-                    waveManagerProps = "RTID(WaveManagerProps@CurrentLevel)",
-                    dynamicZombies = mutableListOf(
-                        DynamicZombieGroup(
-                            pointIncrement = 0,
-                            startingPoints = 0,
-                            startingWave = 0,
-                            zombiePool = mutableListOf(),
-                            zombieLevel = mutableListOf()
-                        )
-                    )
-                )
-            },
-            navigationFactory = { rtid -> EditorSubScreen.WaveManagerModule(rtid) }
         ),
         "InitialPlantEntryProperties" to ModuleMetadata(
             title = "预置植物",
             description = "关卡开始时场上已存在的植物",
             icon = Icons.Default.LocalFlorist,
             isCore = true,
+            allowMultiple = true,
             category = ModuleCategory.Scene,
             defaultAlias = "InitialPlants",
             defaultSource = "CurrentLevel",
@@ -559,6 +642,7 @@ object ModuleRegistry {
             description = "关卡开始时场上已存在的僵尸",
             icon = Icons.AutoMirrored.Filled.DirectionsWalk,
             isCore = true,
+            allowMultiple = true,
             category = ModuleCategory.Scene,
             defaultAlias = "FrozenZombiePlacement",
             defaultSource = "CurrentLevel",
@@ -570,6 +654,7 @@ object ModuleRegistry {
             description = "关卡开始时场上已存在的障碍物",
             icon = Icons.Default.Widgets,
             isCore = true,
+            allowMultiple = true,
             category = ModuleCategory.Scene,
             defaultAlias = "GridItemPlacement",
             defaultSource = "CurrentLevel",
@@ -614,6 +699,7 @@ object ModuleRegistry {
             description = "配置矿车与轨道初始布局",
             icon = Icons.Default.AddRoad,
             isCore = true,
+            allowMultiple = true,
             category = ModuleCategory.Scene,
             defaultAlias = "Railcarts",
             defaultSource = "CurrentLevel",
@@ -625,6 +711,7 @@ object ModuleRegistry {
             description = "配置能量豆联动效果与瓷砖布局",
             icon = Icons.Default.Bolt,
             isCore = true,
+            allowMultiple = true,
             category = ModuleCategory.Scene,
             defaultAlias = "FutureLinkedTileGroups",
             defaultSource = "CurrentLevel",

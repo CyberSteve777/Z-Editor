@@ -1,4 +1,4 @@
-package com.example.z_editor.views.screens
+package com.example.z_editor.views.screens.main
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiPeople

@@ -1,4 +1,4 @@
-package com.example.z_editor.views.screens
+package com.example.z_editor.views.screens.select
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

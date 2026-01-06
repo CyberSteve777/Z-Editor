@@ -27,18 +27,24 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -293,7 +299,84 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                 .background(Color(0xFFF5F5F5)),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            // 1-5 行
+            item {
+                val jamOptions = listOf(
+                    null to "默认/无 (None)",
+                    "jam_pop" to "流行 (Pop)",
+                    "jam_rap" to "说唱 (Rap)",
+                    "jam_metal" to "重金属 (Metal)",
+                    "jam_punk" to "朋克 (Punk)",
+                    "jam_8bit" to "街机 (8-Bit)"
+                )
+                val currentJamCode = actionDataState.value.notificationEvents?.firstOrNull()
+                val currentJamLabel = jamOptions.find { it.first == currentJamCode }?.second ?: "默认/无 (None)"
+                var jamExpanded by remember { mutableStateOf(false) }
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.MusicNote, null, tint = themeColor)
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "魔音音乐切换",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = themeColor
+                            )
+                        }
+                        Spacer(Modifier.height(12.dp))
+
+                        ExposedDropdownMenuBox(
+                            expanded = jamExpanded,
+                            onExpandedChange = { jamExpanded = !jamExpanded },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            OutlinedTextField(
+                                value = currentJamLabel,
+                                onValueChange = {},
+                                readOnly = true,
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = jamExpanded) },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = themeColor,
+                                    focusedLabelColor = themeColor
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = jamExpanded,
+                                onDismissRequest = { jamExpanded = false }
+                            ) {
+                                jamOptions.forEach { (code, label) ->
+                                    DropdownMenuItem(
+                                        text = { Text(label) },
+                                        onClick = {
+                                            val newList = if (code == null) null else mutableListOf(code)
+                                            sync(actionDataState.value.copy(notificationEvents = newList))
+                                            jamExpanded = false
+                                        },
+                                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "此事件触发时切换背景音乐，仅对摇滚年代地图有效。",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
+                }
+            }
+
             items(5) { index ->
                 val rowNum = index + 1
                 val zombiesInRow = actionDataState.value.zombies.filter { it.row == rowNum }

@@ -9,29 +9,54 @@ import java.io.InputStreamReader
 object ReferenceRepository {
     private val gson = Gson()
 
-    // 缓存：Alias -> PvzObject
     private var moduleCache: Map<String, PvzObject>? = null
+
+    private val validGridItemAliases = HashSet<String>()
+
+    private val validZombieAliases = HashSet<String>()
 
     /**
      * 初始化加载参考文件
+     * 在 App 启动或进入编辑器时调用
      */
     fun init(context: Context) {
+        loadLevelModules(context)
+        loadGridItemTypes(context)
+    }
+
+    private fun loadLevelModules(context: Context) {
         if (moduleCache != null) return
         try {
             val inputStream = context.assets.open("reference/LevelModules.json")
             val root = gson.fromJson(InputStreamReader(inputStream), PvzLevelFile::class.java)
-            // 建立 Alias 到 对象的索引
             moduleCache = root.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    /**
-     * 根据别名获取参考对象的类名
-     */
+    private fun loadGridItemTypes(context: Context) {
+        if (validGridItemAliases.isNotEmpty()) return
+        try {
+            val inputStream = context.assets.open("reference/GridItemTypes.json")
+            val root = gson.fromJson(InputStreamReader(inputStream), PvzLevelFile::class.java)
+
+            root.objects.forEach { obj ->
+                obj.aliases?.forEach { alias ->
+                    validGridItemAliases.add(alias)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun getObjClass(alias: String): String? {
         return moduleCache?.get(alias)?.objClass
     }
 
+    fun isValidGridItem(alias: String): Boolean {
+        if (validGridItemAliases.isEmpty()) return true
+        return validGridItemAliases.contains(alias)
+    }
 }

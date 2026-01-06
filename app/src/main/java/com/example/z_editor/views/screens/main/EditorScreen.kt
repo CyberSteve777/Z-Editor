@@ -1,4 +1,4 @@
-package com.example.z_editor.views.screens
+package com.example.z_editor.views.screens.main
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -24,8 +24,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -44,8 +46,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.unit.dp
 import com.example.z_editor.data.EditorSubScreen
 import com.example.z_editor.data.LevelParser
 import com.example.z_editor.data.ModuleMetadata
@@ -259,20 +259,34 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
 
                 if (removed) {
                     if (objClass == "StarChallengeModuleProperties") {
-                        val moduleObj = rootLevelFile!!.objects.find { it.aliases?.contains(alias) == true }
+                        val moduleObj =
+                            rootLevelFile!!.objects.find { it.aliases?.contains(alias) == true }
                         if (moduleObj != null) {
                             try {
-                                val challengeData = gson.fromJson(moduleObj.objData, StarChallengeModuleData::class.java)
+                                val challengeData = gson.fromJson(
+                                    moduleObj.objData,
+                                    StarChallengeModuleData::class.java
+                                )
                                 val allChallengeRtids = challengeData.challenges.flatten()
                                 var deletedCount = 0
                                 allChallengeRtids.forEach { challengeRtid ->
                                     val cInfo = RtidParser.parse(challengeRtid)
                                     if (cInfo?.source == "CurrentLevel") {
-                                        if (rootLevelFile!!.objects.removeAll { it.aliases?.contains(cInfo.alias) == true }) deletedCount++
+                                        if (rootLevelFile!!.objects.removeAll {
+                                                it.aliases?.contains(
+                                                    cInfo.alias
+                                                ) == true
+                                            }) deletedCount++
                                     }
                                 }
-                                if (deletedCount > 0) Toast.makeText(context, "移除了 $deletedCount 个挑战模块", Toast.LENGTH_SHORT).show()
-                            } catch (e: Exception) { e.printStackTrace() }
+                                if (deletedCount > 0) Toast.makeText(
+                                    context,
+                                    "移除了 $deletedCount 个挑战模块",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
                         }
                     }
 
@@ -280,10 +294,15 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                         rootLevelFile!!.objects.removeAll { it.aliases?.contains(alias) == true }
                     }
 
-                    if (objClass == "WaveManagerModuleProperties") parsedData = parsedData!!.copy(waveModule = null)
-                    if (objClass == "LastStandMinigameProperties") updateWaveManagerManualStartup(false)
+                    if (objClass == "WaveManagerModuleProperties") parsedData =
+                        parsedData!!.copy(waveModule = null)
+                    if (objClass == "LastStandMinigameProperties") updateWaveManagerManualStartup(
+                        false
+                    )
 
-                    val newObjectMap = rootLevelFile!!.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+                    val newObjectMap = rootLevelFile!!.objects.associateBy {
+                        it.aliases?.firstOrNull() ?: "unknown"
+                    }
 
                     val currentLevelDef = parsedData!!.levelDef!!
                     val newLevelDef = currentLevelDef.copy(
@@ -301,41 +320,60 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
             },
 
             onAddModule = { meta ->
-                val newRtid = RtidParser.build(meta.defaultAlias, meta.defaultSource)
-                if (meta.defaultSource == "CurrentLevel") {
-                    val exists =
-                        rootLevelFile!!.objects.any { it.aliases?.contains(meta.defaultAlias) == true }
-                    if (!exists && meta.initialDataFactory != null) {
-                        var initialData = meta.initialDataFactory.invoke()
-                        if (initialData is WaveManagerModuleData) {
-                            val actualWaveMgrAlias =
-                                rootLevelFile!!.objects.find { it.objClass == "WaveManagerProperties" }?.aliases?.firstOrNull()
-                                    ?: "WaveManagerProps"
-                            initialData = initialData.copy(
-                                waveManagerProps = RtidParser.build(
-                                    actualWaveMgrAlias,
-                                    "CurrentLevel"
-                                )
-                            )
+                val isDefaultExist =
+                    rootLevelFile!!.objects.any { it.aliases?.contains(meta.defaultAlias) == true }
+                if (!meta.allowMultiple && isDefaultExist) {
+                    Toast.makeText(
+                        context,
+                        "${meta.title} 模块已存在，不可重复添加",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    var finalAlias = meta.defaultAlias
+                    if (rootLevelFile!!.objects.any { it.aliases?.contains(finalAlias) == true }) {
+                        var count = 0
+                        val prefix = meta.defaultAlias
+                        while (rootLevelFile!!.objects.any { it.aliases?.contains(finalAlias) == true }) {
+                            count++
+                            finalAlias = "$prefix$count"
                         }
-                        val newObj = PvzObject(
-                            aliases = listOf(meta.defaultAlias),
-                            objClass = ModuleRegistry.getAllKnownModules().entries.find { it.value == meta }?.key
-                                ?: "Unknown",
-                            objData = gson.toJsonTree(initialData)
-                        )
-                        rootLevelFile!!.objects.add(newObj)
-                        val newObjectMap = rootLevelFile!!.objects.associateBy {
-                            it.aliases?.firstOrNull() ?: "unknown"
-                        }
-                        parsedData = parsedData!!.copy(objectMap = newObjectMap)
                     }
+                    val newRtid = RtidParser.build(finalAlias, meta.defaultSource)
+                    if (meta.defaultSource == "CurrentLevel") {
+                        if (meta.initialDataFactory != null) {
+                            var initialData = meta.initialDataFactory.invoke()
+                            if (initialData is WaveManagerModuleData) {
+                                val actualWaveMgrAlias =
+                                    rootLevelFile!!.objects.find { it.objClass == "WaveManagerProperties" }?.aliases?.firstOrNull()
+                                        ?: "WaveManagerProps"
+                                initialData = initialData.copy(
+                                    waveManagerProps = RtidParser.build(
+                                        actualWaveMgrAlias,
+                                        "CurrentLevel"
+                                    )
+                                )
+                            }
+                            val newObj = PvzObject(
+                                aliases = listOf(finalAlias),
+                                objClass = ModuleRegistry.getAllKnownModules().entries.find { it.value == meta }?.key
+                                    ?: "Unknown",
+                                objData = gson.toJsonTree(initialData)
+                            )
+                            rootLevelFile!!.objects.add(newObj)
+                            val newObjectMap = rootLevelFile!!.objects.associateBy {
+                                it.aliases?.firstOrNull() ?: "unknown"
+                            }
+                            parsedData = parsedData!!.copy(objectMap = newObjectMap)
+                        }
+                    }
+                    parsedData!!.levelDef?.modules?.add(newRtid)
+                    if (meta.defaultAlias == "LastStandMinigame") updateWaveManagerManualStartup(
+                        true
+                    )
+                    refreshTrigger++
+                    Toast.makeText(context, "已添加 ${meta.title}", Toast.LENGTH_SHORT).show()
+                    currentSubScreen = EditorSubScreen.None
                 }
-                parsedData!!.levelDef?.modules?.add(newRtid)
-                if (meta.defaultAlias == "LastStandMinigame") updateWaveManagerManualStartup(true)
-                refreshTrigger++
-                Toast.makeText(context, "已添加 ${meta.title}", Toast.LENGTH_SHORT).show()
-                currentSubScreen = EditorSubScreen.None
             },
 
             onAddEvent = { meta, waveIndex ->
@@ -371,7 +409,8 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                 rootLevelFile!!.objects.find { it.objClass == "WaveManagerProperties" }?.let {
                     it.objData = gson.toJsonTree(newWaveManager)
                 }
-                val newObjectMap = rootLevelFile!!.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+                val newObjectMap =
+                    rootLevelFile!!.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
                 parsedData = parsedData!!.copy(
                     objectMap = newObjectMap,
                     waveManager = newWaveManager
@@ -536,9 +575,9 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
         )
     }
 
-    androidx.compose.material3.Surface(
+    Surface(
         modifier = Modifier.fillMaxSize(),
-        color = androidx.compose.material3.MaterialTheme.colorScheme.background
+        color = MaterialTheme.colorScheme.background
     ) {
         AnimatedContent(
             targetState = currentSubScreen,

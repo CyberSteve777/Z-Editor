@@ -15,8 +15,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.z_editor.ui.theme.PVZ2LevelEditorTheme
-import com.example.z_editor.views.screens.EditorScreen
-import com.example.z_editor.views.screens.LevelListScreen
+import com.example.z_editor.views.screens.main.AboutScreen
+import com.example.z_editor.views.screens.main.EditorScreen
+import com.example.z_editor.views.screens.main.LevelListScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -31,8 +32,9 @@ class MainActivity : ComponentActivity() {
 }
 
 enum class ScreenState {
-    LevelList, // 列表页
-    Editor     // 编辑页
+    LevelList,
+    Editor,
+    About
 }
 
 @Composable
@@ -44,7 +46,7 @@ fun AppNavigation() {
         targetState = currentScreen,
         label = "MainNavigationTransition",
         transitionSpec = {
-            if (targetState == ScreenState.Editor) {
+            if (targetState == ScreenState.Editor || targetState == ScreenState.About) {
                 (slideInHorizontally { width -> width } + fadeIn())
                     .togetherWith(
                         slideOutHorizontally { width -> -width / 3 } + fadeOut()
@@ -63,6 +65,9 @@ fun AppNavigation() {
                     onLevelClick = { fileName ->
                         currentFileName = fileName
                         currentScreen = ScreenState.Editor
+                    },
+                    onAboutClick = {
+                        currentScreen = ScreenState.About
                     }
                 )
             }
@@ -70,6 +75,14 @@ fun AppNavigation() {
             ScreenState.Editor -> {
                 EditorScreen(
                     fileName = currentFileName,
+                    onBack = {
+                        currentScreen = ScreenState.LevelList
+                    }
+                )
+            }
+
+            ScreenState.About -> {
+                AboutScreen(
                     onBack = {
                         currentScreen = ScreenState.LevelList
                     }

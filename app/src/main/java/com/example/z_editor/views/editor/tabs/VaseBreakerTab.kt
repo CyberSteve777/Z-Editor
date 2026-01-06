@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
@@ -56,6 +57,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.data.GridSquareBlacklistData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.PvzObject
 import com.example.z_editor.data.RtidParser
@@ -110,7 +112,12 @@ fun VaseBreakerTab(
 
     fun updateData(mutation: (VaseBreakerPresetData) -> Unit) {
         val currentVases = ArrayList(dataState.value.vases)
-        val newData = dataState.value.copy(vases = currentVases)
+        val currentBlacklist = ArrayList(dataState.value.gridSquareBlacklist)
+
+        val newData = dataState.value.copy(
+            vases = currentVases,
+            gridSquareBlacklist = currentBlacklist
+        )
         mutation(newData)
         dataState.value = newData
         sync()
@@ -120,7 +127,12 @@ fun VaseBreakerTab(
 
     val minCol = data.minColumnIndex
     val maxCol = data.maxColumnIndex
-    val totalSlots = (maxCol - minCol + 1) * 5
+
+    val blacklistCount = data.gridSquareBlacklist?.count {
+        it.mx in minCol..maxCol && it.my in 0..4
+    } ?: 0
+
+    val totalSlots = (maxCol - minCol + 1) * 5 - blacklistCount
     val currentAssigned = data.vases.sumOf { it.count }
     val isCapacityError = totalSlots != currentAssigned
 
@@ -148,7 +160,7 @@ fun VaseBreakerTab(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            "罐子生成范围",
+                            "罐子生成范围与禁用格点",
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             color = Color(0xFF5D4037)
@@ -184,6 +196,13 @@ fun VaseBreakerTab(
 
                         Spacer(Modifier.height(12.dp))
 
+                        Text(
+                            "点击格点可切换禁用状态（禁用点将不生成罐子）",
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -196,7 +215,8 @@ fun VaseBreakerTab(
                                 for (row in 0..4) {
                                     Row(Modifier.weight(1f)) {
                                         for (col in 0..8) {
-                                            val isActive = col in minCol..maxCol
+                                            val isActiveZone = col in minCol..maxCol
+                                            val isBlacklisted = data.gridSquareBlacklist.any { it.mx == col && it.my == row } == true
 
                                             Box(
                                                 modifier = Modifier
@@ -204,15 +224,39 @@ fun VaseBreakerTab(
                                                     .fillMaxHeight()
                                                     .border(0.5.dp, Color(0xFF8D6E63).copy(alpha = 0.5f))
                                                     .background(
-                                                        if (isActive) Color(0xFF9D7165) else Color.Transparent
-                                                    ),
+                                                        when {
+                                                            isBlacklisted -> Color.Black.copy(alpha = 0.6f) // 黑名单显示深色
+                                                            isActiveZone -> Color(0xFF9D7165)
+                                                            else -> Color.Transparent
+                                                        }
+                                                    )
+                                                    .clickable {
+                                                        updateData { mutableData ->
+                                                            val blacklist = mutableData.gridSquareBlacklist
+                                                            val existing = blacklist.find { it.mx == col && it.my == row }
+
+                                                            if (existing != null) {
+                                                                blacklist.remove(existing)
+                                                            } else {
+                                                                blacklist.add(GridSquareBlacklistData(col, row))
+                                                            }
+                                                            mutableData.gridSquareBlacklist = blacklist
+                                                        }
+                                                    },
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                if (row == 4) {
+                                                if (isBlacklisted) {
+                                                    Icon(
+                                                        Icons.Default.Block,
+                                                        contentDescription = null,
+                                                        tint = Color.White.copy(alpha = 0.8f),
+                                                        modifier = Modifier.size(16.dp)
+                                                    )
+                                                } else if (row == 4) {
                                                     Text(
                                                         text = "${col + 1}",
                                                         fontSize = 10.sp,
-                                                        color = if (isActive) Color.White.copy(0.7f) else Color(0xFF5D4037).copy(0.5f)
+                                                        color = if (isActiveZone) Color.White.copy(0.7f) else Color(0xFF5D4037).copy(0.5f)
                                                     )
                                                 }
                                             }
@@ -223,6 +267,8 @@ fun VaseBreakerTab(
                         }
 
                         Spacer(Modifier.height(12.dp))
+
+                        // 容量信息显示
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -246,13 +292,13 @@ fun VaseBreakerTab(
                             Spacer(Modifier.width(8.dp))
                             Column {
                                 Text(
-                                    text = if (isCapacityError) "配置数量与容量不符" else "配置数量已匹配容量",
+                                    text = if (isCapacityError) "配置数量与有效容量不符" else "配置数量已匹配容量",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp,
                                     color = if (isCapacityError) Color.Red else Color(0xFF2E7D32)
                                 )
                                 Text(
-                                    text = "场地容量: $totalSlots  |  已配置: $currentAssigned",
+                                    text = "有效容量: $totalSlots  |  已配置: $currentAssigned",
                                     fontSize = 12.sp,
                                     color = Color.Black
                                 )
@@ -307,19 +353,19 @@ fun VaseBreakerTab(
             }
 
             items(data.vases, key = { System.identityHashCode(it) }) { vase ->
-            VaseItemRow(
-                vase = vase,
-                onDelete = { vaseToDelete = vase },
-                onCountChange = { newCount ->
-                    updateData { mutableData ->
-                        val index = mutableData.vases.indexOfFirst { v -> v === vase }
-                        if (index != -1) {
-                            mutableData.vases[index] = mutableData.vases[index].copy(count = newCount)
+                VaseItemRow(
+                    vase = vase,
+                    onDelete = { vaseToDelete = vase },
+                    onCountChange = { newCount ->
+                        updateData { mutableData ->
+                            val index = mutableData.vases.indexOfFirst { v -> v === vase }
+                            if (index != -1) {
+                                mutableData.vases[index] = mutableData.vases[index].copy(count = newCount)
+                            }
                         }
                     }
-                }
-            )
-        }
+                )
+            }
         }
 
         FloatingActionButton(
@@ -397,7 +443,7 @@ fun VaseBreakerTab(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     AssetImage(
-                                        path = "images/others/${info.iconName}.webp",
+                                        path = "images/others/${info.iconName}",
                                         contentDescription = null,
                                         modifier = Modifier.size(44.dp),
                                         placeholder = { Icon(Icons.Default.Stars, null, tint = Color(0xFFFFC107)) }
@@ -447,7 +493,8 @@ data class CollectableType(
 )
 
 private val collectableTypes = listOf(
-    CollectableType("plantfood", "能量豆", "plantfood")
+    CollectableType("plantfood", "能量豆", "plantfood.webp"),
+    CollectableType("sun_large", "大型阳光", "sun_large.webp")
 )
 
 
@@ -478,7 +525,7 @@ fun VaseItemRow(
         type = "道具"
         val info = collectableTypes.find { it.id == vase.collectableTypeName }
         name = info?.name ?: vase.collectableTypeName ?: "未知道具"
-        iconPath = info?.let { "images/others/${it.iconName}.webp" }
+        iconPath = info?.let { "images/others/${it.iconName}" }
     }
 
     Card(
@@ -507,8 +554,6 @@ fun VaseItemRow(
                         filterQuality = FilterQuality.Medium,
                         placeholder = { Text(name.take(1)) }
                     )
-                } else {
-                    Icon(Icons.Default.Stars, null, tint = Color(0xFFFFC107))
                 }
             }
 
@@ -543,7 +588,7 @@ fun Stepper(value: Int, onChange: (Int) -> Unit) {
             modifier = Modifier
                 .width(32.dp)
                 .height(32.dp)
-                .clickable { if (value > 1) onChange(value - 1) },
+                .clickable { if (value >= 1) onChange(value - 1) },
             contentAlignment = Alignment.Center
         ) {
             Text("-", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Gray)
@@ -597,7 +642,6 @@ fun BoundaryStepper(
                     .fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                // 显示列号 (1-9，对应索引 0-8)
                 Text(
                     text = "${value + 1}",
                     fontWeight = FontWeight.Bold,

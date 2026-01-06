@@ -9,12 +9,12 @@ import com.example.z_editor.data.ZombieStats
 import com.example.z_editor.data.ZombieTypeData
 import com.google.gson.Gson
 import java.io.InputStreamReader
-import kotlin.collections.forEach
 
 object ZombiePropertiesRepository {
     private val gson = Gson()
 
     private val statsCache = mutableMapOf<String, ZombieStats>()
+
     private val aliasToTypeCache = mutableMapOf<String, String>()
 
     private var isInitialized = false
@@ -37,13 +37,9 @@ object ZombiePropertiesRepository {
                         aliasToTypeCache[typeName] = typeName
 
                         val propsAlias = RtidParser.parse(typeData.properties)?.alias ?: ""
-
                         val propsObj = propsFileMap[propsAlias]
-
                         if (propsObj != null) {
-                            val sheet =
-                                gson.fromJson(propsObj.objData, ZombiePropertySheetData::class.java)
-
+                            val sheet = gson.fromJson(propsObj.objData, ZombiePropertySheetData::class.java)
                             val stats = ZombieStats(
                                 id = typeName,
                                 hp = sheet.hitpoints,
@@ -82,4 +78,7 @@ object ZombiePropertiesRepository {
     fun getStats(typeName: String): ZombieStats =
         statsCache[typeName] ?: ZombieStats(typeName, 0.0, 0, 0, 0.0, 0.0, "unknown")
 
+    fun isValidAlias(alias: String): Boolean {
+        return aliasToTypeCache.containsKey(alias)
+    }
 }

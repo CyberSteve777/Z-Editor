@@ -54,18 +54,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.InitialGridItemData
 import com.example.z_editor.data.InitialGridItemEntryData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.data.repository.GridItemRepository
+import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
-import com.example.z_editor.views.screens.GridItemRepository
 import com.google.gson.Gson
 
 private val gson = Gson()
@@ -104,10 +108,7 @@ fun InitialGridItemEntryEP(
         }
     }
 
-    moduleDataState.value.placements.filter {
-        it.gridX == selectedX && it.gridY == selectedY
-    }
-
+    // 3. 排序后的物品列表
     val sortedItems = remember(moduleDataState.value.placements) {
         moduleDataState.value.placements.sortedWith(compareBy({ it.gridY }, { it.gridX }))
     }
@@ -242,7 +243,11 @@ fun InitialGridItemEntryEP(
                                 Spacer(Modifier.weight(1f))
                                 Button(
                                     onClick = { handleSelectItem() },
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF795548))
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(
+                                            0xFF795548
+                                        )
+                                    )
                                 ) {
                                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
                                     Spacer(Modifier.width(8.dp))
@@ -264,10 +269,12 @@ fun InitialGridItemEntryEP(
                                     for (row in 0..4) {
                                         Row(Modifier.weight(1f)) {
                                             for (col in 0..8) {
-                                                val isSelected = (row == selectedY && col == selectedX)
+                                                val isSelected =
+                                                    (row == selectedY && col == selectedX)
                                                 val cellItems =
                                                     moduleDataState.value.placements.filter { it.gridX == col && it.gridY == row }
                                                 val count = cellItems.size
+                                                val firstItem = cellItems.firstOrNull()
 
                                                 Box(
                                                     modifier = Modifier
@@ -285,24 +292,26 @@ fun InitialGridItemEntryEP(
                                                         },
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    if (count > 0) {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxSize(0.9f)
-                                                                .background(
-                                                                    Color(0xFF7A5549),
-                                                                    RoundedCornerShape(4.dp)
-                                                                ),
-                                                            contentAlignment = Alignment.Center
-                                                        ) {
-                                                            Text(
-                                                                text = if (count > 1) "+$count" else cellItems[0].typeName.take(
-                                                                    1
-                                                                ).uppercase(),
-                                                                color = Color.White,
-                                                                fontSize = 12.sp,
-                                                                fontWeight = FontWeight.Bold
-                                                            )
+                                                    if (count > 0 && firstItem != null) {
+                                                        GridItemIconSmall(firstItem.typeName)
+                                                        if (count > 1) {
+                                                            Box(
+                                                                modifier = Modifier
+                                                                    .align(Alignment.TopEnd)
+                                                                    .background(
+                                                                        color = Color.Gray,
+                                                                        shape = RoundedCornerShape(bottomStart = 4.dp)
+                                                                    )
+                                                                    .padding(horizontal = 2.dp)
+                                                            ) {
+                                                                Text(
+                                                                    text = "+$count",
+                                                                    color = Color.White,
+                                                                    fontSize = 8.sp,
+                                                                    fontWeight = FontWeight.Bold,
+                                                                    textAlign = TextAlign.Center
+                                                                )
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -343,6 +352,38 @@ fun InitialGridItemEntryEP(
     }
 }
 
+@Composable
+fun GridItemIconSmall(typeName: String) {
+    val iconPath = remember(typeName) { GridItemRepository.getIconPath(typeName) }
+
+    val cardShape = RoundedCornerShape(3.dp)
+
+    if (iconPath != null) {
+        AssetImage(
+            path = iconPath,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize(0.9f)
+                .clip(cardShape),
+            contentScale = ContentScale.Fit,
+            filterQuality = FilterQuality.Low
+        )
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(0.8f)
+                .background(Color(0xFF795648), cardShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = typeName.take(1).uppercase(),
+                color = Color.White,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
 
 @Composable
 fun GridItemCard(
@@ -362,10 +403,9 @@ fun GridItemCard(
         Column(modifier = Modifier.padding(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "R${item.gridY + 1}:C${item.gridX + 1}",
-                    fontWeight = FontWeight.Bold,
+                    text = GridItemRepository.getName(item.typeName),
                     fontSize = 14.sp,
-                    color = Color(0xFF5D4037)
+                    maxLines = 1
                 )
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
@@ -378,18 +418,41 @@ fun GridItemCard(
                 }
             }
             Spacer(Modifier.height(4.dp))
-            Text(
-                text = GridItemRepository.getName(item.typeName),
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                maxLines = 1
-            )
-            Text(
-                text = item.typeName,
-                fontSize = 12.sp,
-                color = Color.Gray,
-                maxLines = 1
-            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                AssetImage(
+                    path = GridItemRepository.getIconPath(item.typeName),
+                    contentDescription = item.typeName,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .size(36.dp),
+                    filterQuality = FilterQuality.Medium,
+                    placeholder = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color(0xFFF5EEE8)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = item.typeName.take(1),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF795548)
+                            )
+                        }
+                    }
+                )
+
+                Spacer(Modifier.width(8.dp))
+
+                Text(
+                    text = "R${item.gridY + 1}:C${item.gridX + 1}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = Color(0xFF5D4037)
+                )
+            }
         }
     }
 }

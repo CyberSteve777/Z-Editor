@@ -1,4 +1,4 @@
-package com.example.z_editor.views.screens
+package com.example.z_editor.views.screens.select
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -50,31 +50,33 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.repository.ZombieCategory
-import com.example.z_editor.data.repository.ZombieInfo
-import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.data.repository.ZombieTag
+import com.example.z_editor.data.repository.PlantCategory
+import com.example.z_editor.data.repository.PlantInfo
+import com.example.z_editor.data.repository.PlantRepository
+import com.example.z_editor.data.repository.PlantTag
 import com.example.z_editor.views.components.AssetImage
 
 @Composable
-fun ZombieSelectionScreen(
-    onZombieSelected: (String) -> Unit,
+fun PlantSelectionScreen(
+    onPlantSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf(ZombieCategory.Main) }
-    var selectedTag by remember { mutableStateOf(ZombieTag.All) }
+    var selectedTag by remember { mutableStateOf(PlantTag.All) }
+    var selectedCategory by remember { mutableStateOf(PlantCategory.Quality) }
 
     val currentVisibleTags = remember(selectedCategory) {
-        listOf(ZombieTag.All) + ZombieTag.entries.filter {
-            it.category == selectedCategory && it != ZombieTag.All
+        listOf(PlantTag.All) + PlantTag.entries.filter {
+            it.category == selectedCategory && it != PlantTag.All
         }
     }
 
     val displayList = remember(searchQuery, selectedTag) {
-        ZombieRepository.search(searchQuery, selectedTag)
+        PlantRepository.search(searchQuery, selectedTag)
     }
 
     LaunchedEffect(selectedCategory) {
@@ -83,7 +85,7 @@ fun ZombieSelectionScreen(
         }
     }
 
-    val themeColor = Color(0xFF673AB7)
+    val themeColor = Color(0xFF8BC34A)
 
     Scaffold(
         topBar = {
@@ -112,7 +114,7 @@ fun ZombieSelectionScreen(
                             onValueChange = { searchQuery = it },
                             placeholder = {
                                 Text(
-                                    "搜索僵尸名称或代号",
+                                    "搜索植物名称或代码",
                                     fontSize = 16.sp,
                                     color = Color.Gray
                                 )
@@ -147,7 +149,7 @@ fun ZombieSelectionScreen(
                             .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        ZombieCategory.entries.forEach { category ->
+                        PlantCategory.entries.forEach { category ->
                             val isSelected = selectedCategory == category
 
                             Box(
@@ -157,7 +159,7 @@ fun ZombieSelectionScreen(
                                     .clickable {
                                         if (selectedCategory != category) {
                                             selectedCategory = category
-                                            selectedTag = ZombieTag.All
+                                            selectedTag = PlantTag.All
                                         }
                                     }
                                     .background(
@@ -242,7 +244,7 @@ fun ZombieSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(16.dp))
-                    Text("未找到相关僵尸", color = Color.Gray)
+                    Text("未找到相关植物", color = Color.Gray)
                 }
             } else {
                 LazyVerticalGrid(
@@ -252,9 +254,9 @@ fun ZombieSelectionScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(displayList) { zombie ->
-                        ZombieGridItem(zombie = zombie) {
-                            onZombieSelected(zombie.id)
+                    items(displayList) { plant ->
+                        PlantGridItem(plant = plant) {
+                            onPlantSelected(plant.id)
                         }
                     }
                 }
@@ -264,7 +266,7 @@ fun ZombieSelectionScreen(
 }
 
 @Composable
-fun ZombieGridItem(zombie: ZombieInfo, onClick: () -> Unit) {
+fun PlantGridItem(plant: PlantInfo, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -274,8 +276,8 @@ fun ZombieGridItem(zombie: ZombieInfo, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AssetImage(
-            path = if (zombie.icon != null) "images/zombies/${zombie.icon}" else null,
-            contentDescription = zombie.name,
+            path = if (plant.icon != null) "images/plants/${plant.icon}" else null,
+            contentDescription = plant.name,
             filterQuality = FilterQuality.High,
             modifier = Modifier
                 .size(52.dp)
@@ -286,40 +288,37 @@ fun ZombieGridItem(zombie: ZombieInfo, onClick: () -> Unit) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color(0xFFEDE7F6)),
+                        .background(Color(0xFFE8F5E9)),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = zombie.name.take(1),
+                        text = plant.name.take(1),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF512DA8)
+                        color = Color(0xFF2E7D32)
                     )
                 }
             }
         )
-
         Spacer(Modifier.height(6.dp))
-
         Text(
-            text = zombie.name,
+            text = plant.name,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Medium,
-            fontSize = 9.sp,
+            fontSize = 11.sp,
             maxLines = 1,
             color = Color.Black,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 2.dp)
         )
-
         Text(
-            text = zombie.id,
+            text = plant.id,
             fontSize = 8.sp,
             color = Color.Gray,
             maxLines = 1,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
             lineHeight = 10.sp
         )
     }
