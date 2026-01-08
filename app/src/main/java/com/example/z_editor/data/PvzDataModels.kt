@@ -52,7 +52,7 @@ data class DynamicZombieGroup(
 
 // === 波次列表 ===
 data class WaveManagerData(
-    @SerializedName("WaveCount") var waveCount: Int = 0,
+    @SerializedName("WaveCount") var waveCount: Int = 1,
     @SerializedName("FlagWaveInterval") var flagWaveInterval: Int = 10,
     @SerializedName("SuppressFlagZombie") var suppressFlagZombie: Boolean? = null,
     @SerializedName("LevelJam") var levelJam: String? = null,
@@ -324,10 +324,36 @@ data class LevelMutatorStartingPlantfoodPropsData(
     @SerializedName("IconText") var iconText: String = "",
 )
 
-// === 坚果保龄球配置 ===
+// === 沙滩保龄球配置 ===
 data class BowlingMinigamePropertiesData(
     @SerializedName("BowlingFoulLine") var bowlingFoulLine: Int = 2
 )
+
+// === 坚果保龄球配置 ===
+class NewBowlingMinigamePropertiesData
+
+// === 排山倒海配置 ===
+class PVZ1OverwhelmModulePropertiesData
+
+// === 僵王战模块 ===
+data class ZombossBattleModuleData(
+    @SerializedName("ReservedColumnCount") var reservedColumnCount: Int = 2,
+    @SerializedName("ZombossMechType") var zombossMechType: String = "zombossmech_egypt",
+    @SerializedName("ZombossStageCount") var zombossStageCount: Int = 3,
+    @SerializedName("ZombossDeathRow") var zombossDeathRow: Int = 3,
+    @SerializedName("ZombossDeathColumn") var zombossDeathColumn: Int = 5
+)
+
+// === 僵王战转场模块 ===
+data class ZombossBattleIntroData(
+    @SerializedName("PanStartOffset") var panStartOffset: Int = 78,
+    @SerializedName("PanEndOffset") var panEndOffset: Int = 486,
+    @SerializedName("PanRightDuration") var panRightDuration: Double = 1.5,
+    @SerializedName("PanLeftDuration") var panLeftDuration: Double = 1.5,
+    @SerializedName("ZombossPhaseCount") var zombossPhaseCount: Int = 3,
+    @SerializedName("SkipShowingStreetBossBattle") var skipShowingStreetBossBattle: Boolean = false,
+)
+
 
 // ======================== 2. 物体属性解析 ========================
 

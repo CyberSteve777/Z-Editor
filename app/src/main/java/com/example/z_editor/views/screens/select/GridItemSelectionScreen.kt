@@ -1,5 +1,6 @@
 package com.example.z_editor.views.screens.select
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -64,8 +66,9 @@ fun GridItemSelectionScreen(
     onGridItemSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
+    BackHandler(onBack = onBack)
     var searchQuery by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf(GridItemCategory.Scene) }
+    var selectedCategory by remember { mutableStateOf(GridItemCategory.All) }
 
     val displayList = remember(searchQuery, selectedCategory) {
         GridItemRepository.getByCategory(selectedCategory).filter {
@@ -135,10 +138,11 @@ fun GridItemSelectionScreen(
                     }
 
                     // --- Tab 分类 ---
-                    TabRow(
+                    ScrollableTabRow(
                         selectedTabIndex = GridItemCategory.entries.indexOf(selectedCategory),
                         containerColor = Color.Transparent,
                         contentColor = Color.White,
+                        edgePadding = 16.dp,
                         indicator = { tabPositions ->
                             val index = GridItemCategory.entries.indexOf(selectedCategory)
                             if (index < tabPositions.size) {
@@ -148,7 +152,7 @@ fun GridItemSelectionScreen(
                                     height = 3.dp
                                 )
                             }
-                        },
+                        }
                     ) {
                         GridItemCategory.entries.forEach { category ->
                             Tab(

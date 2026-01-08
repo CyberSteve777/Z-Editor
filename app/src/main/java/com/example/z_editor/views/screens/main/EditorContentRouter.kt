@@ -60,13 +60,16 @@ import com.example.z_editor.views.editor.tabs.IZombieTab
 import com.example.z_editor.views.editor.tabs.LevelSettingsTab
 import com.example.z_editor.views.editor.tabs.VaseBreakerTab
 import com.example.z_editor.views.editor.tabs.WaveTimelineTab
+import com.example.z_editor.views.editor.tabs.ZombossBattleTab
 import com.example.z_editor.views.screens.select.ChallengeSelectionScreen
 import com.example.z_editor.views.screens.select.EventSelectionScreen
 import com.example.z_editor.views.screens.select.GridItemSelectionScreen
 import com.example.z_editor.views.screens.select.ModuleSelectionScreen
 import com.example.z_editor.views.screens.select.PlantSelectionScreen
 import com.example.z_editor.views.screens.select.StageSelectionScreen
+import com.example.z_editor.views.screens.select.ToolSelectionScreen
 import com.example.z_editor.views.screens.select.ZombieSelectionScreen
+import com.example.z_editor.views.screens.select.ZombossSelectionScreen
 
 /**
  * 路由分发器：只负责根据 targetState 渲染对应的页面
@@ -228,7 +231,8 @@ fun EditorContentRouter(
                         },
                         onEditSettings = { actions.navigateTo(EditorSubScreen.WaveManagerSettings) },
                         onWavesChanged = actions.onWavesChanged,
-                        onCreateContainer = actions.onCreateWaveContainer
+                        onCreateContainer = actions.onCreateWaveContainer,
+                        onDeleteContainer = actions.onDeleteWaveContainer
                     )
                 }
 
@@ -250,7 +254,10 @@ fun EditorContentRouter(
                 }
 
                 EditorTabType.BossFight -> {
-                    // Boss战编辑器占位
+                    ZombossBattleTab(
+                        rootLevelFile = rootLevelFile,
+                        onLaunchZombossSelector = actions.onLaunchZombossSelector
+                    )
                 }
             }
         }
@@ -312,6 +319,7 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             rootLevelFile = rootLevelFile,
             onBack = actions.navigateBack,
+            onRequestToolSelection = actions.onLaunchToolSelector,
             onRequestPlantSelection = actions.onLaunchPlantSelector,
             scrollState = getScrollState("ConveyorBelt")
         )
@@ -650,5 +658,17 @@ fun EditorContentRouter(
             onChallengeSelected = { info -> actions.onChallengeSelected(info) },
             onBack = actions.onSelectorCancel
         )
+
+        EditorSubScreen.ToolSelection -> ToolSelectionScreen(
+            onToolSelected = { id -> actions.onSelectorResult(id) },
+            onBack = actions.onSelectorCancel
+        )
+
+        EditorSubScreen.ZombossSelection -> {
+            ZombossSelectionScreen(
+                onSelected = { id -> actions.onSelectorResult(id) },
+                onBack = actions.onSelectorCancel
+            )
+        }
     }
 }

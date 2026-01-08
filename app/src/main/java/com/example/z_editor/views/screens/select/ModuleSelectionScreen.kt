@@ -1,5 +1,6 @@
 package com.example.z_editor.views.screens.select
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -64,6 +65,7 @@ fun ModuleSelectionScreen(
     onModuleSelected: (ModuleMetadata) -> Unit,
     onBack: () -> Unit
 ) {
+    BackHandler(onBack = onBack)
     val allModules = remember { ModuleRegistry.getAllKnownModules() }
 
     var searchQuery by remember { mutableStateOf("") }

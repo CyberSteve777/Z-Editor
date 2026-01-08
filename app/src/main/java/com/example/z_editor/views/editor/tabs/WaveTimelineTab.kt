@@ -112,7 +112,8 @@ fun WaveTimelineTab(
     onEditSettings: () -> Unit,
     onNavigateToAddEvent: (Int) -> Unit,
     onWavesChanged: () -> Unit,
-    onCreateContainer: () -> Unit
+    onCreateContainer: () -> Unit,
+    onDeleteContainer: () -> Unit
 ) {
     if (waveManager == null) {
         Box(
@@ -161,6 +162,7 @@ fun WaveTimelineTab(
 
     // ======================== 1. 状态声明 ========================
     var confirmCheckbox by remember { mutableStateOf(false) }
+    var showDeleteContainerDialog by remember { mutableStateOf(false) }
 
     var showExpectationDialog by remember { mutableStateOf<Int?>(null) }
     var waveToDeleteIndex by remember { mutableStateOf<Int?>(null) }
@@ -341,8 +343,15 @@ fun WaveTimelineTab(
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxSize()
-                                                .background(Color(0xFFEEEEEE), RoundedCornerShape(12.dp))
-                                                .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp)),
+                                                .background(
+                                                    Color(0xFFEEEEEE),
+                                                    RoundedCornerShape(12.dp)
+                                                )
+                                                .border(
+                                                    1.dp,
+                                                    Color.LightGray,
+                                                    RoundedCornerShape(12.dp)
+                                                ),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
@@ -364,7 +373,11 @@ fun WaveTimelineTab(
                                                 .size(40.dp)
                                                 .clip(RoundedCornerShape(12.dp))
                                                 .background(Color.White)
-                                                .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp)),
+                                                .border(
+                                                    1.dp,
+                                                    Color.LightGray,
+                                                    RoundedCornerShape(12.dp)
+                                                ),
                                             filterQuality = FilterQuality.Medium,
                                             placeholder = placeholderContent
                                         )
@@ -530,7 +543,9 @@ fun WaveTimelineTab(
                 )
             },
             dismissButton = {
-                TextButton(onClick = { eventToMove = null; moveSourceWaveIndex = null }) { Text("取消") }
+                TextButton(onClick = {
+                    eventToMove = null; moveSourceWaveIndex = null
+                }) { Text("取消") }
             },
             confirmButton = {
                 Button(onClick = {
@@ -541,26 +556,21 @@ fun WaveTimelineTab(
                         val targetIdx = target - 1
 
                         if (targetIdx == sourceIdx) {
-                            Toast.makeText(context, "目标波次与当前波次相同", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "目标波次与当前波次相同", Toast.LENGTH_SHORT)
+                                .show()
                         } else {
-                            // === 核心修改开始 ===
-                            // 1. 创建源波次和目标波次的新副本 (Deep Copy)
-                            // 这样修改后的 List 内存地址会改变，Compose 才能检测到变化
                             val newSourceList = waveManager.waves[sourceIdx].toMutableList()
                             val newTargetList = waveManager.waves[targetIdx].toMutableList()
 
-                            // 2. 在新副本上操作
-                            // 只移除第一个匹配项（防止有重复引用时误删）
                             newSourceList.remove(eventToMove!!)
                             newTargetList.add(eventToMove!!)
 
-                            // 3. 将新副本赋值回主数据
                             waveManager.waves[sourceIdx] = newSourceList
                             waveManager.waves[targetIdx] = newTargetList
-                            // === 核心修改结束 ===
 
-                            onWavesChanged() // 触发刷新
-                            Toast.makeText(context, "已移动至第 $target 波", Toast.LENGTH_SHORT).show()
+                            onWavesChanged()
+                            Toast.makeText(context, "已移动至第 $target 波", Toast.LENGTH_SHORT)
+                                .show()
 
                             eventToMove = null
                             moveSourceWaveIndex = null
@@ -651,6 +661,7 @@ fun WaveTimelineTab(
             }
         )
     }
+
     // --- G. 管理抽屉 ---
     if (editingWaveIndex != null) {
         val waveIdx = editingWaveIndex!!
@@ -706,6 +717,30 @@ fun WaveTimelineTab(
             }
         }
     }
+
+    // --- H. 删除容器弹窗 ---
+    if (showDeleteContainerDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteContainerDialog = false },
+            title = { Text("删除波次容器") },
+            text = { Text("确定要删除空的波次容器吗？\n删除后您可以重新创建一个新的容器。") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDeleteContainer()
+                        showDeleteContainerDialog = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                ) {
+                    Text("确认删除")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteContainerDialog = false }) { Text("取消") }
+            }
+        )
+    }
+
 
     // ======================== 4. 主界面布局 ========================
 
@@ -799,103 +834,148 @@ fun WaveTimelineTab(
 
         item { Spacer(Modifier.height(16.dp)) }
 
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFEEEEEE))
-                    .padding(vertical = 8.dp, horizontal = 16.dp)
-            ) {
-                Text(
-                    "#",
-                    modifier = Modifier.width(36.dp),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray
-                )
-                Text(
-                    "内容及点数预览",
-                    modifier = Modifier.weight(1f),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray
-                )
-                Text(
-                    "Total: ${waveManager.waves.size}",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
-                    fontSize = 13.sp
-                )
-            }
-        }
-
-        itemsIndexed(
-            items = waveManager.waves,
-            key = { index, _ -> "wave_row_${index}_${refreshTrigger}" }
-        ) { index, waveEvents ->
-            val waveIndex = index + 1
-            val isFlagWave = (waveIndex % interval == 0 || waveIndex == waveManager.waves.size)
-            val points = calculatePoints(waveIndex, isFlagWave)
-
-            val dismissState = rememberSwipeToDismissBoxState(
-                confirmValueChange = { value ->
-                    when (value) {
-                        SwipeToDismissBoxValue.StartToEnd -> {
-                            editingWaveIndex = waveIndex
-                            false
-                        }
-
-                        SwipeToDismissBoxValue.EndToStart -> {
-                            waveToDeleteIndex = index
-                            false
-                        }
-
-                        else -> false
-                    }
-                },
-                positionalThreshold = { totalDistance ->
-                    totalDistance * 0.5f
-                }
-            )
-
-            LaunchedEffect(waveToDeleteIndex, editingWaveIndex, refreshTrigger) {
-                if (waveToDeleteIndex == null && editingWaveIndex == null) {
-                    dismissState.reset()
-                }
-            }
-
-            SwipeToDismissBox(
-                state = dismissState,
-                backgroundContent = {
-                    val direction = dismissState.dismissDirection
-                    val color = when (direction) {
-                        SwipeToDismissBoxValue.StartToEnd -> Color(0xFF388E3C)
-                        SwipeToDismissBoxValue.EndToStart -> Color.Red
-                        else -> Color.Transparent
-                    }
-                    val alignment =
-                        if (direction == SwipeToDismissBoxValue.StartToEnd) Alignment.CenterStart else Alignment.CenterEnd
-                    val icon =
-                        if (direction == SwipeToDismissBoxValue.StartToEnd) Icons.Default.Settings else Icons.Default.Delete
-
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .background(color)
-                            .padding(horizontal = 24.dp),
-                        contentAlignment = alignment
+        if (waveManager.waves.isEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                    border = BorderStroke(1.dp, Color.LightGray)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Icon(icon, null, tint = Color.White)
+                        Text(
+                            text = "当前波次列表为空",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Gray
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "您可以添加第一个波次，或者删除这个空的容器。",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(Modifier.height(16.dp))
+
+                        Button(
+                            onClick = { showDeleteContainerDialog = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+                        ) {
+                            Icon(Icons.Default.DeleteForever, null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("删除空容器")
+                        }
                     }
                 }
-            ) {
-                WaveRowItem(
-                    waveIndex = waveIndex,
-                    isFlagWave = isFlagWave,
-                    rtidList = waveEvents,
-                    objectMap = objectMap,
-                    points = points,
-                    onEditEvent = onEditEvent,
-                    onInfoClick = { showExpectationDialog = waveIndex }
+            }
+        } else {
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFEEEEEE))
+                        .padding(vertical = 8.dp, horizontal = 16.dp)
+                ) {
+                    Text(
+                        "#",
+                        modifier = Modifier.width(36.dp),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                    Text(
+                        "内容及点数预览",
+                        modifier = Modifier.weight(1f),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                    Text(
+                        "Total: ${waveManager.waves.size}",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray,
+                        fontSize = 13.sp
+                    )
+                }
+            }
+
+
+            itemsIndexed(
+                items = waveManager.waves,
+                key = { index, _ -> "wave_row_${index}_${refreshTrigger}" }
+            ) { index, waveEvents ->
+                val waveIndex = index + 1
+                val isFlagWave = (waveIndex % interval == 0 || waveIndex == waveManager.waves.size)
+                val points = calculatePoints(waveIndex, isFlagWave)
+
+                val dismissState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = { value ->
+                        when (value) {
+                            SwipeToDismissBoxValue.StartToEnd -> {
+                                editingWaveIndex = waveIndex
+                                false
+                            }
+
+                            SwipeToDismissBoxValue.EndToStart -> {
+                                waveToDeleteIndex = index
+                                false
+                            }
+
+                            else -> false
+                        }
+                    },
+                    positionalThreshold = { totalDistance ->
+                        totalDistance * 0.5f
+                    }
                 )
+
+                LaunchedEffect(waveToDeleteIndex, editingWaveIndex, refreshTrigger) {
+                    if (waveToDeleteIndex == null && editingWaveIndex == null) {
+                        dismissState.reset()
+                    }
+                }
+
+                SwipeToDismissBox(
+                    state = dismissState,
+                    backgroundContent = {
+                        val direction = dismissState.dismissDirection
+                        val color = when (direction) {
+                            SwipeToDismissBoxValue.StartToEnd -> Color(0xFF388E3C)
+                            SwipeToDismissBoxValue.EndToStart -> Color.Red
+                            else -> Color.Transparent
+                        }
+                        val alignment =
+                            if (direction == SwipeToDismissBoxValue.StartToEnd) Alignment.CenterStart else Alignment.CenterEnd
+                        val icon =
+                            if (direction == SwipeToDismissBoxValue.StartToEnd) Icons.Default.Settings else Icons.Default.Delete
+
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .background(color)
+                                .padding(horizontal = 24.dp),
+                            contentAlignment = alignment
+                        ) {
+                            Icon(icon, null, tint = Color.White)
+                        }
+                    }
+                ) {
+                    WaveRowItem(
+                        waveIndex = waveIndex,
+                        isFlagWave = isFlagWave,
+                        rtidList = waveEvents,
+                        objectMap = objectMap,
+                        points = points,
+                        onEditEvent = onEditEvent,
+                        onInfoClick = { showExpectationDialog = waveIndex }
+                    )
+                }
             }
         }
 

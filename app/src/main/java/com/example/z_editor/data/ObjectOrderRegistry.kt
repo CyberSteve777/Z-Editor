@@ -26,7 +26,9 @@ object ObjectOrderRegistry {
         "InitialZombieProperties",
         "InitialGridItemProperties",
 
-
+        "ZombossBattleIntroProperties",
+        "ZombossBattleModuleProperties",
+        "VaseBreakerPresetProperties",
         "EvilDaveProperties",
 
         "StarChallengeModuleProperties",
@@ -46,8 +48,6 @@ object ObjectOrderRegistry {
         "StarChallengeSimultaneousPlantsProps",
         "StarChallengeUnfreezePlantsProps",
         "StarChallengeBlowZombieProps",
-
-        "VaseBreakerPresetProperties",
 
 
         "WaveManagerModuleProperties",

@@ -75,7 +75,7 @@ object ConflictRegistry {
     val rules = listOf(
         ModuleConflictRule(
             conflictingClasses = setOf("SeedBankProperties", "ConveyorSeedBankProperties"),
-            description = "种子库与传送带模块同时存在，需要确保种子库处于preset状态。"
+            description = "种子库与传送带模块的ui会相互遮挡，而且有可能闪退，需要确保种子库处于预选模式。"
         ),
         ModuleConflictRule(
             conflictingClasses = setOf("VaseBreakerPresetProperties", "StandardLevelIntroProperties"),
@@ -92,6 +92,14 @@ object ConflictRegistry {
         ModuleConflictRule(
             conflictingClasses = setOf("EvilDaveProperties", "ZombiesAteYourBrainsProperties"),
             description = "我是僵尸模式下不能添加僵尸胜利判定。"
+        ),
+        ModuleConflictRule(
+            conflictingClasses = setOf("ZombossBattleModuleProperties", "ZombiesDeadWinConProperties"),
+            description = "僵王战模式下使用死亡掉落会导致无法正常结算。"
+        ),
+        ModuleConflictRule(
+            conflictingClasses = setOf("ZombossBattleIntroProperties", "StandardLevelIntroProperties"),
+            description = "两种关卡开局转场不能同时出现，否则僵王血量无法正常显示。"
         )
     )
 }

@@ -1,5 +1,6 @@
 package com.example.z_editor.views.screens.select
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -32,9 +33,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -57,93 +58,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.data.repository.StageItem
+import com.example.z_editor.data.repository.StageRepository
+import com.example.z_editor.data.repository.StageType
 import com.example.z_editor.views.components.AssetImage
-
-// === 1. 数据结构 ===
-
-enum class StageType {
-    Main,
-    Extra,
-    Seasons,
-    Special
-}
-
-data class StageItem(
-    val alias: String,
-    val name: String,
-    val iconName: String?,
-    val type: StageType
-)
-
-private val STAGE_DATABASE = listOf(
-    StageItem("TutorialStage", "教程庭院", "Stage_Modern.png", StageType.Main),
-    StageItem("EgyptStage", "神秘埃及", "Stage_Egypt.png", StageType.Main),
-    StageItem("PirateStage", "海盗港湾", "Stage_Pirate.png", StageType.Main),
-    StageItem("WestStage", "狂野西部", "Stage_West.png", StageType.Main),
-    StageItem("KongfuStage", "功夫世界", "Stage_Kongfu.png", StageType.Main),
-    StageItem("FutureStage", "遥远未来", "Stage_Future.png", StageType.Main),
-    StageItem("DarkStage", "黑暗时代", "Stage_Dark.png", StageType.Main),
-    StageItem("BeachStage", "巨浪沙滩", "Stage_Beach.png", StageType.Main),
-    StageItem("IceageStage", "冰河世纪", "Stage_Iceage.png", StageType.Main),
-    StageItem("LostCityStage", "失落之城", "Stage_LostCity.png", StageType.Main),
-    StageItem("EightiesStage", "摇滚年代", "Stage_Eighties.png", StageType.Main),
-    StageItem("DinoStage", "恐龙危机", "Stage_Dino.png", StageType.Main),
-    StageItem("ModernStage", "现代世界", "Stage_Modern.png", StageType.Main),
-    StageItem("SteamStage", "蒸汽时代", "Stage_Steam.png", StageType.Main),
-    StageItem("RenaiStage", "复兴时代", "Stage_Renai.png", StageType.Main),
-    StageItem("HeianStage", "平安时代", "Stage_Heian.png", StageType.Main),
-    StageItem("DeepseaStage", "深海地图", "Stage_Atlantis.png", StageType.Main),
-    StageItem("DeepseaLandStage", "亚特兰蒂斯", "Stage_Atlantis.png", StageType.Main),
-
-    StageItem("FairyTaleStage", "童话森林", null, StageType.Extra),
-    StageItem("ZCorpStage", "Z公司", null, StageType.Extra),
-    StageItem("FrontLawnSpringStage", "复活节", null, StageType.Extra),
-    StageItem("ChildrenDayStage", "儿童节", null, StageType.Extra),
-    StageItem("HalloweenStage", "万圣节", null, StageType.Extra),
-    StageItem("UnchartedAnniversaryStage", "周年庆", null, StageType.Extra),
-    StageItem("VacationLostCityStage", "失落火山", null, StageType.Extra),
-    StageItem("UnchartedIceageStage", "冰河再临", null, StageType.Extra),
-    StageItem("RunningNormalStage", "地铁酷跑联动", null, StageType.Extra),
-    StageItem("UnchartedNeedforspeedStage", "极品飞车联动", null, StageType.Extra),
-    StageItem("UnchartedNo42UniverseStage", "平行宇宙秘境", null, StageType.Extra),
-    StageItem("JourneyToTheWestStage", "西游地图", null, StageType.Extra),
-    StageItem("RiftStage", "潘妮的追击", null, StageType.Extra),
-    StageItem("JoustStage", "超Z联赛", null, StageType.Extra),
-
-    StageItem("TwisterStage", "前院白天", null, StageType.Seasons),
-    StageItem("NightStage", "前院夜晚", null, StageType.Seasons),
-    StageItem("PoolDaylightStage", "泳池白天", null, StageType.Seasons),
-    StageItem("PoolNightStage", "泳池夜晚", null, StageType.Seasons),
-    StageItem("RoofStage", "屋顶白天", null, StageType.Seasons),
-    StageItem("RoofNightStage", "屋顶夜晚", null, StageType.Seasons),
-    StageItem("NewYearDaylightStage", "新春白天", null, StageType.Seasons),
-    StageItem("NewYearNightStage", "新春黑夜", null, StageType.Seasons),
-    StageItem("SpringDaylightStage", "春日白天", null, StageType.Seasons),
-    StageItem("SpringNightStage", "春日夜晚", null, StageType.Seasons),
-    StageItem("SummerDaylightStage", "仲夏白天", null, StageType.Seasons),
-    StageItem("SummerNightStage", "仲夏夜晚", null, StageType.Seasons),
-    StageItem("AutumnEarlyStage", "秋季初秋", null, StageType.Seasons),
-    StageItem("AutumnLateStage", "秋季晚秋", null, StageType.Seasons),
-    StageItem("SnowModernStage", "冬日白天", null, StageType.Seasons),
-    StageItem("SnowNightStage", "冬日夜晚", null, StageType.Seasons),
-    StageItem("SnowRoofStage", "冬日屋顶", null, StageType.Seasons),
-    StageItem("UnchartedArbordayStage", "踏雪寻春", null, StageType.Seasons),
-
-    StageItem("TheatreDarkStage", "黑暗剧院", null, StageType.Special),
-    StageItem("BeachSnakeStage", "鳄梨贪吃蛇", null, StageType.Special),
-    StageItem("IceageRiverCrossingStage", "渡渡鸟历险", null, StageType.Special),
-    StageItem("IceageEliminateStage", "冰河连连看", null, StageType.Special),
-    StageItem("SkycityFishingStage", "一炮当关", null, StageType.Special),
-    StageItem("SkycityPooyanStage", "壮植凌云", null, StageType.Special),
-    StageItem("AquariumStage", "水族馆", null, StageType.Special),
-    StageItem("BowlingStage", "保龄球", null, StageType.Special),
-    StageItem("WhackAMoleStage", "锤僵尸", null, StageType.Special),
-    StageItem("CardGameStage", "牌面纷争", null, StageType.Special),
-    StageItem("OverwhelmStage", "排山倒海", null, StageType.Special),
-    StageItem("OverwhelmSnowModernStage", "冬日排山倒海", null, StageType.Special),
-    StageItem("OverwhelmSnowRoofStage", "冬日排山倒海屋顶", null, StageType.Special),
-    StageItem("OverwhelmSnowNightStage", "冬日排山倒海夜晚", null, StageType.Special)
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,17 +69,24 @@ fun StageSelectionScreen(
     onStageSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
+    BackHandler(onBack = onBack)
     var searchQuery by remember { mutableStateOf("") }
     var selectedTab by remember { mutableIntStateOf(0) }
 
+    val tabs = listOf(
+        StageType.All to "全部地图",
+        StageType.Main to "主线世界",
+        StageType.Extra to "活动/秘境",
+        StageType.Seasons to "一代/季节",
+        StageType.Special to "小游戏"
+    )
+
     val displayStages = remember(searchQuery, selectedTab) {
-        val targetType =
-            if (selectedTab == 0) StageType.Main else if (selectedTab == 1) StageType.Extra else if (selectedTab == 2) StageType.Seasons else StageType.Special
-        STAGE_DATABASE.filter {
-            it.type == targetType &&
-                    (searchQuery.isBlank() ||
-                            it.name.contains(searchQuery, ignoreCase = true) ||
-                            it.alias.contains(searchQuery, ignoreCase = true))
+        val targetType = tabs[selectedTab].first
+        StageRepository.getByType(targetType).filter {
+            searchQuery.isBlank() ||
+                    it.name.contains(searchQuery, ignoreCase = true) ||
+                    it.alias.contains(searchQuery, ignoreCase = true)
         }
     }
 
@@ -179,7 +104,6 @@ fun StageSelectionScreen(
                         .statusBarsPadding()
                         .padding(bottom = 0.dp)
                 ) {
-                    // --- 顶部搜索栏区域 (仿照 PlantSelectionScreen) ---
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -195,11 +119,7 @@ fun StageSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text(
-                                    "搜索地图名称或代号",
-                                    fontSize = 16.sp,
-                                    color = Color.Gray
-                                )
+                                Text("搜索地图名称或代号", fontSize = 16.sp, color = Color.Gray)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -225,11 +145,11 @@ fun StageSelectionScreen(
                         )
                     }
 
-                    // --- Tab 分类 ---
-                    TabRow(
+                    ScrollableTabRow(
                         selectedTabIndex = selectedTab,
                         containerColor = Color.Transparent,
                         contentColor = Color.White,
+                        edgePadding = 16.dp,
                         indicator = { tabPositions ->
                             if (selectedTab < tabPositions.size) {
                                 SecondaryIndicator(
@@ -238,32 +158,23 @@ fun StageSelectionScreen(
                                     height = 3.dp
                                 )
                             }
-                        },
+                        }
                     ) {
-                        Tab(
-                            selected = selectedTab == 0,
-                            onClick = { selectedTab = 0 },
-                            text = { Text("主线世界", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
-                            unselectedContentColor = Color.White.copy(alpha = 0.7f)
-                        )
-                        Tab(
-                            selected = selectedTab == 1,
-                            onClick = { selectedTab = 1 },
-                            text = { Text("活动/秘境", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
-                            unselectedContentColor = Color.White.copy(alpha = 0.7f)
-                        )
-                        Tab(
-                            selected = selectedTab == 2,
-                            onClick = { selectedTab = 2 },
-                            text = { Text("一代/季节", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
-                            unselectedContentColor = Color.White.copy(alpha = 0.7f)
-                        )
-                        Tab(
-                            selected = selectedTab == 3,
-                            onClick = { selectedTab = 3 },
-                            text = { Text("小游戏", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
-                            unselectedContentColor = Color.White.copy(alpha = 0.7f)
-                        )
+                        tabs.forEachIndexed { index, (_, title) ->
+                            val isSelected = selectedTab == index
+                            Tab(
+                                selected = isSelected,
+                                onClick = { selectedTab = index },
+                                text = {
+                                    Text(
+                                        text = title,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        fontSize = 13.sp
+                                    )
+                                },
+                                unselectedContentColor = Color.White.copy(alpha = 0.7f)
+                            )
+                        }
                     }
                 }
             }
@@ -364,7 +275,6 @@ fun StageGridItem(
                 Spacer(Modifier.height(10.dp))
             }
 
-            // 文字区域
             Text(
                 text = stage.name,
                 fontWeight = FontWeight.Bold,

@@ -1,5 +1,6 @@
 package com.example.z_editor.views.screens.select
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -65,6 +66,7 @@ fun PlantSelectionScreen(
     onPlantSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
+    BackHandler(onBack = onBack)
     var searchQuery by remember { mutableStateOf("") }
     var selectedTag by remember { mutableStateOf(PlantTag.All) }
     var selectedCategory by remember { mutableStateOf(PlantCategory.Quality) }
@@ -109,15 +111,12 @@ fun PlantSelectionScreen(
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
                         }
                         Spacer(Modifier.width(16.dp))
+
                         TextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text(
-                                    "搜索植物名称或代码",
-                                    fontSize = 16.sp,
-                                    color = Color.Gray
-                                )
+                                Text("搜索植物名称或代码", fontSize = 16.sp, color = Color.Gray)
                             },
                             modifier = Modifier
                                 .weight(1f)

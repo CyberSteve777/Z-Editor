@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,10 +27,10 @@ import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LinearScale
-import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,12 +64,12 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.ConveyorBeltData
 import com.example.z_editor.data.DropDelayConditionData
 import com.example.z_editor.data.InitialPlantListData
-import com.example.z_editor.data.LevelDefinitionData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SpeedConditionData
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.PlantTag
+import com.example.z_editor.data.repository.ToolRepository
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -85,6 +86,7 @@ fun ConveyorSeedBankPropertiesEP(
     rootLevelFile: PvzLevelFile,
     onBack: () -> Unit,
     onRequestPlantSelection: ((String) -> Unit) -> Unit,
+    onRequestToolSelection: ((String) -> Unit) -> Unit,
     scrollState: ScrollState
 ) {
     val focusManager = LocalFocusManager.current
@@ -134,7 +136,7 @@ fun ConveyorSeedBankPropertiesEP(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF1976D2),
                     titleContentColor = Color.White,
-                    actionIconContentColor = Color.White // 确保图标是白色的
+                    actionIconContentColor = Color.White
                 )
             )
         }
@@ -143,7 +145,7 @@ fun ConveyorSeedBankPropertiesEP(
             EditorHelpDialog(
                 title = "传送带模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF1976D2) // 使用与TopBar一致的主题色
+                themeColor = Color(0xFF1976D2)
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -163,7 +165,7 @@ fun ConveyorSeedBankPropertiesEP(
                 )
                 HelpSection(
                     title = "进阶玩法",
-                    body = "当选择模式是preset时，将选卡模块放在传送带模块前面可以让传送带中文消耗阳光种植，放在后面可以让预选卡种植不消耗阳光。"
+                    body = "当选择模式是预选时，将选卡模块放在传送带模块前面可以让传送带中文消耗阳光种植，放在后面可以让预选卡种植不消耗阳光。"
                 )
             }
         }
@@ -183,7 +185,8 @@ fun ConveyorSeedBankPropertiesEP(
                         conveyorDataState.value.copy(initialPlantList = newList)
                     sync()
                 },
-                onRequestPlantSelection = onRequestPlantSelection
+                onRequestPlantSelection = onRequestPlantSelection,
+                onRequestToolSelection = onRequestToolSelection
             )
 
             // === 区域 2: 掉落延迟控制 ===
@@ -211,18 +214,24 @@ fun ConveyorSeedBankPropertiesEP(
                     sync()
                 },
                 onValueChange = { sync() },
-                contentRow = { item ->
+                contentRow = { item, triggerSave ->
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         NumberInputInt(
                             value = item.maxPacketsDelay,
-                            onValueChange = { item.maxPacketsDelay = it },
+                            onValueChange = {
+                                item.maxPacketsDelay = it
+                                triggerSave()
+                            },
                             label = "阈值",
                             modifier = Modifier.weight(1f),
                             color = Color(0xFF1976D2)
                         )
                         NumberInputInt(
                             value = item.delay,
-                            onValueChange = { item.delay = it },
+                            onValueChange = {
+                                item.delay = it
+                                triggerSave()
+                            },
                             label = "延迟",
                             modifier = Modifier.weight(1f),
                             color = Color(0xFF1976D2)
@@ -257,18 +266,24 @@ fun ConveyorSeedBankPropertiesEP(
                     sync()
                 },
                 onValueChange = { sync() },
-                contentRow = { item ->
+                contentRow = { item, triggerSave ->
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         NumberInputInt(
                             value = item.maxPacketsSpeed,
-                            onValueChange = { item.maxPacketsSpeed = it },
+                            onValueChange = {
+                                item.maxPacketsSpeed = it
+                                triggerSave()
+                            },
                             label = "阈值",
                             modifier = Modifier.weight(1f),
                             color = Color(0xFF1976D2)
                         )
                         NumberInputInt(
                             value = item.speed,
-                            onValueChange = { item.speed = it },
+                            onValueChange = {
+                                item.speed = it
+                                triggerSave()
+                            },
                             label = "速度",
                             modifier = Modifier.weight(1f),
                             color = Color(0xFF1976D2)
@@ -310,18 +325,19 @@ private fun createDefaultConveyorData(): ConveyorBeltData {
 fun ConveyorPlantListEditor(
     items: MutableList<InitialPlantListData>,
     onListChanged: (MutableList<InitialPlantListData>) -> Unit,
-    onRequestPlantSelection: ((String) -> Unit) -> Unit
+    onRequestPlantSelection: ((String) -> Unit) -> Unit,
+    onRequestToolSelection: ((String) -> Unit) -> Unit
 ) {
     var showEditDialog by remember { mutableStateOf<InitialPlantListData?>(null) }
-
     val listKey = remember { mutableIntStateOf(0) }
+
 
     if (showEditDialog != null) {
         PlantDetailDialog(
             data = showEditDialog!!,
             onDismiss = { showEditDialog = null },
             onConfirm = {
-                listKey.intValue++ // 强制列表重组
+                listKey.intValue++
                 onListChanged(items)
                 showEditDialog = null
             }
@@ -337,21 +353,56 @@ fun ConveyorPlantListEditor(
                 Icon(Icons.Default.LinearScale, null, tint = Color(0xFF1976D2))
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    "传送带植物池",
+                    "传送带卡片池",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     color = Color(0xFF1976D2)
                 )
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = {
-                    onRequestPlantSelection { selectedId ->
-                        val newPlant = InitialPlantListData(plantType = selectedId)
-                        items.add(newPlant)
-                        listKey.intValue++
-                        onListChanged(items)
-                    }
-                }) {
-                    Icon(Icons.Default.Add, "添加", tint = Color(0xFF1976D2))
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Button(
+                    onClick = {
+                        onRequestPlantSelection { selectedId ->
+                            val newPlant = InitialPlantListData(plantType = selectedId)
+                            items.add(newPlant)
+                            listKey.intValue++
+                            onListChanged(items)
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE3F2FD),
+                        contentColor = Color(0xFF1976D2)
+                    ),
+                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 8.dp)
+                ) {
+                    Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("添加植物", fontSize = 13.sp)
+                }
+
+                Button(
+                    onClick = {
+                        onRequestToolSelection { selectedId ->
+                            val newTool = InitialPlantListData(plantType = selectedId)
+                            items.add(newTool)
+                            listKey.intValue++
+                            onListChanged(items)
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE3F2FD),
+                        contentColor = Color(0xFF1976D2)
+                    ),
+                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 8.dp)
+                ) {
+                    Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("添加工具", fontSize = 13.sp)
                 }
             }
 
@@ -359,7 +410,7 @@ fun ConveyorPlantListEditor(
 
             if (items.isEmpty()) {
                 Text(
-                    "暂无植物，请添加",
+                    "暂无卡片，请添加",
                     color = Color.Gray,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(8.dp)
@@ -390,6 +441,23 @@ fun PlantRow(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val toolInfo = remember(plant.plantType) { ToolRepository.get(plant.plantType) }
+    val isTool = toolInfo != null
+
+    val plantInfo = remember(plant.plantType) {
+        if (!isTool) PlantRepository.search(plant.plantType, PlantTag.All).firstOrNull() else null
+    }
+
+    val displayName = toolInfo?.name ?: PlantRepository.getName(plant.plantType)
+
+    val iconPath = if (isTool) {
+        if (!toolInfo.icon.isNullOrEmpty()) "images/tools/${toolInfo.icon}" else null
+    } else {
+        if (plantInfo?.icon != null) "images/plants/${plantInfo.icon}" else null
+    }
+
+    val themeColor = Color.Gray
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -399,17 +467,12 @@ fun PlantRow(
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val info = remember(plant.plantType) {
-            PlantRepository.search(plant.plantType, PlantTag.All).firstOrNull()
-        }
-        val displayName = PlantRepository.getName(plant.plantType)
-
         val placeholderContent = @Composable {
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFBDBDBD), CircleShape)
-                    .border(1.dp, Color.White, CircleShape),
+                    .background(Color(0xFFBDBDBD), RoundedCornerShape(8.dp))
+                    .border(1.dp, Color.White, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -420,30 +483,34 @@ fun PlantRow(
                 )
             }
         }
+
         AssetImage(
-            path = if (info?.icon != null) "images/plants/${info.icon}" else null,
+            path = iconPath,
             contentDescription = displayName,
             modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color.White)
-                .border(1.dp, Color.LightGray, CircleShape),
+                .size(height = if(isTool) 36.dp else 44.dp, width = 44.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.LightGray)
+                .border(1.dp, themeColor.copy(alpha = 0.5f), RoundedCornerShape(8.dp)),
             filterQuality = FilterQuality.Medium,
             placeholder = placeholderContent
         )
-        Spacer(Modifier.width(8.dp))
+
+        Spacer(Modifier.width(12.dp))
+
         Column(modifier = Modifier.weight(1f)) {
             Text(displayName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val levelText = if (plant.iLevel == null) "随账号" else "${plant.iLevel}"
-                Text(
-                    "权重: ${plant.weight}  等级: $levelText",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-                Spacer(Modifier.width(8.dp))
+                Text("权重: ${plant.weight}", fontSize = 12.sp, color = Color.Gray)
+                if (!isTool) {
+                    Spacer(Modifier.width(8.dp))
+                    Text("等级: $levelText", fontSize = 12.sp, color = Color.Gray)
+                }
             }
         }
+
         IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
             Icon(Icons.Default.Delete, null, tint = Color.Gray, modifier = Modifier.size(18.dp))
         }
@@ -459,9 +526,11 @@ fun PlantDetailDialog(
     onDismiss: () -> Unit,
     onConfirm: (InitialPlantListData) -> Unit
 ) {
-    // 如果是编辑模式，直接使用原数据ID；如果是新建，使用临时状态
-    var tempType by remember { mutableStateOf(data.plantType) }
+    val toolInfo = remember(data.plantType) { ToolRepository.get(data.plantType) }
+    val isTool = toolInfo != null
+    val displayName = toolInfo?.name ?: PlantRepository.getName(data.plantType)
 
+    var tempType by remember { mutableStateOf(data.plantType) }
     var tempWeight by remember { mutableIntStateOf(data.weight) }
     var tempLevel by remember { mutableIntStateOf(data.iLevel ?: 0) }
 
@@ -475,7 +544,7 @@ fun PlantDetailDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "编辑: ${PlantRepository.getName(data.plantType)}",
+                text = "编辑: $displayName",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
@@ -506,7 +575,7 @@ fun PlantDetailDialog(
                     )
                 }
                 Text(
-                    "等级输入 0 表示等级跟随玩家账号",
+                    text = if (isTool) "工具卡默认固定等级无需修改" else "等级输入 0 表示等级跟随玩家账号",
                     fontSize = 12.sp,
                     color = Color.Gray,
                     modifier = Modifier.padding(start = 4.dp)
@@ -612,8 +681,8 @@ fun <T> ConveyorConditionEditor(
     extractMaxPackets: (T) -> Int,
     onAdd: () -> Unit,
     onRemove: (Int) -> Unit,
-    onValueChange: () -> Unit,
-    contentRow: @Composable (T) -> Unit
+    onValueChange: () -> Unit, // 这个回调需要在数值改变时显式调用
+    contentRow: @Composable (T, () -> Unit) -> Unit // 增加第二个参数：onChangeTrigger
 ) {
     val refreshKey = remember { mutableIntStateOf(0) }
 
@@ -666,7 +735,8 @@ fun <T> ConveyorConditionEditor(
                         modifier = Modifier.padding(vertical = 4.dp)
                     ) {
                         Box(modifier = Modifier.weight(1f)) {
-                            contentRow(item)
+                            // [关键修改] 将 onValueChange 传递给 contentRow
+                            contentRow(item, onValueChange)
                         }
 
                         if (isBaseCondition) {
@@ -695,7 +765,6 @@ fun <T> ConveyorConditionEditor(
                             }
                         }
                     }
-                    LaunchedEffect(item) { onValueChange() }
                 }
             }
         }

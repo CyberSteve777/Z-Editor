@@ -1,5 +1,6 @@
 package com.example.z_editor.views.screens.select
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -65,6 +66,7 @@ fun ZombieSelectionScreen(
     onZombieSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
+    BackHandler(onBack = onBack)
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(ZombieCategory.Main) }
     var selectedTag by remember { mutableStateOf(ZombieTag.All) }

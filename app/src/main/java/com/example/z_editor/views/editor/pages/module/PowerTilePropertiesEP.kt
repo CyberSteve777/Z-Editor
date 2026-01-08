@@ -73,10 +73,10 @@ enum class PowerTileGroup(
     val color: Color,
     val imageName: String
 ) {
-    Alpha("alpha", "Alpha (绿)", Color(0xFF41FF4B), "alpha_tile.webp"),
-    Beta("beta", "Beta (红)", Color(0xFFFF493A), "beta_tile.webp"),
-    Gamma("gamma", "Gamma (蓝)", Color(0xFF3CFFFF), "gamma_tile.webp"),
-    Delta("delta", "Delta (黄)", Color(0xFFFFE837), "delta_tile.webp")
+    Alpha("alpha", "Alpha (绿)", Color(0xFF41FF4B), "tool_powertile_alpha.png"),
+    Beta("beta", "Beta (红)", Color(0xFFFF493A), "tool_powertile_beta.png"),
+    Gamma("gamma", "Gamma (蓝)", Color(0xFF3CFFFF), "tool_powertile_gamma.png"),
+    Delta("delta", "Delta (黄)", Color(0xFFFFE837), "tool_powertile_delta.png")
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -331,7 +331,7 @@ fun PowerTilePropertiesEP(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             AssetImage(
-                                                path = "images/others/${groupConfig.imageName}",
+                                                path = "images/tools/${groupConfig.imageName}",
                                                 contentDescription = groupConfig.label,
                                                 modifier = Modifier.fillMaxSize()
                                             )
@@ -380,7 +380,7 @@ fun PowerTilePropertiesEP(
                                 contentAlignment = Alignment.Center
                             ) {
                                 AssetImage(
-                                    path = "images/others/${group.imageName}",
+                                    path = "images/tools/${group.imageName}",
                                     contentDescription = group.label,
                                     modifier = Modifier.fillMaxSize()
                                 )

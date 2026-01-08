@@ -143,23 +143,23 @@ fun SeedBankPropertiesEP(
             ) {
                 HelpSection(
                     title = "简要介绍",
-                    body = "种子库可以允许玩家选择已有的植物，在庭院模块下通过定义全局阶级可以实现全植物可用。"
-                )
-                HelpSection(
-                    title = "预选植物",
-                    body = "选择方式为自选时，开始游戏前会让玩家在种子库补齐植物到卡槽总数。选择方式为预选时，玩家会带着预选设置页的植物直接开始游戏。"
+                    body = "种子库可以允许玩家选择已有的植物，在庭院模块下可以定义全局阶级且实现全植物可用。"
                 )
                 HelpSection(
                     title = "黑白名单",
                     body = "白名单为空时不作限制，若白名单有植物则只能从白名单内选择。黑名单为额外禁用植物，优先级高于白名单。"
                 )
                 HelpSection(
-                    title = "进阶玩法",
-                    body = "当选择模式是preset时，将选卡模块放在传送带模块前面可以让传送带中文消耗阳光种植，放在后面可以让预选卡种植不消耗阳光。"
+                    title = "我是僵尸模式",
+                    body = "启用我是僵尸模式后，需要预设关卡的可用僵尸。此时选卡模式强制为预选。如果关卡中同时存在植物卡槽模式和僵尸卡槽模式，需锁定至相同阶级。"
                 )
                 HelpSection(
-                    title = "我是僵尸模式",
-                    body = "启用我是僵尸模式后，种子库将转变为僵尸选择器。此时选卡模式强制为 Preset。如果关卡中同时存在植物卡槽模式和僵尸卡槽模式，需锁定至相同阶级。"
+                    title = "卡槽占位",
+                    body = "非法的代号在卡槽中会空缺。在植物模式下僵尸代号非法，反之亦然，可以用此特点在关卡里拼接两种模式的卡槽。例如植物卡槽预选5种，那么僵尸卡槽则需把前5个位置用非法代号占位。"
+                )
+                HelpSection(
+                    title = "进阶玩法",
+                    body = "当选择模式是预选时，将选卡模块放在传送带模块前面可以让传送带中文消耗阳光种植，放在后面可以让预选卡种植不消耗阳光。"
                 )
             }
         }
@@ -178,7 +178,7 @@ fun SeedBankPropertiesEP(
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -190,7 +190,11 @@ fun SeedBankPropertiesEP(
                         Text("基础规则", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
 
+                    Spacer(Modifier.height(8.dp))
+
                     HorizontalDivider(thickness = 0.5.dp)
+
+                    Spacer(Modifier.height(8.dp))
 
                     Text("选卡模式", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -205,7 +209,7 @@ fun SeedBankPropertiesEP(
                             }
                         )
                         SelectionMethodChip(
-                            label = "锁定 (Preset)",
+                            label = "预选 (Preset)",
                             selected = seedBankDataState.value.selectionMethod == "preset" || isZombieMode,
                             enabled = !isZombieMode,
                             onClick = {
@@ -215,6 +219,14 @@ fun SeedBankPropertiesEP(
                             }
                         )
                     }
+
+                    Text(
+                        "选择模式为预选时，无论预选卡片数量多少都会立即进入游戏",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+
+                    Spacer(Modifier.height(12.dp))
 
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -247,6 +259,11 @@ fun SeedBankPropertiesEP(
                             label = "卡槽数量 (0-9)"
                         )
                     }
+                    Text(
+                        "庭院模式下，对卡槽数量的更改无效，自选模式会锁定8槽",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
                 }
             }
 

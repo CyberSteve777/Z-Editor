@@ -1,0 +1,32 @@
+package com.example.z_editor.data.repository
+
+data class ToolCardInfo(
+    val id: String,
+    val name: String,
+    val icon: String? = null
+)
+
+object ToolRepository {
+    private val TOOL_CARDS = listOf(
+        ToolCardInfo("tool_powertile_alpha", "绿色瓷砖", "tool_powertile_alpha.png"),
+        ToolCardInfo("tool_powertile_beta", "红色瓷砖", "tool_powertile_beta.png"),
+        ToolCardInfo("tool_powertile_gamma", "青色瓷砖", "tool_powertile_gamma.png"),
+        ToolCardInfo("tool_powertile_delta", "黄色瓷砖", "tool_powertile_delta.png"),
+        ToolCardInfo("tool_projectile_bowlingbulb1", "保龄泡泡小青球", "tool_projectile_bowlingbulb1.png"),
+        ToolCardInfo("tool_projectile_bowlingbulb2", "保龄泡泡中蓝球", "tool_projectile_bowlingbulb2.png"),
+        ToolCardInfo("tool_projectile_bowlingbulb3", "保龄泡泡大黄球", "tool_projectile_bowlingbulb3.png"),
+        ToolCardInfo("tool_projectile_bowlingbulb_explode", "保龄泡泡大招球", "tool_projectile_bowlingbulb_explode.png"),
+        ToolCardInfo("tool_projectile_wallnut", "坚果保龄球", "tool_projectile_wallnut.png"),
+        ToolCardInfo("tool_projectile_wallnut_big", "大坚果保龄球", "tool_projectile_wallnut_big.png"),
+        ToolCardInfo("tool_projectile_wallnut_explode", "爆炸坚果保龄球", "tool_projectile_wallnut_explode.png"),
+        ToolCardInfo("tool_projectile_wallnut_primeval", "原始坚果保龄球", "tool_projectile_wallnut_primeval.png"),
+        ToolCardInfo("tool_projectile_jackfruit", "菠萝蜜保龄球", "tool_projectile_jackfruit.png")
+    )
+
+
+    fun get(id: String): ToolCardInfo? {
+        return TOOL_CARDS.find { it.id == id }
+    }
+
+    fun getAll(): List<ToolCardInfo> = TOOL_CARDS
+}

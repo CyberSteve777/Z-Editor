@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.EmojiPeople
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.FastForward
+import androidx.compose.material.icons.filled.Grass
 import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
@@ -63,6 +64,8 @@ sealed class EditorSubScreen {
     object StageSelection : EditorSubScreen()
     object GridItemSelection : EditorSubScreen()
     object ChallengeSelection : EditorSubScreen()
+    object ToolSelection : EditorSubScreen()
+    object ZombossSelection : EditorSubScreen()
     data class EventSelection(val waveIndex: Int) : EditorSubScreen()
 
     // 具体模块页
@@ -593,7 +596,6 @@ object ModuleRegistry {
             description = "预设传送带植物种类和权重",
             icon = Icons.Default.LinearScale,
             isCore = true,
-            allowMultiple = true,
             category = ModuleCategory.Base,
             defaultAlias = "ConveyorBelt",
             initialDataFactory = { ConveyorBeltData() },
@@ -634,15 +636,26 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.LastStandMinigame(rtid) }
         ),
         "BowlingMinigameProperties" to ModuleMetadata(
-            title = "旧版保龄球",
+            title = "沙滩保龄球",
             description = "设置禁种线以及禁用铲子",
             icon = Icons.Default.SportsEsports,
             isCore = true,
             category = ModuleCategory.Mode,
-            defaultAlias = "Bowling",
+            defaultAlias = "BowlingBulbMinigame",
             defaultSource = "CurrentLevel",
             initialDataFactory = { BowlingMinigamePropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.BowlingMinigameModule(rtid) }
+        ),
+        "NewBowlingMinigameProperties" to ModuleMetadata(
+            title = "坚果保龄球",
+            description = "在固定位置绘制保龄球警戒线",
+            icon = Icons.Default.SportsEsports,
+            isCore = false,
+            category = ModuleCategory.Mode,
+            defaultAlias = "NewBowlingBulbMinigame",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { NewBowlingMinigamePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "VaseBreakerPresetProperties" to ModuleMetadata(
             title = "罐子布局",
@@ -668,7 +681,7 @@ object ModuleRegistry {
         ),
         "VaseBreakerFlowModuleProperties" to ModuleMetadata(
             title = "砸罐子流程",
-            description = "控制砸罐子的游戏流程与胜负判定逻辑",
+            description = "控制砸罐子开始前罐子掉下来的动画",
             icon = Icons.AutoMirrored.Filled.NextPlan,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -688,6 +701,28 @@ object ModuleRegistry {
             initialDataFactory = { EvilDavePropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
+        "ZombossBattleModuleProperties" to ModuleMetadata(
+            title = "僵王战模式",
+            description = "配置僵王战模式参数以及僵王种类",
+            icon = Icons.Default.Dangerous,
+            isCore = false,
+            category = ModuleCategory.Mode,
+            defaultAlias = "ZombossBattle",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { ZombossBattleModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+        "ZombossBattleIntroProperties" to ModuleMetadata(
+            title = "僵王转场",
+            description = "控制Boss战前的过场动画",
+            icon = Icons.Default.MovieFilter,
+            isCore = false,
+            category = ModuleCategory.Mode,
+            defaultAlias = "ZombossBattleIntro",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { ZombossBattleIntroData() },
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
         "SunBombChallengeProperties" to ModuleMetadata(
             title = "太阳炸弹",
             description = "配置掉落的太阳爆炸范围和伤害",
@@ -698,6 +733,17 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { SunBombChallengeData() },
             navigationFactory = { rtid -> EditorSubScreen.SunBombChallenge(rtid) }
+        ),
+        "PVZ1OverwhelmModuleProperties" to ModuleMetadata(
+            title = "排山倒海",
+            description = "排山倒海小游戏，需配合传送带",
+            icon = Icons.Default.Grass,
+            isCore = false,
+            category = ModuleCategory.Mode,
+            defaultAlias = "PVZ1Overwhelm",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { PVZ1OverwhelmModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "IncreasedCostModuleProperties" to ModuleMetadata(
             title = "通货膨胀",

@@ -8,6 +8,7 @@ data class GridItemInfo(
 )
 
 enum class GridItemCategory(val label: String) {
+    All("全部物品"),
     Scene("场景布置"),
     Trap("陷阱强化")
 }
@@ -36,7 +37,7 @@ object GridItemRepository {
 
         GridItemInfo("goldtile", "黄金地砖", GridItemCategory.Scene, "goldtile.png"),
         GridItemInfo("fake_mold", "霉菌地面", GridItemCategory.Scene, "fake_mold.png"),
-        GridItemInfo("lilipad", "莲叶", GridItemCategory.Scene, "lilypad.jpg"),
+        GridItemInfo("lilypad", "莲叶", GridItemCategory.Scene, "lilypad.jpg"),
 
         GridItemInfo("zombiepotion_speed", "疾速药水", GridItemCategory.Trap, "zombiepotion_speed.png"),
         GridItemInfo("zombiepotion_toughness", "坚韧药水", GridItemCategory.Trap, "zombiepotion_toughness.png"),
@@ -61,7 +62,11 @@ object GridItemRepository {
 
     // === 业务方法 ===
     fun getByCategory(category: GridItemCategory): List<GridItemInfo> {
-        return allItems.filter { it.category == category }
+        return if (category == GridItemCategory.All) {
+            allItems
+        } else {
+            allItems.filter { it.category == category }
+        }
     }
 
     fun getName(typeName: String): String {

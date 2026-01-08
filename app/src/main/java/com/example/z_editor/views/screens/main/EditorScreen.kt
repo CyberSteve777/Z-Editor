@@ -1,5 +1,6 @@
 package com.example.z_editor.views.screens.main
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -27,9 +29,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -43,8 +48,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.EditorSubScreen
 import com.example.z_editor.data.LevelParser
@@ -67,6 +74,7 @@ import com.google.gson.Gson
 
 private val gson = Gson()
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorScreen(fileName: String, onBack: () -> Unit) {
@@ -90,13 +98,15 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
     val lazyListStates = remember { mutableMapOf<String, LazyListState>() }
     val scrollStates = remember { mutableMapOf<String, ScrollState>() }
 
-    // [修复2] ScrollState 需要传入初始值 0
     fun getLazyState(key: String) = lazyListStates.getOrPut(key) { LazyListState() }
     fun getScrollState(key: String) = scrollStates.getOrPut(key) { ScrollState(0) }
 
     // 选择器状态
     var previousSubScreen by remember { mutableStateOf<EditorSubScreen>(EditorSubScreen.None) }
     var genericSelectionCallback by remember { mutableStateOf<((Any) -> Unit)?>(null) }
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
 
     // ======================== 核心逻辑 ========================
 
@@ -139,12 +149,14 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
             if(!existingClasses.contains("EvilDaveProperties")) missingList.add("ZombiesAteYourBrainsProperties")
         }
         if (!existingClasses.contains("ZombiesDeadWinConProperties")) {
-            if(!existingClasses.contains("EvilDaveProperties")) missingList.add("ZombiesDeadWinConProperties")
+            if(!existingClasses.contains("EvilDaveProperties") &&
+                !existingClasses.contains("ZombossBattleModuleProperties")) missingList.add("ZombiesDeadWinConProperties")
         }
         if (!existingClasses.contains("CustomLevelModuleProperties")) missingList.add("CustomLevelModuleProperties")
         if (!existingClasses.contains("StandardLevelIntroProperties")) {
             if(!existingClasses.contains("VaseBreakerPresetProperties") &&
-                !existingClasses.contains("LastStandMinigameProperties")) missingList.add("StandardLevelIntroProperties")
+                !existingClasses.contains("LastStandMinigameProperties") &&
+                !existingClasses.contains("ZombossBattleIntroProperties")) missingList.add("StandardLevelIntroProperties")
         }
         if (existingClasses.contains("VaseBreakerPresetProperties")) {
             if (!existingClasses.contains("VaseBreakerArcadeModuleProperties")) missingList.add("VaseBreakerArcadeModuleProperties")
@@ -153,6 +165,9 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
         if (existingClasses.contains("EvilDaveProperties")) {
             if (!existingClasses.contains("InitialPlantEntryProperties")) missingList.add("InitialPlantEntryProperties")
             if (!existingClasses.contains("SeedBankProperties")) missingList.add("SeedBankProperties")
+        }
+        if (existingClasses.contains("ZombossBattleModuleProperties")) {
+            if (!existingClasses.contains("ZombossBattleIntroProperties")) missingList.add("ZombossBattleIntroProperties")
         }
 
         missingModules = missingList.mapNotNull { objClass ->
@@ -464,6 +479,34 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                 }
             },
 
+            onDeleteWaveContainer = {
+                if (rootLevelFile != null) {
+                    val removed = rootLevelFile!!.objects.removeAll { it.objClass == "WaveManagerProperties" }
+                    val modObj = rootLevelFile!!.objects.find { it.objClass == "WaveManagerModuleProperties" }
+                    if (modObj != null) {
+                        try {
+                            val modData = gson.fromJson(modObj.objData, WaveManagerModuleData::class.java)
+                            modData.waveManagerProps = ""
+                            modObj.objData = gson.toJsonTree(modData)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    if (removed) {
+                        Toast.makeText(context, "已删除波次容器", Toast.LENGTH_SHORT).show()
+                        val newObjectMap = rootLevelFile!!.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+                        parsedData = parsedData!!.copy(
+                            objectMap = newObjectMap,
+                            waveManager = null,
+                            waveModule = modObj?.let { gson.fromJson(it.objData, WaveManagerModuleData::class.java) }
+                                ?: parsedData!!.waveModule
+                        )
+                        refreshTrigger++
+                    }
+                }
+            },
+
             onStageSelected = { newRtid ->
                 parsedData?.levelDef?.stageModule = newRtid
                 currentSubScreen = EditorSubScreen.BasicInfo
@@ -588,6 +631,16 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                 genericSelectionCallback = null
                 currentSubScreen = previousSubScreen
                 refreshTrigger++
+            },
+            onLaunchToolSelector = { cb ->
+                previousSubScreen = currentSubScreen
+                genericSelectionCallback = { id -> cb(id as String) }
+                currentSubScreen = EditorSubScreen.ToolSelection
+            },
+            onLaunchZombossSelector = { cb ->
+                previousSubScreen = currentSubScreen
+                genericSelectionCallback = { id -> cb(id as String) }
+                currentSubScreen = EditorSubScreen.ZombossSelection
             }
         )
     }
@@ -631,13 +684,13 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                 }
                 if (targetState == EditorSubScreen.PlantSelection || targetState == EditorSubScreen.ZombieSelection
                     || targetState == EditorSubScreen.StageSelection || targetState == EditorSubScreen.GridItemSelection
-                    || targetState == EditorSubScreen.ChallengeSelection
+                    || targetState == EditorSubScreen.ChallengeSelection || targetState == EditorSubScreen.ToolSelection
                 ) {
                     (slideInHorizontally { width -> width } + fadeIn()).togetherWith(
                         slideOutHorizontally { width -> -width / 3 } + fadeOut())
                 } else if (initialState == EditorSubScreen.PlantSelection || initialState == EditorSubScreen.ZombieSelection
                     || initialState == EditorSubScreen.StageSelection || initialState == EditorSubScreen.GridItemSelection
-                    || initialState == EditorSubScreen.ChallengeSelection
+                    || initialState == EditorSubScreen.ChallengeSelection || initialState == EditorSubScreen.ToolSelection
                 ) {
                     (slideInHorizontally { width -> -width / 3 } + fadeIn()).togetherWith(
                         slideOutHorizontally { width -> width } + fadeOut())
@@ -700,9 +753,26 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                             .fillMaxSize()
                     ) {
                         if (availableTabs.size > 1) {
-                            TabRow(selectedTabIndex = selectedTabIndex) {
+                            ScrollableTabRow(
+                                selectedTabIndex = selectedTabIndex,
+                                containerColor = Color.Transparent,
+                                contentColor = Color(0xFF1976D2),
+                                edgePadding = 0.dp,
+                                indicator = { tabPositions ->
+                                    val index = selectedTabIndex
+                                    if (index < tabPositions.size) {
+                                        SecondaryIndicator(
+                                            Modifier.tabIndicatorOffset(tabPositions[index]),
+                                            color = Color(0xFF1976D2),
+                                            height = 3.dp
+                                        )
+                                    }
+                                },
+                            ) {
                                 availableTabs.forEachIndexed { index, tabType ->
                                     Tab(
+                                        modifier = if (availableTabs.size == 2) Modifier.width(screenWidth / 2)
+                                        else Modifier.width(screenWidth / 3),
                                         selected = selectedTabIndex == index,
                                         onClick = { selectedTabIndex = index },
                                         text = { Text(tabType.title) },

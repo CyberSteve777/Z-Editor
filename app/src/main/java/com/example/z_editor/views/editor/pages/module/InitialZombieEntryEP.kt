@@ -553,10 +553,10 @@ fun InitialZombieCard(
                     path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(8.dp))
                         .background(Color(0xFFEFEBE9))
-                        .border(0.5.dp, Color.LightGray, CircleShape),
+                        .border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp)),
                     placeholder = {
                         Box(
                             Modifier

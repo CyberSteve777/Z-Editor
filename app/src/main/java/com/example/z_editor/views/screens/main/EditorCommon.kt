@@ -1,6 +1,7 @@
 package com.example.z_editor.views.screens.main
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dangerous
 import androidx.compose.material.icons.filled.EmojiPeople
 import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Settings
@@ -21,7 +22,7 @@ enum class EditorTabType(val title: String, val icon: ImageVector) {
     Timeline("波次时间轴", Icons.Default.Timeline),
     IZombie("我是僵尸", Icons.Default.EmojiPeople),
     VaseBreaker("罐子布局", Icons.Default.Grid4x4),
-    BossFight("僵王属性", Icons.Default.ShieldMoon),
+    BossFight("僵王属性", Icons.Default.Dangerous),
 }
 
 /**
@@ -32,7 +33,6 @@ data class EditorActions(
     val navigateTo: (EditorSubScreen) -> Unit,
     val navigateBack: () -> Unit,
 
-    // 业务逻辑回调
     val onRemoveModule: (String) -> Unit,
     val onAddModule: (ModuleMetadata) -> Unit,
     val onAddEvent: (EventMetadata, Int) -> Unit,
@@ -40,18 +40,18 @@ data class EditorActions(
     val onDeleteEventReference: (String) -> Unit,
     val onSaveWaveManager: () -> Unit,
     val onCreateWaveContainer: () -> Unit,
+    val onDeleteWaveContainer: () -> Unit,
     val onStageSelected: (String) -> Unit,
 
-    // 这里的参数必须明确指定完整包名或确保 import 正确
     val onAddChallenge: (ChallengeTypeInfo) -> Unit,
 
-    // 选择器启动回调
     val onLaunchPlantSelector: ((String) -> Unit) -> Unit,
     val onLaunchZombieSelector: ((String) -> Unit) -> Unit,
     val onLaunchGridItemSelector: ((String) -> Unit) -> Unit,
     val onLaunchChallengeSelector: ((ChallengeTypeInfo) -> Unit) -> Unit,
+    val onLaunchToolSelector: ((String) -> Unit) -> Unit,
+    val onLaunchZombossSelector: ((String) -> Unit) -> Unit,
 
-    // 选择器结果处理
     val onSelectorResult: (Any) -> Unit,
     val onSelectorCancel: () -> Unit,
 

@@ -67,13 +67,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.WaveActionData
+import com.example.z_editor.data.ZombieSpawnData
+import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.data.ZombieSpawnData
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.LaneRow
@@ -249,7 +249,13 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
             TopAppBar(
                 title = {
                     Column {
-                        Text("编辑 $currentAlias", fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(
+                            "编辑 $currentAlias",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                         Text("事件类型：自然出怪", fontSize = 14.sp, fontWeight = FontWeight.Normal)
                     }
                 },
@@ -309,7 +315,8 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                     "jam_8bit" to "街机 (8-Bit)"
                 )
                 val currentJamCode = actionDataState.value.notificationEvents?.firstOrNull()
-                val currentJamLabel = jamOptions.find { it.first == currentJamCode }?.second ?: "默认/无 (None)"
+                val currentJamLabel =
+                    jamOptions.find { it.first == currentJamCode }?.second ?: "默认/无 (None)"
                 var jamExpanded by remember { mutableStateOf(false) }
 
                 Card(
@@ -358,7 +365,8 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                                     DropdownMenuItem(
                                         text = { Text(label) },
                                         onClick = {
-                                            val newList = if (code == null) null else mutableListOf(code)
+                                            val newList =
+                                                if (code == null) null else mutableListOf(code)
                                             sync(actionDataState.value.copy(notificationEvents = newList))
                                             jamExpanded = false
                                         },
@@ -494,13 +502,12 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
             }
 
             item {
-                // 获取当前掉落植物列表
+                val count = actionDataState.value.additionalPlantFood ?: 0
                 val spawnPlantList = actionDataState.value.spawnPlantName ?: mutableListOf()
-                // 判断逻辑：列表有内容则为"掉落植物"，无内容则为"掉落能量豆"
-                val isDroppingPlants = spawnPlantList.isNotEmpty()
+                val isDroppingPlants = (spawnPlantList.size == count && spawnPlantList.isNotEmpty())
                 val cardTitle = if (isDroppingPlants) "掉落物配置 (植物)" else "掉落物配置 (能量豆)"
                 val cardColor =
-                    if (isDroppingPlants) Color(0xFFE65100) else Color(0xFF2E7D32) // 橙色区分植物掉落
+                    if (isDroppingPlants) Color(0xFFE65100) else Color(0xFF2E7D32)
 
                 Card(
                     modifier = Modifier
@@ -510,7 +517,6 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        // 标题栏
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 Icons.Default.Eco,
@@ -576,10 +582,8 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                                 onClick = {
                                     onRequestPlantSelection { selectedId ->
                                         val newList = spawnPlantList.toMutableList()
-                                        if (!newList.contains(selectedId)) {
-                                            newList.add(selectedId)
-                                            sync(actionDataState.value.copy(spawnPlantName = newList))
-                                        }
+                                        newList.add(selectedId)
+                                        sync(actionDataState.value.copy(spawnPlantName = newList))
                                     }
                                 },
                                 label = { Text("添加植物") },
@@ -593,7 +597,12 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                             )
                         }
 
-                        Spacer(Modifier.height(16.dp))
+                        Text(
+                            "当掉落植物列表的植物数等于能量豆数量时会变为掉落植物卡片",
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
+                            color = Color.Gray
+                        )
 
                         val countLabel = if (isDroppingPlants) {
                             "携带上述植物的僵尸数量 (AdditionalPlantFood)"
@@ -612,13 +621,11 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                             color = themeColor
                         )
 
-                        // 解释文本
-                        val countVal = actionDataState.value.additionalPlantFood ?: 0
-                        val explainText = if (countVal > 0) {
+                        val explainText = if (count > 0) {
                             if (isDroppingPlants)
-                                "本波次将有 $countVal 只僵尸掉落列表中的植物"
+                                "本波次将有 $count 只僵尸掉落列表中的植物"
                             else
-                                "本波次将有 $countVal 只僵尸携带能量豆"
+                                "本波次将有 $count 只僵尸携带能量豆"
                         } else {
                             "无额外掉落"
                         }

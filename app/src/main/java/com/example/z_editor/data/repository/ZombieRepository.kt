@@ -30,7 +30,8 @@ enum class ZombieTag(val label: String, val iconName: String?, val category: Zom
     Memory("回忆之旅", null, ZombieCategory.Main),
     Universe("平行宇宙", null, ZombieCategory.Main),
     Tothewest("西游记", null, ZombieCategory.Main),
-    Festival("节日串烧", null, ZombieCategory.Main),
+    Festival1("节日串烧1", null, ZombieCategory.Main),
+    Festival2("节日串烧2", null, ZombieCategory.Main),
     Roman("罗马世界", null, ZombieCategory.Main),
 
     // --- 僵尸体型 ---

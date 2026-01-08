@@ -28,7 +28,7 @@
     },
     {
         "id": "mummy_flag",
-        "name": "木乃伊旗子僵尸",
+        "name": "木乃伊旗帜僵尸",
         "tags": [
             "Egypt_Pirate",
             "Basic"
@@ -146,7 +146,7 @@
     },
     {
         "id": "pirate_flag",
-        "name": "旗子海盗僵尸",
+        "name": "旗帜海盗僵尸",
         "tags": [
             "Egypt_Pirate",
             "Basic"
@@ -255,7 +255,7 @@
     },
     {
         "id": "cowboy_flag",
-        "name": "旗子牛仔僵尸",
+        "name": "旗帜牛仔僵尸",
         "tags": [
             "West_Future",
             "Basic"
@@ -356,7 +356,7 @@
     },
     {
         "id": "kongfu_basic",
-        "name": "功夫普通僵尸",
+        "name": "功夫僵尸",
         "tags": [
             "Kongfu_Skycity",
             "Basic"
@@ -364,8 +364,35 @@
         "icon": "zombie_kongfu_basic.jpg"
     },
     {
+        "id": "kongfu_basic_armor1",
+        "name": "路障功夫僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_basic_armor1.jpg"
+    },
+    {
+        "id": "kongfu_basic_armor2",
+        "name": "铁茶壶功夫僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_basic_armor2.jpg"
+    },
+    {
+        "id": "kongfu_basic_armor3",
+        "name": "功夫元帅僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_basic_armor3.jpg"
+    },
+    {
         "id": "kongfu_flag",
-        "name": "功夫旗子僵尸",
+        "name": "功夫旗帜僵尸",
         "tags": [
             "Kongfu_Skycity",
             "Basic"
@@ -445,15 +472,6 @@
         "icon": "zombie_kongfu_monk_basic.jpg"
     },
     {
-        "id": "kongfu_monk_flag",
-        "name": "旗子武僧僵尸",
-        "tags": [
-            "Kongfu_Skycity",
-            "Basic"
-        ],
-        "icon": "zombie_kongfu_monk_flag.jpg"
-    },
-    {
         "id": "kongfu_monk_cone",
         "name": "路障武僧僵尸",
         "tags": [
@@ -470,6 +488,15 @@
             "Basic"
         ],
         "icon": "zombie_kongfu_monk_bucket.jpg"
+    },
+    {
+        "id": "kongfu_monk_flag",
+        "name": "旗帜武僧僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_flag.jpg"
     },
     {
         "id": "kongfu_monk_imp",
@@ -575,7 +602,7 @@
     },
     {
         "id": "future_flag",
-        "name": "旗子未来僵尸",
+        "name": "旗帜未来僵尸",
         "tags": [
             "West_Future",
             "Basic"
@@ -705,7 +732,7 @@
     },
     {
         "id": "dark_flag",
-        "name": "旗子黑暗僵尸",
+        "name": "旗帜黑暗僵尸",
         "tags": [
             "Dark_Beach",
             "Basic"
@@ -881,7 +908,7 @@
     },
     {
         "id": "beach_flag",
-        "name": "旗子沙滩僵尸",
+        "name": "旗帜沙滩僵尸",
         "tags": [
             "Dark_Beach",
             "Basic"
@@ -991,7 +1018,7 @@
     },
     {
         "id": "iceage_flag",
-        "name": "洞穴旗子僵尸",
+        "name": "洞穴旗帜僵尸",
         "tags": [
             "Iceage_Lostcity",
             "Basic"
@@ -1177,7 +1204,7 @@
     },
     {
         "id": "skycity_flag",
-        "name": "旗子飞行员僵尸",
+        "name": "旗帜飞行员僵尸",
         "tags": [
             "Kongfu_Skycity",
             "Basic"
@@ -1320,7 +1347,7 @@
     },
     {
         "id": "lostcity_flag",
-        "name": "旗子失落僵尸",
+        "name": "旗帜失落僵尸",
         "tags": [
             "Iceage_Lostcity",
             "Basic"
@@ -1448,7 +1475,7 @@
     },
     {
         "id": "eighties_flag",
-        "name": "旗子摇滚僵尸",
+        "name": "旗帜摇滚僵尸",
         "tags": [
             "Eighties_Dino",
             "Basic"
@@ -1602,7 +1629,7 @@
     },
     {
         "id": "dino_flag",
-        "name": "旗子侏罗纪僵尸",
+        "name": "旗帜侏罗纪僵尸",
         "tags": [
             "Eighties_Dino",
             "Basic"
@@ -1768,7 +1795,7 @@
     },
     {
         "id": "tutorial_flag",
-        "name": "旗子僵尸",
+        "name": "旗帜僵尸",
         "tags": [
             "Modern_Pvz1",
             "Basic"
@@ -1899,6 +1926,16 @@
         "icon": "zombie_catapult.jpg"
     },
     {
+        "id": "pvz1_bungee",
+        "name": "蹦极僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Evildave"
+        ],
+        "icon": "zombie_pvz1_bungee.jpg"
+    },
+    {
         "id": "dancer_king",
         "name": "舞王僵尸",
         "tags": [
@@ -1976,7 +2013,7 @@
     },
     {
         "id": "steam_flag",
-        "name": "旗子工人僵尸",
+        "name": "旗帜工人僵尸",
         "tags": [
             "Steam_Renai",
             "Basic"
@@ -2057,7 +2094,7 @@
     },
     {
         "id": "renai_flag",
-        "name": "旗子贵族僵尸",
+        "name": "旗帜贵族僵尸",
         "tags": [
             "Steam_Renai",
             "Basic"
@@ -2187,7 +2224,7 @@
     },
     {
         "id": "heian_flag",
-        "name": "旗子武士僵尸",
+        "name": "旗帜武士僵尸",
         "tags": [
             "Henai_Atlantis",
             "Basic"
@@ -2269,7 +2306,7 @@
     },
     {
         "id": "atlantis_flag",
-        "name": "海洋旗子僵尸",
+        "name": "海洋旗帜僵尸",
         "tags": [
             "Henai_Atlantis",
             "Basic"
@@ -2323,7 +2360,7 @@
     },
     {
         "id": "atlantis_land_flag",
-        "name": "遗迹旗子僵尸",
+        "name": "遗迹旗帜僵尸",
         "tags": [
             "Henai_Atlantis",
             "Basic"
@@ -3037,7 +3074,7 @@
         "id": "lny",
         "name": "新春僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_lny.jpg"
@@ -3046,7 +3083,7 @@
         "id": "lny_armor1",
         "name": "新春路障僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_lny_armor1.jpg"
@@ -3055,7 +3092,7 @@
         "id": "lny_armor2",
         "name": "新春铁桶僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_lny_armor2.jpg"
@@ -3064,7 +3101,7 @@
         "id": "lny_flag",
         "name": "新春旗帜僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_lny_flag.jpg"
@@ -3073,7 +3110,7 @@
         "id": "lny_camel_onehump",
         "name": "单驼峰新年骆驼牌",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_lny_camel_onehump.jpg"
@@ -3082,7 +3119,7 @@
         "id": "lny_camel_twohump",
         "name": "双驼新年峰骆驼牌",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_lny_camel_onehump.jpg"
@@ -3091,7 +3128,7 @@
         "id": "lny_camel_manyhump",
         "name": "多驼峰新年骆驼牌",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_lny_camel_onehump.jpg"
@@ -3100,7 +3137,7 @@
         "id": "lny_imp",
         "name": "新年粉丝小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Imp"
         ],
         "icon": "zombie_lny_imp.jpg"
@@ -3109,7 +3146,7 @@
         "id": "zombie_moneytree",
         "name": "摇钱树僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_zombie_moneytree.jpg"
@@ -3118,7 +3155,7 @@
         "id": "endlesswealth",
         "name": "财神",
         "tags": [
-            "Festival",
+            "Festival1",
             "Fat"
         ],
         "icon": "zombie_endlesswealth.jpg"
@@ -3127,7 +3164,7 @@
         "id": "feastivus_swashbuckler",
         "name": "神偷僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_feastivus_swashbuckler.jpg"
@@ -3136,7 +3173,7 @@
         "id": "zombie_yearmonster",
         "name": "年兽僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Elite",
             "Imp",
             "Pet"
@@ -3147,7 +3184,7 @@
         "id": "iceyearmonster",
         "name": "寒冰年兽僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Elite",
             "Imp",
             "Pet"
@@ -3155,10 +3192,109 @@
         "icon": "zombie_iceyearmonster.jpg"
     },
     {
+        "id": "spring",
+        "name": "复活节普通僵尸",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_spring.jpg"
+    },
+    {
+        "id": "spring_armor1",
+        "name": "复活节路障僵尸",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_spring_armor1.jpg"
+    },
+    {
+        "id": "spring_armor2",
+        "name": "复活节铁桶僵尸",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_spring_armor2.jpg"
+    },
+    {
+        "id": "spring_flag",
+        "name": "复活节旗帜僵尸",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_spring_flag.jpg"
+    },
+    {
+        "id": "spring_camel_onehump",
+        "name": "单驼峰复活节骆驼牌",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_spring_camel_onehump.jpg"
+    },
+    {
+        "id": "spring_camel_twohump",
+        "name": "双驼峰复活节骆驼牌",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_spring_camel_onehump.jpg"
+    },
+    {
+        "id": "spring_camel_manyhump",
+        "name": "多驼峰复活节骆驼牌",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_spring_camel_onehump.jpg"
+    },
+    {
+        "id": "spring_imp",
+        "name": "复活节小鬼僵尸",
+        "tags": [
+            "Festival1",
+            "Imp"
+        ],
+        "icon": "zombie_spring_imp.jpg"
+    },
+    {
+        "id": "spring_gargantuar",
+        "name": "复活节巨人僵尸",
+        "tags": [
+            "Festival1",
+            "Gargantuar"
+        ],
+        "icon": "zombie_spring_gargantuar.jpg"
+    },
+    {
+        "id": "spring_wizard",
+        "name": "复活节魔法师僵尸",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_spring_wizard.jpg"
+    },
+    {
+        "id": "spring_poncho",
+        "name": "复活节斗篷僵尸",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_spring_poncho.jpg"
+    },
+    {
         "id": "childrensday",
         "name": "儿童节普通僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_childrensday.jpg"
@@ -3167,7 +3303,7 @@
         "id": "childrensday_armor1",
         "name": "儿童节路障僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_childrensday_armor1.jpg"
@@ -3176,7 +3312,7 @@
         "id": "childrensday_armor2",
         "name": "儿童节铁桶僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_childrensday_armor2.jpg"
@@ -3185,7 +3321,7 @@
         "id": "childrensday_flag",
         "name": "儿童节旗帜僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_childrensday_flag.jpg"
@@ -3194,7 +3330,7 @@
         "id": "childrensday_gargantuar",
         "name": "儿童节粉熊巨人僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Gargantuar"
         ],
         "icon": "zombie_childrensday_gargantuar.jpg"
@@ -3203,7 +3339,7 @@
         "id": "childrensday_imp",
         "name": "儿童节粉熊小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Imp"
         ],
         "icon": "zombie_childrensday_imp.jpg"
@@ -3212,7 +3348,7 @@
         "id": "children_ballon",
         "name": "儿童节气球小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Imp"
         ],
         "icon": "zombie_children_ballon.jpg"
@@ -3221,7 +3357,7 @@
         "id": "children_schoolbag",
         "name": "儿童节小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Imp"
         ],
         "icon": "zombie_children_schoolbag.jpg"
@@ -3230,7 +3366,7 @@
         "id": "children_toycar",
         "name": "儿童节玩具车小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Imp"
         ],
         "icon": "zombie_children_toycar.jpg"
@@ -3239,7 +3375,7 @@
         "id": "children_toygun",
         "name": "儿童节泡泡枪小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Imp"
         ],
         "icon": "zombie_children_toygun.jpg"
@@ -3248,7 +3384,7 @@
         "id": "children_lollipops",
         "name": "儿童节棒棒糖僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_children_lollipops.jpg"
@@ -3257,7 +3393,7 @@
         "id": "bumpercar",
         "name": "碰碰车僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Elite",
             "Imp"
         ],
@@ -3267,7 +3403,7 @@
         "id": "bumpercar_elite",
         "name": "精英碰碰车僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Elite",
             "Imp"
         ],
@@ -3277,7 +3413,7 @@
         "id": "summer_basic",
         "name": "夏夜僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_summer_basic.jpg"
@@ -3286,7 +3422,7 @@
         "id": "summer_armor1",
         "name": "夏夜路障僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_summer_armor1.jpg"
@@ -3295,7 +3431,7 @@
         "id": "summer_armor2",
         "name": "夏夜铁桶僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_summer_armor2.jpg"
@@ -3304,7 +3440,7 @@
         "id": "summer_flag",
         "name": "夏夜旗帜僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_summer_flag.jpg"
@@ -3313,7 +3449,7 @@
         "id": "summer_gargantuar",
         "name": "夏夜巨人僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Gargantuar"
         ],
         "icon": "zombie_summer_gargantuar.jpg"
@@ -3322,7 +3458,7 @@
         "id": "summer_imp",
         "name": "夏夜小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Imp"
         ],
         "icon": "zombie_summer_imp.jpg"
@@ -3331,8 +3467,7 @@
         "id": "summer_bug",
         "name": "夏夜昆虫僵尸",
         "tags": [
-            "Festival",
-            "Basic",
+            "Festival1",
             "Pet"
         ],
         "icon": "zombie_summer_bug.jpg"
@@ -3341,8 +3476,7 @@
         "id": "summer_bug_armor1",
         "name": "夏夜昆虫路障僵尸",
         "tags": [
-            "Festival",
-            "Basic",
+            "Festival1",
             "Pet"
         ],
         "icon": "zombie_summer_bug.jpg"
@@ -3351,8 +3485,7 @@
         "id": "summer_bug_armor2",
         "name": "夏夜昆虫铁桶僵尸",
         "tags": [
-            "Festival",
-            "Basic",
+            "Festival1",
             "Pet"
         ],
         "icon": "zombie_summer_bug.jpg"
@@ -3361,7 +3494,7 @@
         "id": "birthday",
         "name": "周年庆僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_birthday.jpg"
@@ -3370,7 +3503,7 @@
         "id": "birthday_flag",
         "name": "周年庆旗帜僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_birthday_flag.jpg"
@@ -3379,7 +3512,7 @@
         "id": "birthday_gargantuar",
         "name": "周年庆巨人僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Gargantuar"
         ],
         "icon": "zombie_birthday_gargantuar.jpg"
@@ -3388,7 +3521,7 @@
         "id": "birthday_pharaoh",
         "name": "周年庆法老僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_birthday_pharaoh.jpg"
@@ -3397,7 +3530,7 @@
         "id": "birthday_barrelroller",
         "name": "周年庆滚桶僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_birthday_barrelroller.jpg"
@@ -3406,7 +3539,7 @@
         "id": "birthday_jetpack",
         "name": "周年庆飞行器僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_birthday_jetpack.jpg"
@@ -3415,7 +3548,7 @@
         "id": "birthday_juggler",
         "name": "周年庆小丑僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Basic"
         ],
         "icon": "zombie_birthday_juggler.jpg"
@@ -3424,7 +3557,7 @@
         "id": "birthday_troglobite",
         "name": "周年庆穴居僵尸",
         "tags": [
-            "Festival",
+            "Festival1",
             "Strong"
         ],
         "icon": "zombie_birthday_troglobite.jpg"
@@ -3433,7 +3566,7 @@
         "id": "caketank",
         "name": "蛋糕坦克",
         "tags": [
-            "Festival",
+            "Festival1",
             "Elite"
         ],
         "icon": "zombie_caketank.jpg"
@@ -3442,7 +3575,7 @@
         "id": "halloween",
         "name": "万圣节僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_halloween.jpg"
@@ -3451,7 +3584,7 @@
         "id": "halloween_armor1",
         "name": "万圣节路障僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_halloween_armor1.jpg"
@@ -3460,7 +3593,7 @@
         "id": "halloween_armor2",
         "name": "万圣节铁桶僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_halloween_armor2.jpg"
@@ -3469,7 +3602,7 @@
         "id": "halloween_flag",
         "name": "万圣节旗帜僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_halloween_flag.jpg"
@@ -3478,7 +3611,7 @@
         "id": "halloween_gargantuar",
         "name": "万圣节巨人僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Gargantuar"
         ],
         "icon": "zombie_halloween_gargantuar.jpg"
@@ -3487,7 +3620,7 @@
         "id": "halloween_imp",
         "name": "万圣节小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Imp"
         ],
         "icon": "zombie_halloween_imp.jpg"
@@ -3496,7 +3629,7 @@
         "id": "pumpkin_knight_ghost",
         "name": "南瓜幽灵僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Imp",
             "Pet"
         ],
@@ -3506,7 +3639,7 @@
         "id": "pumpkin_scarecrow_bird",
         "name": "僵尸乌鸦",
         "tags": [
-            "Festival",
+            "Festival2",
             "Pet"
         ],
         "icon": "zombie_pumpkin_scarecrow_bird.jpg"
@@ -3515,7 +3648,7 @@
         "id": "pumpkin_house_ghost",
         "name": "南瓜屋南瓜幽灵僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Elite",
             "Pet"
         ],
@@ -3525,7 +3658,7 @@
         "id": "pumpkin_knight",
         "name": "南瓜骑士僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Elite",
             "Basic",
             "Pet"
@@ -3536,7 +3669,7 @@
         "id": "pumpkin_necromancer",
         "name": "南瓜术士僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Elite",
             "Strong"
         ],
@@ -3546,7 +3679,7 @@
         "id": "christmas",
         "name": "圣诞节普通僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas.jpg"
@@ -3555,7 +3688,7 @@
         "id": "christmas_armor1",
         "name": "圣诞节路障僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_armor1.jpg"
@@ -3564,7 +3697,7 @@
         "id": "christmas_armor2",
         "name": "圣诞节铁桶僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_armor2.jpg"
@@ -3573,7 +3706,7 @@
         "id": "giftbox",
         "name": "礼物头僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_giftbox.jpg"
@@ -3582,7 +3715,7 @@
         "id": "giftbox_armor1",
         "name": "礼物头路障僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_giftbox.jpg"
@@ -3591,7 +3724,7 @@
         "id": "giftbox_armor2",
         "name": "礼物头铁桶僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_giftbox.jpg"
@@ -3600,7 +3733,7 @@
         "id": "christmas_flag",
         "name": "圣诞节旗帜僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_flag.jpg"
@@ -3609,7 +3742,7 @@
         "id": "christmas_gargantuar",
         "name": "圣诞节巨人僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Gargantuar"
         ],
         "icon": "zombie_christmas_gargantuar.jpg"
@@ -3618,7 +3751,7 @@
         "id": "christmas_gargantuar2",
         "name": "圣诞节驯鹿巨人僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Gargantuar"
         ],
         "icon": "zombie_christmas_gargantuar2.jpg"
@@ -3627,7 +3760,7 @@
         "id": "christmas_imp",
         "name": "圣诞节小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Imp"
         ],
         "icon": "zombie_christmas_imp.jpg"
@@ -3636,7 +3769,7 @@
         "id": "christmas_imp2",
         "name": "圣诞节精灵小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Imp"
         ],
         "icon": "zombie_christmas_imp2.jpg"
@@ -3645,7 +3778,7 @@
         "id": "christmas_camel_onehump",
         "name": "单驼峰圣诞节骆驼牌",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_camel_onehump.jpg"
@@ -3654,7 +3787,7 @@
         "id": "christmas_camel_twohump",
         "name": "双驼峰圣诞节骆驼牌",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_camel_onehump.jpg"
@@ -3663,7 +3796,7 @@
         "id": "christmas_camel_manyhump",
         "name": "多驼峰圣诞节骆驼牌",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_camel_onehump.jpg"
@@ -3672,7 +3805,7 @@
         "id": "christmas_swashbuckler",
         "name": "圣诞节飞索僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_swashbuckler.jpg"
@@ -3681,7 +3814,7 @@
         "id": "christmas_poncho",
         "name": "圣诞节斗篷僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_poncho.jpg"
@@ -3690,7 +3823,7 @@
         "id": "christmas_poncho_no_plate",
         "name": "无钢板圣诞节斗篷僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_poncho.jpg"
@@ -3699,7 +3832,7 @@
         "id": "christmas_poncho_plate",
         "name": "有钢板圣诞节斗篷僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_poncho.jpg"
@@ -3708,7 +3841,7 @@
         "id": "christmas_piano",
         "name": "圣诞节钢琴僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_christmas_piano.jpg"
@@ -3717,7 +3850,7 @@
         "id": "nutcracker",
         "name": "胡桃夹子僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_nutcracker.jpg"
@@ -3726,7 +3859,7 @@
         "id": "nutcracker_gargantuar",
         "name": "胡桃夹子巨人僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Gargantuar"
         ],
         "icon": "zombie_nutcracker_gargantuar.jpg"
@@ -3735,7 +3868,7 @@
         "id": "nutcracker_gargantuar_white",
         "name": "白皇后护卫胡桃夹子巨人僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Gargantuar"
         ],
         "icon": "zombie_nutcracker_gargantuar.jpg"
@@ -3744,7 +3877,7 @@
         "id": "sled",
         "name": "圣诞节雪橇车小队",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_sled.jpg"
@@ -3753,7 +3886,7 @@
         "id": "sled_armor",
         "name": "圣诞节雪橇车小队队员",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_sled.jpg"
@@ -3762,7 +3895,7 @@
         "id": "bobsled",
         "name": "圣诞节冰车僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_bobsled.jpg"
@@ -3771,7 +3904,7 @@
         "id": "pole_vaulting_feastivus",
         "name": "圣诞节撑杆僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_pole_vaulting_feastivus.jpg"
@@ -3780,7 +3913,7 @@
         "id": "ladder_festival",
         "name": "圣诞节扶梯僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_ladder_festival.jpg"
@@ -3789,7 +3922,7 @@
         "id": "snow_ballroller",
         "name": "滚雪球僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_snow_ballroller.jpg"
@@ -3798,7 +3931,7 @@
         "id": "figure_skating",
         "name": "花样滑冰僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Basic"
         ],
         "icon": "zombie_figure_skating.jpg"
@@ -3807,7 +3940,7 @@
         "id": "santa",
         "name": "驯鹿僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Pet",
             "Imp"
         ],
@@ -3817,7 +3950,7 @@
         "id": "christmas_caketank",
         "name": "圣诞节蛋糕坦克",
         "tags": [
-            "Festival",
+            "Festival2",
             "Elite"
         ],
         "icon": "zombie_christmas_caketank.jpg"
@@ -3826,7 +3959,7 @@
         "id": "dark_juggler_elite",
         "name": "圣诞节小丑僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Elite",
             "Basic"
         ],
@@ -3836,10 +3969,52 @@
         "id": "fairy_tale_imp_elite",
         "name": "圣诞节白皇后小鬼僵尸",
         "tags": [
-            "Festival",
+            "Festival2",
             "Elite"
         ],
         "icon": "zombie_fairy_tale_imp_elite.jpg"
+    },
+    {
+        "id": "zombie_snowpea",
+        "name": "寒冰豌豆僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Evildave",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_snowpea.jpg"
+    },
+    {
+        "id": "zombie_gatlingpea",
+        "name": "机枪豌豆僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Evildave",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_gatlingpea.jpg"
+    },
+    {
+        "id": "zombie_explodenut",
+        "name": "爆炸坚果僵尸",
+        "tags": [
+            "Memory",
+            "Evildave",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_explodenut.jpg"
+    },
+    {
+        "id": "zombie_jalapeno",
+        "name": "火爆辣椒僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_jalapeno.jpg"
     },
     {
         "id": "izombie_sunflower",
@@ -3896,48 +4071,6 @@
             "Basic"
         ],
         "icon": "zombie_izombie_lostcity_doctor.jpg"
-    },
-    {
-        "id": "zombie_jalapeno",
-        "name": "火爆辣椒僵尸",
-        "tags": [
-            "Modern_Pvz1",
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_zombie_jalapeno.jpg"
-    },
-    {
-        "id": "zombie_explodenut",
-        "name": "爆炸坚果僵尸",
-        "tags": [
-            "Memory",
-            "Evildave",
-            "Basic"
-        ],
-        "icon": "zombie_zombie_explodenut.jpg"
-    },
-    {
-        "id": "zombie_snowpea",
-        "name": "寒冰豌豆僵尸",
-        "tags": [
-            "Modern_Pvz1",
-            "Evildave",
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_zombie_snowpea.jpg"
-    },
-    {
-        "id": "zombie_gatlingpea",
-        "name": "机枪豌豆僵尸",
-        "tags": [
-            "Modern_Pvz1",
-            "Evildave",
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_zombie_gatlingpea.jpg"
     },
     {
         "id": "slimes",
@@ -4002,7 +4135,7 @@
     },
     {
         "id": "roman_flag",
-        "name": "旗子罗马僵尸",
+        "name": "旗帜罗马僵尸",
         "tags": [
             "Roman",
             "Basic"
@@ -4175,7 +4308,7 @@
     },
     {
         "id": "journey_to_the_west_flag",
-        "name": "西游旗子僵尸",
+        "name": "西游旗帜僵尸",
         "tags": [
             "Tothewest",
             "Basic"

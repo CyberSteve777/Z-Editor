@@ -479,10 +479,10 @@ fun InitialPlantCard(
                     path = if (info?.icon != null) "images/plants/${info.icon}" else null,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(8.dp))
                         .background(Color(0xFFF1F8E9))
-                        .border(0.5.dp, Color.LightGray, CircleShape),
+                        .border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp)),
                     placeholder = {
                         Box(
                             Modifier
