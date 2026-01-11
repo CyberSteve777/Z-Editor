@@ -309,9 +309,9 @@ fun StormZombieSpawnerPropsEP(
                         )
                         Spacer(Modifier.weight(1f))
                         TextButton(onClick = {
-                            onRequestZombieSelection { zombieId ->
-                                val fullRtid = RtidParser.build(zombieId, "ZombieTypes")
-
+                            onRequestZombieSelection { selectedId ->
+                                val aliases = ZombieRepository.buildAliases(selectedId)
+                                val fullRtid = RtidParser.build(aliases, "ZombieTypes")
                                 val newList = stormDataState.value.zombies.toMutableList()
                                 newList.add(StormZombieData(type = fullRtid))
                                 stormDataState.value = stormDataState.value.copy(zombies = newList)
@@ -337,16 +337,9 @@ fun StormZombieSpawnerPropsEP(
                     } else {
                         key(listRefreshTrigger) {
                             stormDataState.value.zombies.forEachIndexed { index, zombie ->
-                                val realTypeName = remember(zombie.type) {
-                                    val alias = RtidParser.parse(zombie.type)?.alias ?: zombie.type
-                                    ZombiePropertiesRepository.getTypeNameByAlias(alias)
-                                }
-                                val info = remember(realTypeName) {
-                                    ZombieRepository.search(
-                                        realTypeName,
-                                        ZombieTag.All
-                                    ).firstOrNull()
-                                }
+                                val alias = RtidParser.parse(zombie.type)?.alias ?: zombie.type
+                                val realTypeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
+                                val info = ZombieRepository.search(realTypeName, ZombieTag.All).firstOrNull()
                                 val displayName = info?.name ?: realTypeName
                                 val placeholderContent = @Composable {
                                     Box(

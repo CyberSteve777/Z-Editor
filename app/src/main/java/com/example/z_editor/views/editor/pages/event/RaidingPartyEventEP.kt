@@ -74,7 +74,7 @@ fun RaidingPartyEventEP(
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
-                focusManager.clearFocus() // 点击空白处清除焦点
+                focusManager.clearFocus()
             })
         },
         topBar = {

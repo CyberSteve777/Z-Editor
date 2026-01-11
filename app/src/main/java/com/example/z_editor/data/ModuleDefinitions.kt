@@ -1,6 +1,7 @@
 package com.example.z_editor.data
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material.icons.automirrored.filled.NextPlan
@@ -112,6 +113,7 @@ sealed class EditorSubScreen {
     data class SpawnGravestonesDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class GridItemSpawnerDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class ZombiePotionActionDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class MagicMirrorDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class InvalidEvent(val rtid: String, val waveIndex: Int) : EditorSubScreen()
 }
 
@@ -435,6 +437,24 @@ object EventRegistry {
                     val gson = Gson()
                     val data = gson.fromJson(obj.objData, BlackHoleEventData::class.java)
                     "${data.colNumPlantIsDragged} 列"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
+        "WaveActionMagicMirrorTeleportationArrayProps2" to EventMetadata(
+            title = "魔镜传送",
+            description = "在场地上生成成对的传送门",
+            icon = Icons.AutoMirrored.Filled.CompareArrows,
+            color = Color(0xFF7C30D9),
+            defaultAlias = "MirrorEvent",
+            defaultObjClass = "WaveActionMagicMirrorTeleportationArrayProps2",
+            initialDataFactory = { MagicMirrorWaveActionData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, MagicMirrorWaveActionData::class.java)
+                    "${data.arrays.size} 组魔镜"
                 } catch (_: Exception) {
                     "解析错误"
                 }

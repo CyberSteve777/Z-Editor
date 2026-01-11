@@ -335,27 +335,17 @@ class NewBowlingMinigamePropertiesData
 // === 排山倒海配置 ===
 class PVZ1OverwhelmModulePropertiesData
 
-// === 僵王战模块 ===
-data class ZombossBattleModuleData(
-    @SerializedName("ReservedColumnCount") var reservedColumnCount: Int = 2,
-    @SerializedName("ZombossMechType") var zombossMechType: String = "zombossmech_egypt",
-    @SerializedName("ZombossStageCount") var zombossStageCount: Int = 3,
-    @SerializedName("ZombossDeathRow") var zombossDeathRow: Int = 3,
-    @SerializedName("ZombossDeathColumn") var zombossDeathColumn: Int = 5
-)
-
-// === 僵王战转场模块 ===
-data class ZombossBattleIntroData(
-    @SerializedName("PanStartOffset") var panStartOffset: Int = 78,
-    @SerializedName("PanEndOffset") var panEndOffset: Int = 486,
-    @SerializedName("PanRightDuration") var panRightDuration: Double = 1.5,
-    @SerializedName("PanLeftDuration") var panLeftDuration: Double = 1.5,
-    @SerializedName("ZombossPhaseCount") var zombossPhaseCount: Int = 3,
-    @SerializedName("SkipShowingStreetBossBattle") var skipShowingStreetBossBattle: Boolean = false,
-)
-
 
 // ======================== 2. 物体属性解析 ========================
+
+// === 通用僵尸数据 ===
+data class ZombieSpawnData(
+    @SerializedName("Type") var type: String,
+    @SerializedName("Level") var level: Int? = null,
+    @JsonAdapter(FlexibleIntAdapter::class)
+    @SerializedName("Row") var row: Int? = null,
+    @Transient var isElite: Boolean = false
+)
 
 // === 僵尸属性解析 ===
 data class ZombieTypeData(
@@ -383,16 +373,14 @@ data class ZombieStats(
     val sizeType: String
 )
 
+
+data class LocationData(
+    @SerializedName("mX") var x: Int = 0,
+    @SerializedName("mY") var y: Int = 0
+)
+
 // ======================== 3. 具体事件定义 ========================
 
-// === 通用僵尸数据 ===
-data class ZombieSpawnData(
-    @SerializedName("Type") var type: String,
-    @SerializedName("Level") var level: Int? = 1,
-    @JsonAdapter(FlexibleIntAdapter::class)
-    @SerializedName("Row") var row: Int? = null,
-    @Transient var isElite: Boolean = false
-)
 
 // === 自然出怪事件 ===
 data class WaveActionData(
@@ -524,7 +512,7 @@ data class DinoWaveActionPropsData(
 // === 障碍物生成事件 ===
 data class SpawnGraveStonesData(
     @SerializedName("GravestonePool") var gravestonePool: MutableList<GravestonePoolItem> = mutableListOf(),
-    @SerializedName("SpawnPositionsPool") var spawnPositionsPool: MutableList<SpawnPositionData> = mutableListOf()
+    @SerializedName("SpawnPositionsPool") var spawnPositionsPool: MutableList<LocationData> = mutableListOf()
 )
 
 data class GravestonePoolItem(
@@ -532,22 +520,12 @@ data class GravestonePoolItem(
     @SerializedName("Type") var type: String = ""
 )
 
-data class SpawnPositionData(
-    @SerializedName("mX") var mX: Int = 0,
-    @SerializedName("mY") var mY: Int = 0
-)
-
 // === 障碍物出怪事件 ===
 data class SpawnZombiesFromGridItemData(
     @SerializedName("WaveStartMessage") var waveStartMessage: String? = null,
     @SerializedName("ZombieSpawnWaitTime") var zombieSpawnWaitTime: Int = 0,
     @SerializedName("GridTypes") var gridTypes: MutableList<String> = mutableListOf(),
-    @SerializedName("Zombies") var zombies: MutableList<GridItemSpawnerZombieData> = mutableListOf()
-)
-
-data class GridItemSpawnerZombieData(
-    @SerializedName("Type") var type: String = "",
-    @SerializedName("Level") var level: Int = 1
+    @SerializedName("Zombies") var zombies: MutableList<ZombieSpawnData> = mutableListOf()
 )
 
 // === 投放药水事件 ===
@@ -556,13 +534,23 @@ data class ZombiePotionActionPropsData(
 )
 
 data class ZombiePotionData(
-    @SerializedName("Location") var location: PotionLocationData = PotionLocationData(),
+    @SerializedName("Location") var location: LocationData = LocationData(),
     @SerializedName("Type") var type: String = ""
 )
 
-data class PotionLocationData(
-    @SerializedName("mX") var x: Int = 0,
-    @SerializedName("mY") var y: Int = 0
+// === 魔镜传送事件 ===
+data class MagicMirrorWaveActionData(
+    @SerializedName("MagicMirrorTeleportationArrays")
+    var arrays: MutableList<MagicMirrorArrayData> = mutableListOf()
+)
+
+data class MagicMirrorArrayData(
+    @SerializedName("Mirror1GridX") var mirror1GridX: Int = 2,
+    @SerializedName("Mirror1GridY") var mirror1GridY: Int = 2,
+    @SerializedName("Mirror2GridX") var mirror2GridX: Int = 6,
+    @SerializedName("Mirror2GridY") var mirror2GridY: Int = 2,
+    @SerializedName("TypeIndex") var typeIndex: Int = 1,
+    @SerializedName("MirrorExistDuration") var mirrorExistDuration: Int = 300
 )
 
 
@@ -574,13 +562,8 @@ data class VaseBreakerPresetData(
     @SerializedName("MaxColumnIndex") var maxColumnIndex: Int = 8,
     @SerializedName("NumColoredPlantVases") var numColoredPlantVases: Int = 0,
     @SerializedName("NumColoredZombieVases") var numColoredZombieVases: Int = 0,
-    @SerializedName("GridSquareBlacklist") var gridSquareBlacklist: MutableList<GridSquareBlacklistData> = mutableListOf(),
+    @SerializedName("GridSquareBlacklist") var gridSquareBlacklist: MutableList<LocationData> = mutableListOf(),
     @SerializedName("Vases") var vases: MutableList<VaseDefinition> = mutableListOf()
-)
-
-data class GridSquareBlacklistData(
-    @SerializedName("mX") var mx: Int = 0,
-    @SerializedName("mY") var my: Int = 0
 )
 
 data class VaseDefinition(
@@ -599,4 +582,24 @@ class VaseBreakerFlowModuleData
 // === 我是僵尸模块 ===
 data class EvilDavePropertiesData(
     @SerializedName("PlantDistance") var plantDistance: Int = 4
+)
+
+// === 僵王战模块 ===
+data class ZombossBattleModuleData(
+    @SerializedName("ReservedColumnCount") var reservedColumnCount: Int = 2,
+    @SerializedName("ZombossMechType") var zombossMechType: String = "zombossmech_egypt",
+    @SerializedName("ZombossStageCount") var zombossStageCount: Int = 3,
+    @SerializedName("ZombossDeathRow") var zombossDeathRow: Int = 3,
+    @SerializedName("ZombossDeathColumn") var zombossDeathColumn: Int = 5,
+    @SerializedName("ZombossSpawnGridPosition") var zombossSpawnGridPosition: LocationData? = LocationData()
+)
+
+// === 僵王战转场模块 ===
+data class ZombossBattleIntroData(
+    @SerializedName("PanStartOffset") var panStartOffset: Int = 78,
+    @SerializedName("PanEndOffset") var panEndOffset: Int = 486,
+    @SerializedName("PanRightDuration") var panRightDuration: Double = 1.5,
+    @SerializedName("PanLeftDuration") var panLeftDuration: Double = 1.5,
+    @SerializedName("ZombossPhaseCount") var zombossPhaseCount: Int = 3,
+    @SerializedName("SkipShowingStreetBossBattle") var skipShowingStreetBossBattle: Boolean = false,
 )

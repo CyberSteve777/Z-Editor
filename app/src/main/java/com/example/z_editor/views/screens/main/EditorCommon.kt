@@ -42,6 +42,7 @@ data class EditorActions(
     val onCreateWaveContainer: () -> Unit,
     val onDeleteWaveContainer: () -> Unit,
     val onStageSelected: (String) -> Unit,
+    val onStageCanceled: () -> Unit,
 
     val onAddChallenge: (ChallengeTypeInfo) -> Unit,
 

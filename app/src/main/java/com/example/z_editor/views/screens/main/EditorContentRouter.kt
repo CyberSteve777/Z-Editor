@@ -18,6 +18,7 @@ import com.example.z_editor.views.editor.pages.event.BlackHoleEventEP
 import com.example.z_editor.views.editor.pages.event.DinoEventEP
 import com.example.z_editor.views.editor.pages.event.FrostWindEventEP
 import com.example.z_editor.views.editor.pages.event.InvalidEventEP
+import com.example.z_editor.views.editor.pages.event.MagicMirrorEventEP
 import com.example.z_editor.views.editor.pages.event.ModifyConveyorEventEP
 import com.example.z_editor.views.editor.pages.event.ParachuteRainEventEP
 import com.example.z_editor.views.editor.pages.event.RaidingPartyEventEP
@@ -213,6 +214,11 @@ fun EditorContentRouter(
                                     )
 
                                     "ZombiePotionActionProps" -> EditorSubScreen.ZombiePotionActionDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
+                                    "WaveActionMagicMirrorTeleportationArrayProps2" -> EditorSubScreen.MagicMirrorDetail(
                                         rtid,
                                         waveIdx
                                     )
@@ -604,6 +610,12 @@ fun EditorContentRouter(
             onRequestGridItemSelection = actions.onLaunchGridItemSelector
         )
 
+        is EditorSubScreen.MagicMirrorDetail -> MagicMirrorEventEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile
+        )
+
         is EditorSubScreen.InvalidEvent -> InvalidEventEP(
             rtid = targetState.rtid,
             waveIndex = targetState.waveIndex,
@@ -651,7 +663,7 @@ fun EditorContentRouter(
 
         EditorSubScreen.StageSelection -> StageSelectionScreen(
             onStageSelected = actions.onStageSelected,
-            onBack = actions.navigateBack
+            onBack = actions.onStageCanceled
         )
 
         EditorSubScreen.ChallengeSelection -> ChallengeSelectionScreen(

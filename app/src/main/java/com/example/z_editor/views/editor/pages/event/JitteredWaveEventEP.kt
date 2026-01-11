@@ -72,7 +72,6 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.WaveActionData
 import com.example.z_editor.data.ZombieSpawnData
 import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -102,6 +101,10 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
     var batchLevelFloat by remember { mutableFloatStateOf(1f) }
     var showBatchConfirmDialog by remember { mutableStateOf(false) }
 
+    val objectMap = remember(rootLevelFile) {
+        rootLevelFile.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+    }
+
     val actionDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
@@ -111,11 +114,9 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
         }
 
         data.zombies.forEach { zombie ->
-            val parsed = RtidParser.parse(zombie.type)
-            val realTypeAlias = parsed?.alias ?: ""
-            val typeName = ZombiePropertiesRepository.getTypeNameByAlias(realTypeAlias)
+            val (baseTypeName, isValid) = ZombieRepository.resolveZombieType(zombie.type, objectMap)
+            zombie.isElite = ZombieRepository.isElite(baseTypeName)
 
-            zombie.isElite = ZombieRepository.isElite(typeName)
             if (zombie.isElite) {
                 zombie.level = null
             } else if ((zombie.level ?: 1) < 1) {
@@ -138,14 +139,12 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
 
     fun handleAddZombie() {
         onRequestZombieSelection { selectedId ->
-            val alias = RtidParser.parse(selectedId)?.alias ?: selectedId
-            val typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
-            val isElite = ZombieRepository.isElite(typeName)
-
+            val isElite = ZombieRepository.isElite(selectedId)
+            val aliases = ZombieRepository.buildAliases(selectedId)
             val newZombie = ZombieSpawnData(
-                type = RtidParser.build(typeName, "ZombieTypes"),
+                type = RtidParser.build(aliases, "ZombieTypes"),
                 row = addingToRowIndex,
-                level = if (isElite) null else 1,
+                level = null,
                 isElite = isElite
             )
 
@@ -163,7 +162,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
         val newZombies = currentZombies.map { zombie ->
             if (!zombie.isElite) {
                 changeCount++
-                zombie.copy(level = targetLevel)
+                zombie.copy(level = if (targetLevel == 0) null else targetLevel)
             } else {
                 zombie
             }
@@ -178,7 +177,6 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
         ).show()
     }
 
-    // 底部抽屉
     if (showBottomSheet && editingZombie != null) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false; editingZombie = null },
@@ -186,6 +184,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
         ) {
             ZombieEditSheetContent(
                 originalZombie = editingZombie!!,
+                objectMap = objectMap,
                 onValueChange = { updatedZombie ->
                     val currentList = actionDataState.value.zombies.toMutableList()
                     val index = currentList.indexOf(editingZombie!!)
@@ -285,7 +284,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
             ) {
                 HelpSection(
                     title = "简要介绍",
-                    body = "最基础的生成僵尸事件。可以配置每一只僵尸的阶级和行号"
+                    body = "最基础的生成僵尸事件。可以配置每一只僵尸的阶级和行号，0阶表示随地图阶级，庭院模式下即为1阶。"
                 )
                 HelpSection(
                     title = "等级设置",
@@ -397,6 +396,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                         addingToRowIndex = rowNum
                         handleAddZombie()
                     },
+                    objectMap = objectMap,
                     onZombieClick = { zombie ->
                         editingZombie = zombie
                         showBottomSheet = true
@@ -404,7 +404,6 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                 )
             }
 
-            // 随机行
             item {
                 val randomZombies =
                     actionDataState.value.zombies.filter { it.row == null || it.row == 0 }
@@ -416,6 +415,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                         addingToRowIndex = null
                         handleAddZombie()
                     },
+                    objectMap = objectMap,
                     onZombieClick = { zombie ->
                         editingZombie = zombie
                         showBottomSheet = true
@@ -432,7 +432,6 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        // 标题行
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
@@ -451,7 +450,6 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                                 color = themeColor
                             )
                             Spacer(Modifier.weight(1f))
-                            // 当前值显示
                             Text(
                                 text = "${batchLevelFloat.roundToInt()} 阶",
                                 fontWeight = FontWeight.Bold,
@@ -462,12 +460,10 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
 
                         Spacer(Modifier.height(12.dp))
 
-                        // 操作行
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            // 拖动条
                             Slider(
                                 value = batchLevelFloat,
                                 onValueChange = { batchLevelFloat = it },
@@ -478,12 +474,9 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
 
                             Spacer(Modifier.width(16.dp))
 
-                            // 确认按钮
                             Button(
                                 onClick = { showBatchConfirmDialog = true },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = themeColor
-                                ),
+                                colors = ButtonDefaults.buttonColors(containerColor = themeColor),
                                 contentPadding = PaddingValues(horizontal = 12.dp),
                                 modifier = Modifier.height(36.dp)
                             ) {

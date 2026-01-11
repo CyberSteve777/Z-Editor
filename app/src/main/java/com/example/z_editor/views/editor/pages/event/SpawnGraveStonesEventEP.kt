@@ -58,10 +58,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.GravestonePoolItem
+import com.example.z_editor.data.LocationData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SpawnGraveStonesData
-import com.example.z_editor.data.SpawnPositionData
 import com.example.z_editor.data.repository.GridItemRepository
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
@@ -108,12 +108,12 @@ fun SpawnGraveStonesEventEP(
 
     fun togglePosition(col: Int, row: Int) {
         val currentPool = actionDataState.value.spawnPositionsPool.toMutableList()
-        val existing = currentPool.find { it.mX == col && it.mY == row }
+        val existing = currentPool.find { it.x == col && it.y == row }
 
         if (existing != null) {
             currentPool.remove(existing)
         } else {
-            currentPool.add(SpawnPositionData(mX = col, mY = row))
+            currentPool.add(LocationData(x = col, y = row))
         }
 
         actionDataState.value = actionDataState.value.copy(spawnPositionsPool = currentPool)
@@ -245,7 +245,7 @@ fun SpawnGraveStonesEventEP(
                                     Row(Modifier.weight(1f)) {
                                         for (col in 0..8) {
                                             val isSelected =
-                                                actionDataState.value.spawnPositionsPool.any { it.mX == col && it.mY == row }
+                                                actionDataState.value.spawnPositionsPool.any { it.x == col && it.y == row }
 
                                             Box(
                                                 modifier = Modifier

@@ -92,7 +92,6 @@ fun ModifyConveyorEventEP(
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    // 1. 状态加载 (模仿地下出怪EP的结构)
     val actionDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
@@ -107,7 +106,6 @@ fun ModifyConveyorEventEP(
         rootLevelFile.objects.any { it.objClass == "ConveyorSeedBankProperties" }
     }
 
-    // 2. 同步方法
     fun sync(newData: ModifyConveyorWaveActionData) {
         actionDataState.value = newData
         rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
@@ -115,7 +113,6 @@ fun ModifyConveyorEventEP(
         }
     }
 
-    // RTID 处理工具
     fun wrapRtid(plantId: String): String = "RTID($plantId@PlantTypes)"
     fun unwrapRtid(rtidStr: String): String = RtidParser.parse(rtidStr)?.alias ?: rtidStr
 
@@ -148,7 +145,7 @@ fun ModifyConveyorEventEP(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF4AC380),
                     titleContentColor = Color.White,
-                    actionIconContentColor = Color.White // 确保图标是白色的
+                    actionIconContentColor = Color.White
                 )
             )
         }
@@ -157,7 +154,7 @@ fun ModifyConveyorEventEP(
             EditorHelpDialog(
                 title = "传送带事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF4AC380) // 使用与TopBar一致的主题色
+                themeColor = Color(0xFF4AC380)
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -221,7 +218,7 @@ fun ModifyConveyorEventEP(
             ModifyConveyorList(
                 title = "添加植物 (Add List)",
                 icon = Icons.Default.AddCircleOutline,
-                titleColor = Color(0xFF2E7D32), // 绿色代表添加
+                titleColor = Color(0xFF2E7D32),
                 items = actionDataState.value.addList,
                 onListChanged = { newList ->
                     sync(actionDataState.value.copy(addList = newList))
@@ -237,7 +234,7 @@ fun ModifyConveyorEventEP(
                 title = "移除植物 (Remove List)",
                 icon = Icons.Default.RemoveCircleOutline,
                 titleColor = Color(0xFFC62828),
-                items = actionDataState.value.removeList, // 这里是 removeList
+                items = actionDataState.value.removeList,
                 onListChanged = { newList ->
                     sync(actionDataState.value.copy(removeList = newList))
                 },

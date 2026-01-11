@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.data.LocationData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.ZombossBattleIntroData
 import com.example.z_editor.data.ZombossBattleModuleData
@@ -92,17 +93,27 @@ fun ZombossBattleTab(
         }
     }
 
-    val currentBossType = battleDataState.value.zombossMechType
     val currentBossInfo = ZombossRepository.get(battleDataState.value.zombossMechType)
     val themeColor = Color(0xFF673AB7)
 
     fun onZombossChanged(newType: String) {
         val newInfo = ZombossRepository.get(newType) ?: return
         val newPhaseCount = newInfo.defaultPhaseCount
+        val newSpawnPosition: LocationData? = when (newType) {
+            "zombossmech_pvz1_robot_hard", "zombossmech_pvz1_robot_normal", "zombossmech_pvz1_robot_1",
+            "zombossmech_pvz1_robot_2", "zombossmech_pvz1_robot_3", "zombossmech_pvz1_robot_4",
+            "zombossmech_pvz1_robot_5", "zombossmech_pvz1_robot_6", "zombossmech_pvz1_robot_7",
+            "zombossmech_pvz1_robot_8", "zombossmech_pvz1_robot_9" -> null
+            "zombossmech_iceage", "zombossmech_eighties", "zombossmech_renai", "zombossmech_modern_iceage",
+            "zombossmech_modern_eighties", "zombossmech_iceage_vacation", "zombossmech_eighties_vacation",
+            "zombossmech_iceage_12th", "zombossmech_eighties_12th", "zombossmech_renai_12th" -> LocationData(6, 4)
+            else -> LocationData(6, 3)
+        }
 
         battleDataState.value = battleDataState.value.copy(
             zombossMechType = newType,
-            zombossStageCount = newPhaseCount
+            zombossStageCount = newPhaseCount,
+            zombossSpawnGridPosition = newSpawnPosition
         )
 
         if (introDataState.value != null) {

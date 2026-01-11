@@ -481,7 +481,7 @@ fun ResourceListEditor(
     description: String,
     items: MutableList<String>,
     accentColor: Color,
-    isZombie: Boolean, // 新增参数：区分是植物还是僵尸
+    isZombie: Boolean,
     onListChanged: (MutableList<String>) -> Unit,
     onAddRequest: ((String) -> Unit) -> Unit
 ) {
@@ -498,7 +498,8 @@ fun ResourceListEditor(
                 }
                 IconButton(onClick = {
                     onAddRequest { selectedId ->
-                        val newList = items.toMutableList().apply { add(selectedId) }
+                        val aliases = ZombieRepository.buildAliases(selectedId)
+                        val newList = items.toMutableList().apply { add(aliases) }
                         onListChanged(newList)
                     }
                 }) {
@@ -523,7 +524,6 @@ fun ResourceListEditor(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items.forEachIndexed { index, itemId ->
-                        // 根据 isZombie 决定解析方式
                         val displayName = if (isZombie) {
                             ZombieRepository.getName(itemId)
                         } else {

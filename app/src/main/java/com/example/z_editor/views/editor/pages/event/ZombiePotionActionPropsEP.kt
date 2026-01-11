@@ -1,7 +1,6 @@
 package com.example.z_editor.views.editor.pages.event
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -63,7 +62,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.PotionLocationData
+import com.example.z_editor.data.LocationData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.ZombiePotionActionPropsData
@@ -117,7 +116,7 @@ fun ZombiePotionActionPropsEP(
         onRequestGridItemSelection { typeName ->
             val newList = eventDataState.value.potions.toMutableList()
             val newItem = ZombiePotionData(
-                location = PotionLocationData(x = selectedX, y = selectedY),
+                location = LocationData(x = selectedX, y = selectedY),
                 type = typeName
             )
             newList.add(newItem)

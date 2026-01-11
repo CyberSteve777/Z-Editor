@@ -71,7 +71,6 @@ fun TidalChangeEventEP(
     var showHelpDialog by remember { mutableStateOf(false) }
     val currentAlias = RtidParser.parse(rtid)?.alias ?: "TidalChangeEvent"
 
-    // 数据状态
     val actionDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
@@ -86,7 +85,6 @@ fun TidalChangeEventEP(
         mutableStateOf(data)
     }
 
-    // 同步函数
     fun sync() {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         if (obj != null) {
@@ -94,7 +92,6 @@ fun TidalChangeEventEP(
         }
     }
 
-    // 计算潮水位置显示（ChangeAmount 和 StartingWaveLocation 的含义相同）
     val changeAmount = actionDataState.value.tidalChange.changeAmount
 
     val isCellInWater: (Int) -> Boolean = remember(changeAmount) {

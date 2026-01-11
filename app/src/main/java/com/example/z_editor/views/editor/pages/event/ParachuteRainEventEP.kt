@@ -234,7 +234,6 @@ fun ParachuteRainEventEP(
                         Text("位置与时间参数", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         Spacer(Modifier.height(12.dp))
 
-                        // 列范围
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             NumberInputInt(
                                 value = actionDataState.value.columnStart,

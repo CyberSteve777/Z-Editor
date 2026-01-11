@@ -179,7 +179,6 @@ fun NumberInputInt(
     OutlinedTextField(
         value = text,
         onValueChange = { input ->
-            // 过滤非数字字符
             val filtered = input.filter { it.isDigit() || it == '-' }
             text = filtered
             val num = filtered.toIntOrNull()
@@ -230,12 +229,12 @@ fun NumberInputDouble(
     )
 }
 
-
 @Composable
 fun LaneRow(
     laneLabel: String,
     laneColor: Color,
     zombies: List<ZombieSpawnData>,
+    objectMap: Map<String, PvzObject>,
     onAddClick: () -> Unit,
     onZombieClick: (ZombieSpawnData) -> Unit
 ) {
@@ -270,13 +269,111 @@ fun LaneRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(zombies) { zombie ->
-                CompactZombieCard(zombie = zombie, onClick = { onZombieClick(zombie) })
+                CompactZombieCard(
+                    zombie = zombie,
+                    objectMap = objectMap,
+                    onClick = { onZombieClick(zombie) }
+                )
             }
             item {
                 CompactAddButton(onClick = onAddClick, color = laneColor)
             }
         }
         HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.3f))
+    }
+}
+
+@Composable
+fun CompactZombieCard(
+    zombie: ZombieSpawnData,
+    objectMap: Map<String, PvzObject>,
+    onClick: () -> Unit
+) {
+    val resolverResult = remember(zombie.type, objectMap) {
+        ZombieRepository.resolveZombieType(zombie.type, objectMap)
+    }
+    val realTypeName = resolverResult.first
+    val isValid = resolverResult.second
+
+    val parsedRtid = remember(zombie.type) { RtidParser.parse(zombie.type) }
+    val isCustom = parsedRtid?.source == "CurrentLevel"
+    val alias = parsedRtid?.alias ?: "Unknown"
+
+    val displayName = if (isCustom) alias else ZombieRepository.getName(realTypeName)
+
+    val info = remember(realTypeName) {
+        ZombieRepository.search(realTypeName, ZombieTag.All).firstOrNull()
+    }
+
+    val isElite = zombie.isElite
+    val level = zombie.level ?: 1
+
+    val placeholderContent = @Composable {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(if (isValid) Color(0xFFE0E0E0) else Color(0xFFFFEBEE)),
+            contentAlignment = Alignment.Center
+        ) {
+            if (!isValid) {
+                Icon(Icons.Default.ErrorOutline, null, tint = Color.Red, modifier = Modifier.size(24.dp))
+            } else {
+                Text(
+                    text = displayName.take(1).uppercase(),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(if (isValid) Color.White else Color(0xFFFFEBEE))
+            .border(0.5.dp, if (isValid) Color.LightGray else Color.Red, RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+    ) {
+        if (isValid) {
+            AssetImage(
+                path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
+                contentDescription = displayName,
+                modifier = Modifier.fillMaxSize(),
+                filterQuality = FilterQuality.Medium,
+                placeholder = placeholderContent
+            )
+        } else {
+            placeholderContent()
+        }
+        if (isValid) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .background(
+                        color = when {
+                            isCustom -> Color(0xFFFF9800)
+                            isElite -> Color(0xFF673AB7)
+                            else -> Color.Gray
+                        },
+                        shape = RoundedCornerShape(bottomStart = 6.dp)
+                    )
+                    .padding(horizontal = 4.dp, vertical = 1.dp)
+            ) {
+                Text(
+                    text = when {
+                        isElite -> "E"
+                        isCustom -> "C"
+                        else -> "$level"
+                    },
+                    color = Color.White,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     }
 }
 
@@ -296,104 +393,52 @@ fun CompactAddButton(onClick: () -> Unit, color: Color) {
 }
 
 @Composable
-fun CompactZombieCard(zombie: ZombieSpawnData, onClick: () -> Unit) {
-    val realTypeName = remember(zombie.type) {
-        val alias = RtidParser.parse(zombie.type)?.alias ?: zombie.type
-        ZombiePropertiesRepository.getTypeNameByAlias(alias)
-    }
-    val info = remember(realTypeName) {
-        ZombieRepository.search(realTypeName, ZombieTag.All).firstOrNull()
-    }
-    val displayName = info?.name ?: realTypeName
-    val isElite = zombie.isElite
-    val level = zombie.level ?: 1
-
-    val placeholderContent = @Composable {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFE0E0E0)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = displayName.take(1).uppercase(),
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.White)
-            .border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp))
-            .clickable(onClick = onClick)
-    ) {
-        AssetImage(
-            path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
-            contentDescription = displayName,
-            modifier = Modifier.fillMaxSize(),
-            filterQuality = FilterQuality.Medium,
-            placeholder = placeholderContent
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .background(
-                    color = if (isElite) Color(0xFF673AB7)
-                    else Color.Gray,
-                    shape = RoundedCornerShape(bottomStart = 6.dp)
-                )
-                .padding(horizontal = 5.dp)
-        ) {
-            Text(
-                text = if (isElite) "E" else "$level",
-                color = Color.White,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
 fun ZombieEditSheetContent(
     originalZombie: ZombieSpawnData,
+    objectMap: Map<String, PvzObject>,
     onValueChange: (ZombieSpawnData) -> Unit,
     onCopy: (() -> Unit)? = null,
     onDelete: () -> Unit
 ) {
-    val realTypeName = remember(originalZombie.type) {
-        val alias = RtidParser.parse(originalZombie.type)?.alias ?: originalZombie.type
-        ZombiePropertiesRepository.getTypeNameByAlias(alias)
+    // === 核心解析逻辑 ===
+    val resolverResult = remember(originalZombie.type, objectMap) {
+        ZombieRepository.resolveZombieType(originalZombie.type, objectMap)
     }
-    val displayName = ZombieRepository.getName(realTypeName)
-    val info = remember(realTypeName) {
-        ZombieRepository.search(realTypeName, ZombieTag.All).firstOrNull()
+    val baseTypeName = resolverResult.first
+    val isValid = resolverResult.second
+    val rtidInfo = remember(originalZombie.type) { RtidParser.parse(originalZombie.type) }
+    val isCustom = rtidInfo?.source == "CurrentLevel"
+
+    val alias = rtidInfo?.alias ?: originalZombie.type
+    val displayName = if (isCustom) alias else ZombieRepository.getName(baseTypeName)
+    val subtitle = if (isCustom) "基于: $baseTypeName" else baseTypeName
+    val info = remember(baseTypeName) {
+        ZombieRepository.search(baseTypeName, ZombieTag.All).firstOrNull()
     }
+
     val isElite = originalZombie.isElite
 
     val placeholderContent = @Composable {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFEEEEEE), RoundedCornerShape(16.dp))
-                .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp)),
+                .background(if(isValid) Color(0xFFEEEEEE) else Color(0xFFFFEBEE), RoundedCornerShape(16.dp))
+                .border(1.dp, if(isValid) Color.LightGray else Color.Red, RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = displayName.take(1).uppercase(),
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray,
-                fontSize = 24.sp
-            )
+            if (isValid) {
+                Text(
+                    text = displayName.take(1).uppercase(),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    fontSize = 24.sp
+                )
+            } else {
+                Icon(Icons.Default.ErrorOutline, null, tint = Color.Red, modifier = Modifier.size(32.dp))
+            }
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -403,28 +448,51 @@ fun ZombieEditSheetContent(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AssetImage(
-                path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
+                path = if (isValid && info?.icon != null) "images/zombies/${info.icon}" else null,
                 contentDescription = displayName,
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color.White)
-                    .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp)),
+                    .border(1.dp, if(isValid) Color.LightGray else Color.Red, RoundedCornerShape(16.dp)),
                 filterQuality = FilterQuality.Medium,
                 placeholder = placeholderContent
             )
             Spacer(Modifier.width(12.dp))
             Column {
-                Text(displayName, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                if (isElite) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "精英僵尸",
-                        fontSize = 14.sp,
-                        color = Color(0xFF673AB7),
-                        fontWeight = FontWeight.Bold
+                        text = displayName,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = if (isValid) Color.Black else Color.Red
                     )
+                    if (isCustom) {
+                        Spacer(Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFFFF9800), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 4.dp, vertical = 1.dp)
+                        ) {
+                            Text("自定义", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                    else if (isElite) {
+                        Spacer(Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFF673AB7), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 4.dp, vertical = 1.dp)
+                        ) {
+                            Text("精英", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+
+                if (!isValid) {
+                    Text("引用失效 (找不到定义)", fontSize = 12.sp, color = Color.Red)
                 } else {
-                    Text(realTypeName, fontSize = 14.sp, color = Color.Gray)
+                    Text(subtitle, fontSize = 14.sp, color = Color.Gray)
                 }
             }
         }
@@ -433,11 +501,10 @@ fun ZombieEditSheetContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // 复制按钮 (如果存在)
             if (onCopy != null) {
                 Button(
                     onClick = onCopy,
-                    modifier = Modifier.weight(1f), // 平分宽度
+                    modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFE3F2FD),
                         contentColor = Color(0xFF1976D2)
@@ -467,35 +534,36 @@ fun ZombieEditSheetContent(
             }
         }
 
-        if (isElite) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFEEEEEE), RoundedCornerShape(12.dp))
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("僵尸等级", fontSize = 16.sp, color = Color.Gray)
-                Spacer(Modifier.weight(1f))
-                Text("Elite", fontWeight = FontWeight.Bold, color = Color(0xFF673AB7))
-            }
-        } else {
-            StepperControl(
-                label = "僵尸等级",
-                valueText = "${originalZombie.level ?: 1}",
-                onMinus = {
-                    val current = originalZombie.level ?: 1
-                    val newLevel = (current - 1).coerceAtLeast(1)
-                    onValueChange(originalZombie.copy(level = newLevel))
-                },
-                onPlus = {
-                    val current = originalZombie.level ?: 1
-                    val newLevel = (current + 1).coerceAtMost(10)
-                    onValueChange(originalZombie.copy(level = newLevel))
+        if (isValid) {
+            if (isElite) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFEEEEEE), RoundedCornerShape(12.dp))
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("僵尸等级", fontSize = 16.sp, color = Color.Gray)
+                    Spacer(Modifier.weight(1f))
+                    Text("Elite", fontWeight = FontWeight.Bold, color = Color(0xFF673AB7))
                 }
-            )
+            } else {
+                StepperControl(
+                    label = "僵尸等级",
+                    valueText = "${originalZombie.level ?: 0}",
+                    onMinus = {
+                        val current = originalZombie.level ?: 0
+                        val newLevel = (current - 1).coerceAtLeast(0)
+                        onValueChange(originalZombie.copy(level = if (newLevel == 0) null else newLevel))
+                    },
+                    onPlus = {
+                        val current = originalZombie.level ?: 0
+                        val newLevel = (current + 1).coerceAtMost(10)
+                        onValueChange(originalZombie.copy(level = if (newLevel == 0) null else newLevel))
+                    }
+                )
+            }
         }
-
         val currentRow = originalZombie.row ?: 0
         StepperControl(
             label = "所在行",
@@ -521,7 +589,6 @@ fun ZombieEditSheetContent(
         Spacer(Modifier.height(16.dp))
     }
 }
-
 @Composable
 fun StepperControl(
     label: String,

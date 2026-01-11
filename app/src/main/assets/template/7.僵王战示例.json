@@ -118,6 +118,10 @@
         "ZombossDeathColumn": 5,
         "ZombossDeathRow": 3,
         "ZombossMechType": "zombossmech_future",
+        "ZombossSpawnGridPosition": {
+          "mX": 6,
+          "mY": 3
+        },
         "ZombossStageCount": 3
       }
     }

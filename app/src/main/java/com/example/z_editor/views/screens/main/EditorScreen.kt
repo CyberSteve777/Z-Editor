@@ -513,6 +513,11 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                 refreshTrigger++
             },
 
+            onStageCanceled = {
+                currentSubScreen = EditorSubScreen.BasicInfo
+                refreshTrigger++
+            },
+
             onAddChallenge = { info ->
                 var alias = info.defaultAlias
                 var count = 0

@@ -567,7 +567,7 @@ fun PlantDetailDialog(
                     NumberInputInt(
                         value = tempLevel,
                         onValueChange = { input ->
-                            tempLevel = input.coerceIn(0, 5)
+                            tempLevel = if (!isTool) input.coerceIn(0, 5) else 0
                         },
                         label = "植物等级",
                         modifier = Modifier.weight(1f),

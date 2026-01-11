@@ -1,7 +1,7 @@
 package com.example.z_editor.views.editor.pages.module
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,13 +27,11 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
@@ -69,6 +67,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -77,7 +76,6 @@ import com.example.z_editor.data.InitialZombieData
 import com.example.z_editor.data.InitialZombieEntryData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
-import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.data.repository.ZombieTag
 import com.example.z_editor.views.components.AssetImage
@@ -104,6 +102,7 @@ fun InitialZombieEntryEP(
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val moduleDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
@@ -135,20 +134,21 @@ fun InitialZombieEntryEP(
     }
 
     fun handleAddZombie() {
-        onRequestZombieSelection { zombieId ->
-            val alias = RtidParser.parse(zombieId)?.alias ?: zombieId
-            val typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
-
-            val newList = moduleDataState.value.placements.toMutableList()
-            val newPlacement = InitialZombieData(
-                gridX = selectedX,
-                gridY = selectedY,
-                typeName = typeName,
-                condition = "icecubed"
-            )
-            newList.add(newPlacement)
-            moduleDataState.value = moduleDataState.value.copy(placements = newList)
-            sync()
+        onRequestZombieSelection { selectedId ->
+            val isElite = ZombieRepository.isElite(selectedId)
+            val aliases = ZombieRepository.buildAliases(selectedId)
+            if (!isElite) {
+                val newList = moduleDataState.value.placements.toMutableList()
+                val newPlacement = InitialZombieData(
+                    gridX = selectedX,
+                    gridY = selectedY,
+                    typeName = aliases,
+                    condition = "icecubed"
+                )
+                newList.add(newPlacement)
+                moduleDataState.value = moduleDataState.value.copy(placements = newList)
+                sync()
+            } else Toast.makeText(context, "不能添加精英僵尸", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -522,8 +522,8 @@ fun ZombieIconSmall(typeName: String) {
     } else {
         Box(
             modifier = Modifier
-                .fillMaxSize(0.7f)
-                .background(Color(0xFF5D4037), cardShape)
+                .fillMaxSize(0.9f)
+                .background(Color.LightGray, cardShape)
         )
     }
 }
@@ -534,7 +534,9 @@ fun InitialZombieCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val info = remember(item.typeName) { ZombieRepository.search(item.typeName, ZombieTag.All).firstOrNull() }
+    val info = remember(item.typeName) {
+        ZombieRepository.search(item.typeName, ZombieTag.All).firstOrNull()
+    }
 
     Card(
         onClick = onClick,

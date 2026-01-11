@@ -49,7 +49,7 @@ fun BeachStageEventEP(
     onBack: () -> Unit,
     rootLevelFile: PvzLevelFile,
     scrollState: LazyListState,
-    onRequestZombieSelection: ((String) -> Unit) -> Unit // 新增：请求选择僵尸的回调
+    onRequestZombieSelection: ((String) -> Unit) -> Unit
 ) {
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
@@ -66,7 +66,6 @@ fun BeachStageEventEP(
         mutableStateOf(data)
     }
 
-    // 同步保存
     fun sync(newData: BeachStageEventData) {
         actionDataState.value = newData
         rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
@@ -74,7 +73,6 @@ fun BeachStageEventEP(
         }
     }
 
-    // 获取当前僵尸的显示信息 (用于UI展示头像和名称)
     val currentZombieInfo = remember(actionDataState.value.zombieName) {
         val realName = ZombiePropertiesRepository.getTypeNameByAlias(actionDataState.value.zombieName)
         val name = ZombieRepository.getName(realName)
@@ -114,7 +112,6 @@ fun BeachStageEventEP(
             )
         }
     ) { padding ->
-        // 帮助弹窗
         if (showHelpDialog) {
             EditorHelpDialog(
                 title = "退潮突袭事件说明",
@@ -160,7 +157,6 @@ fun BeachStageEventEP(
 
                         Spacer(Modifier.height(16.dp))
 
-                        // 僵尸选择卡片
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -169,9 +165,8 @@ fun BeachStageEventEP(
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable {
                                     onRequestZombieSelection { selectedId ->
-                                        val alias = RtidParser.parse(selectedId)?.alias ?: selectedId
-                                        val typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
-                                        sync(actionDataState.value.copy(zombieName = typeName))
+                                        val aliases = ZombieRepository.buildAliases(selectedId)
+                                        sync(actionDataState.value.copy(zombieName = aliases))
                                     }
                                 }
                                 .padding(12.dp),

@@ -1,5 +1,6 @@
 package com.example.z_editor.views.editor.pages.module
 
+import android.widget.Toast
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -84,6 +86,7 @@ fun WaveManagerModulePropertiesEP(
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val moduleDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
@@ -185,7 +188,7 @@ fun WaveManagerModulePropertiesEP(
                 )
                 HelpSection(
                     title = "僵尸池设置",
-                    body = "点数为正数时，出怪使用的僵尸从僵尸池中选取。在波次容器编辑页面内可查看每种僵尸的出现期望。点数为负数时，会从自然出怪事件中扣除相应点数的僵尸。"
+                    body = "点数为正数时，出怪使用的僵尸从僵尸池中选取。在波次容器编辑页面内可查看每种僵尸的出现期望。点数为负数时，会从自然出怪事件中扣除相应点数的僵尸。注意点数出怪池不应该写精英怪以及自定义僵尸。"
                 )
             }
         }
@@ -204,9 +207,11 @@ fun WaveManagerModulePropertiesEP(
                 ),
                 elevation = CardDefaults.cardElevation(1.dp)
             ) {
-                Column(modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             if (isPropsValid) Icons.Default.CheckCircle else Icons.Default.Warning,
@@ -306,10 +311,14 @@ fun WaveManagerModulePropertiesEP(
                     zombieLevel = firstGroup.zombieLevel,
                     onAdd = {
                         onRequestZombieSelection { selectedId ->
-                            firstGroup.zombiePool.add(RtidParser.build(selectedId, "ZombieTypes"))
-                            firstGroup.zombieLevel.add(1)
-                            sync()
-                            refreshTrigger++
+                            val isElite = ZombieRepository.isElite(selectedId)
+                            val aliases = ZombieRepository.buildAliases(selectedId)
+                            if (!isElite) {
+                                firstGroup.zombiePool.add(RtidParser.build(aliases, "ZombieTypes"))
+                                firstGroup.zombieLevel.add(1)
+                                sync()
+                                refreshTrigger++
+                            } else Toast.makeText(context, "不能添加精英僵尸", Toast.LENGTH_SHORT).show()
                         }
                     },
                     onRemove = { index ->

@@ -57,7 +57,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.GridSquareBlacklistData
+import com.example.z_editor.data.LocationData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.VaseBreakerPresetData
@@ -127,7 +127,7 @@ fun VaseBreakerTab(
     val maxCol = data.maxColumnIndex
 
     val blacklistCount = data.gridSquareBlacklist.count {
-        it.mx in minCol..maxCol && it.my in 0..4
+        it.x in minCol..maxCol && it.y in 0..4
     }
 
     val totalSlots = (maxCol - minCol + 1) * 5 - blacklistCount
@@ -214,7 +214,7 @@ fun VaseBreakerTab(
                                     Row(Modifier.weight(1f)) {
                                         for (col in 0..8) {
                                             val isActiveZone = col in minCol..maxCol
-                                            val isBlacklisted = data.gridSquareBlacklist.any { it.mx == col && it.my == row } == true
+                                            val isBlacklisted = data.gridSquareBlacklist.any { it.x == col && it.y == row } == true
 
                                             Box(
                                                 modifier = Modifier
@@ -231,12 +231,12 @@ fun VaseBreakerTab(
                                                     .clickable {
                                                         updateData { mutableData ->
                                                             val blacklist = mutableData.gridSquareBlacklist
-                                                            val existing = blacklist.find { it.mx == col && it.my == row }
+                                                            val existing = blacklist.find { it.x == col && it.y == row }
 
                                                             if (existing != null) {
                                                                 blacklist.remove(existing)
                                                             } else {
-                                                                blacklist.add(GridSquareBlacklistData(col, row))
+                                                                blacklist.add(LocationData(col, row))
                                                             }
                                                             mutableData.gridSquareBlacklist = blacklist
                                                         }

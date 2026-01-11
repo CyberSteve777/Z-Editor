@@ -1,8 +1,20 @@
 package com.example.z_editor.views.editor.pages.event
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,10 +24,25 @@ import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Widgets
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,10 +54,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.GridItemSpawnerZombieData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SpawnZombiesFromGridItemData
+import com.example.z_editor.data.ZombieSpawnData
 import com.example.z_editor.data.repository.GridItemRepository
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
@@ -62,12 +89,27 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
 
     val themeColor = Color(0xFF607D8B)
 
+    val objectMap = remember(rootLevelFile) {
+        rootLevelFile.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+    }
+
     val actionDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
             gson.fromJson(obj?.objData, SpawnZombiesFromGridItemData::class.java)
         } catch (_: Exception) {
             SpawnZombiesFromGridItemData()
+        }
+
+        data.zombies.forEach { zombie ->
+            val (baseTypeName, isValid) = ZombieRepository.resolveZombieType(zombie.type, objectMap)
+            zombie.isElite = ZombieRepository.isElite(baseTypeName)
+
+            if (zombie.isElite) {
+                zombie.level = null
+            } else if ((zombie.level ?: 1) < 1) {
+                zombie.level = 1
+            }
         }
         mutableStateOf(data)
     }
@@ -83,21 +125,24 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
     }
 
     fun addGridType() {
-        onRequestGridItemSelection { typeName ->
+        onRequestGridItemSelection { selectedId ->
             val newList = actionDataState.value.gridTypes.toMutableList()
-            newList.add(RtidParser.build(typeName, "GridItemTypes"))
+            newList.add(RtidParser.build(selectedId, "GridItemTypes"))
             actionDataState.value = actionDataState.value.copy(gridTypes = newList)
             sync()
         }
     }
 
     fun addZombie() {
-        onRequestZombieSelection { typeName ->
+        onRequestZombieSelection { selectedId ->
+            val aliases = ZombieRepository.buildAliases(selectedId)
+            val isElite = ZombieRepository.isElite(selectedId)
             val newList = actionDataState.value.zombies.toMutableList()
             newList.add(
-                GridItemSpawnerZombieData(
-                    type = RtidParser.build(typeName, "ZombieTypes"),
-                    level = 1
+                ZombieSpawnData(
+                    type = RtidParser.build(aliases, "ZombieTypes"),
+                    level = if (isElite) null else 1,
+                    row = null
                 )
             )
             actionDataState.value = actionDataState.value.copy(zombies = newList)
@@ -113,8 +158,18 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
             TopAppBar(
                 title = {
                     Column {
-                        Text("编辑 $currentAlias", fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("事件类型：障碍物出怪", fontSize = 14.sp, fontWeight = FontWeight.Normal)
+                        Text(
+                            "编辑 $currentAlias",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            "事件类型：障碍物出怪",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal
+                        )
                     }
                 },
                 navigationIcon = {
@@ -171,14 +226,20 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("基础参数", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(
+                            "基础参数",
+                            color = themeColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        )
                         Spacer(Modifier.height(12.dp))
 
                         OutlinedTextField(
                             value = actionDataState.value.waveStartMessage ?: "",
                             onValueChange = {
                                 val newVal = if (it.isBlank()) null else it
-                                actionDataState.value = actionDataState.value.copy(waveStartMessage = newVal)
+                                actionDataState.value =
+                                    actionDataState.value.copy(waveStartMessage = newVal)
                                 sync()
                             },
                             label = { Text("提示信息 (WaveStartMessage)") },
@@ -201,7 +262,8 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                         NumberInputInt(
                             value = actionDataState.value.zombieSpawnWaitTime,
                             onValueChange = {
-                                actionDataState.value = actionDataState.value.copy(zombieSpawnWaitTime = it)
+                                actionDataState.value =
+                                    actionDataState.value.copy(zombieSpawnWaitTime = it)
                                 sync()
                             },
                             color = themeColor,
@@ -256,12 +318,16 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                     GridItemRepository.isValid(alias)
                 }
 
-                val displayName = if (source == "CurrentLevel") alias else GridItemRepository.getName(alias)
+                val displayName =
+                    if (source == "CurrentLevel") alias else GridItemRepository.getName(alias)
 
                 Card(
                     colors = CardDefaults.cardColors(containerColor = if (!isValid) Color(0xFFF8F1F1) else Color.White),
                     elevation = CardDefaults.cardElevation(1.dp),
-                    border = if (!isValid) androidx.compose.foundation.BorderStroke(1.dp, Color.Red) else null
+                    border = if (!isValid) androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        Color.Red
+                    ) else null
                 ) {
                     Row(
                         modifier = Modifier.padding(12.dp),
@@ -300,7 +366,8 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                             onClick = {
                                 val newList = actionDataState.value.gridTypes.toMutableList()
                                 newList.removeAt(index)
-                                actionDataState.value = actionDataState.value.copy(gridTypes = newList)
+                                actionDataState.value =
+                                    actionDataState.value.copy(gridTypes = newList)
                                 sync()
                             }
                         ) {
@@ -335,22 +402,21 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                 }
             }
 
+
+
             items(actionDataState.value.zombies.size) { index ->
                 val zombieData = actionDataState.value.zombies[index]
 
+                val (baseTypeName, isValid) = ZombieRepository.resolveZombieType(zombieData.type, objectMap)
+
                 val parsed = RtidParser.parse(zombieData.type)
+                val isCustom = parsed?.source == "CurrentLevel"
                 val alias = parsed?.alias ?: zombieData.type
-                val source = parsed?.source
 
-                val isValid = if (source == "CurrentLevel") {
-                    internalObjectAliases.contains(alias)
-                } else {
-                    ZombieRepository.isValid(alias)
-                }
+                val displayName = if (isCustom) alias else ZombieRepository.getName(baseTypeName)
 
-                val realTypeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
-                val info = ZombieRepository.search(realTypeName, ZombieTag.All).firstOrNull()
-                val displayName = info?.name ?: realTypeName
+                val info = ZombieRepository.search(baseTypeName, ZombieTag.All).firstOrNull()
+                val isElite = zombieData.isElite
 
                 Card(
                     colors = CardDefaults.cardColors(containerColor = if (!isValid) Color(0xFFF8F1F1) else Color.White),
@@ -360,25 +426,65 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                     Column(modifier = Modifier.padding(12.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             AssetImage(
-                                path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
+                                path = if (isValid && info?.icon != null) "images/zombies/${info.icon}" else null,
                                 contentDescription = displayName,
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(Color(0xFFEEEEEE)),
+                                    .background(if (isValid) Color(0xFFEEEEEE) else Color(0xFFFFEBEE))
+                                    .border(0.5.dp, if(isValid) Color.Transparent else Color.Red, RoundedCornerShape(8.dp)),
                                 filterQuality = FilterQuality.Medium,
                                 placeholder = {
-                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                        Text(displayName.take(1), fontWeight = FontWeight.Bold)
+                                    Box(
+                                        Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (isValid) {
+                                            Text(displayName.take(1), fontWeight = FontWeight.Bold)
+                                        } else {
+                                            Icon(Icons.Default.Widgets, null, tint = Color.Red) // 或者用 ErrorOutline
+                                        }
                                     }
                                 }
                             )
                             Spacer(Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(displayName, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Text(alias, fontSize = 10.sp, color = Color.Gray)
-                            }
 
+                            Column(modifier = Modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = displayName,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = if (isValid) Color.Black else Color.Red
+                                    )
+                                    if (isCustom) {
+                                        Spacer(Modifier.width(6.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .background(Color(0xFFFF9800), RoundedCornerShape(4.dp))
+                                                .padding(horizontal = 4.dp, vertical = 1.dp)
+                                        ) {
+                                            Text("自定义", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                    else if (isElite) {
+                                        Spacer(Modifier.width(6.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .background(Color(0xFF673AB7), RoundedCornerShape(4.dp))
+                                                .padding(horizontal = 4.dp, vertical = 1.dp)
+                                        ) {
+                                            Text("精英", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                }
+
+                                if (!isValid) {
+                                    Text("引用失效", fontSize = 10.sp, color = Color.Red)
+                                } else {
+                                    Text(if(isCustom) "基于: $baseTypeName" else alias, fontSize = 10.sp, color = Color.Gray)
+                                }
+                            }
 
                             IconButton(
                                 onClick = {
@@ -386,18 +492,25 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                     val zombieToCopy = newList[index]
                                     newList.add(index + 1, zombieToCopy.copy())
 
-                                    actionDataState.value = actionDataState.value.copy(zombies = newList)
+                                    actionDataState.value =
+                                        actionDataState.value.copy(zombies = newList)
                                     sync()
                                 }
                             ) {
-                                Icon(Icons.Default.ContentCopy, null, tint = Color.Gray, modifier = Modifier.size(18.dp))
+                                Icon(
+                                    Icons.Default.ContentCopy,
+                                    null,
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(18.dp)
+                                )
                             }
 
                             IconButton(
                                 onClick = {
                                     val newList = actionDataState.value.zombies.toMutableList()
                                     newList.removeAt(index)
-                                    actionDataState.value = actionDataState.value.copy(zombies = newList)
+                                    actionDataState.value =
+                                        actionDataState.value.copy(zombies = newList)
                                     sync()
                                 }
                             ) {
@@ -407,29 +520,54 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
 
                         Spacer(Modifier.height(8.dp))
 
-                        StepperControl(
-                            label = "僵尸等级",
-                            valueText = "${zombieData.level}",
-                            onMinus = {
-                                val current = zombieData.level
-                                if (current > 1) {
-                                    val newList = actionDataState.value.zombies.toMutableList()
-                                    newList[index] = zombieData.copy(level = current - 1)
-                                    actionDataState.value = actionDataState.value.copy(zombies = newList)
-                                    sync()
+                        // 等级控制 (仅有效引用时显示)
+                        if (isValid) {
+                            if (isElite) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFFEEEEEE), RoundedCornerShape(8.dp))
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("僵尸等级", fontSize = 14.sp, color = Color.Gray)
+                                    Spacer(Modifier.weight(1f))
+                                    Text(
+                                        "Elite",
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF673AB7),
+                                        fontSize = 14.sp
+                                    )
                                 }
-                            },
-                            onPlus = {
-                                val current = zombieData.level
-                                if (current < 10) {
-                                    val newList = actionDataState.value.zombies.toMutableList()
-                                    newList[index] = zombieData.copy(level = current + 1)
-                                    actionDataState.value = actionDataState.value.copy(zombies = newList)
-                                    sync()
-                                }
-                            },
-                            modifier = Modifier.background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
-                        )
+                            } else {
+                                StepperControl(
+                                    label = "僵尸等级",
+                                    valueText = "${zombieData.level}",
+                                    onMinus = {
+                                        val current = zombieData.level
+                                        if (current != null && current > 1) {
+                                            val newList = actionDataState.value.zombies.toMutableList()
+                                            newList[index] = zombieData.copy(level = current - 1)
+                                            actionDataState.value = actionDataState.value.copy(zombies = newList)
+                                            sync()
+                                        }
+                                    },
+                                    onPlus = {
+                                        val current = zombieData.level
+                                        if (current != null && current < 10) {
+                                            val newList = actionDataState.value.zombies.toMutableList()
+                                            newList[index] = zombieData.copy(level = current + 1)
+                                            actionDataState.value = actionDataState.value.copy(zombies = newList)
+                                            sync()
+                                        }
+                                    },
+                                    modifier = Modifier.background(
+                                        Color(0xFFF5F5F5),
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             }

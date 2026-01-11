@@ -128,4 +128,40 @@ object ZombieRepository {
         if (uiConfiguredAliases.contains(id)) return true
         return ZombiePropertiesRepository.isValidAlias(id)
     }
+
+    fun buildAliases(id: String): String {
+        return if (id.contains("iceage_fat_weasel")) "iceage_fat_weasel_elite"
+        else id
+    }
+
+    fun resolveZombieType(rtid: String, objectMap: Map<String, com.example.z_editor.data.PvzObject>? = null): Pair<String, Boolean> {
+        val parsed = com.example.z_editor.data.RtidParser.parse(rtid) ?: return Pair("", false)
+        val alias = parsed.alias
+        if (parsed.source == "ZombieTypes") {
+            val typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
+            val isValid = uiConfiguredAliases.contains(typeName) || ZombiePropertiesRepository.isValidAlias(alias)
+            return Pair(typeName, isValid)
+        }
+
+        if (parsed.source == "CurrentLevel" && objectMap != null) {
+            val customZombieObj = objectMap[alias]
+            if (customZombieObj != null) {
+                try {
+                    val gson = Gson()
+                    if (customZombieObj.objClass == "ZombieType") {
+                        val data = gson.fromJson(customZombieObj.objData, com.example.z_editor.data.ZombieTypeData::class.java)
+                        val baseType = data.typeName
+                        val isValidBase = uiConfiguredAliases.contains(baseType) || ZombiePropertiesRepository.isValidAlias(baseType)
+                        return Pair(baseType, isValidBase)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                return Pair(alias, true)
+            } else {
+                return Pair(alias, false)
+            }
+        }
+        return Pair(alias, false)
+    }
 }

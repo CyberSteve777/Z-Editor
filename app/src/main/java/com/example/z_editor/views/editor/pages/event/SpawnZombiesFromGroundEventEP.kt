@@ -96,6 +96,10 @@ fun SpawnZombiesFromGroundEventEP(
     var batchLevelFloat by remember { mutableFloatStateOf(1f) }
     var showBatchConfirmDialog by remember { mutableStateOf(false) }
 
+    val objectMap = remember(rootLevelFile) {
+        rootLevelFile.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+    }
+
     val actionDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
@@ -105,11 +109,9 @@ fun SpawnZombiesFromGroundEventEP(
         }
 
         data.zombies.forEach { zombie ->
-            val parsed = RtidParser.parse(zombie.type)
-            val realTypeAlias = parsed?.alias ?: ""
-            val typeName = ZombiePropertiesRepository.getTypeNameByAlias(realTypeAlias)
+            val (baseTypeName, isValid) = ZombieRepository.resolveZombieType(zombie.type, objectMap)
+            zombie.isElite = ZombieRepository.isElite(baseTypeName)
 
-            zombie.isElite = ZombieRepository.isElite(typeName)
             if (zombie.isElite) {
                 zombie.level = null
             } else if ((zombie.level ?: 1) < 1) {
@@ -132,14 +134,12 @@ fun SpawnZombiesFromGroundEventEP(
 
     fun handleAddZombie() {
         onRequestZombieSelection { selectedId ->
-            val alias = RtidParser.parse(selectedId)?.alias ?: selectedId
-            val typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
-            val isElite = ZombieRepository.isElite(typeName)
-
+            val isElite = ZombieRepository.isElite(selectedId)
+            val aliases = ZombieRepository.buildAliases(selectedId)
             val newZombie = ZombieSpawnData(
-                type = RtidParser.build(typeName, "ZombieTypes"),
+                type = RtidParser.build(aliases, "ZombieTypes"),
                 row = addingToRowIndex,
-                level = if (isElite) null else 1,
+                level = null,
                 isElite = isElite
             )
 
@@ -158,7 +158,7 @@ fun SpawnZombiesFromGroundEventEP(
         val newZombies = currentZombies.map { zombie ->
             if (!zombie.isElite) {
                 changeCount++
-                zombie.copy(level = targetLevel)
+                zombie.copy(level = if (targetLevel == 0) null else targetLevel)
             } else {
                 zombie
             }
@@ -181,6 +181,7 @@ fun SpawnZombiesFromGroundEventEP(
         ) {
             ZombieEditSheetContent(
                 originalZombie = editingZombie!!,
+                objectMap = objectMap,
                 onValueChange = { updatedZombie ->
                     val currentList = actionDataState.value.zombies.toMutableList()
                     val index = currentList.indexOf(editingZombie!!)
@@ -278,7 +279,7 @@ fun SpawnZombiesFromGroundEventEP(
             ) {
                 HelpSection(
                     title = "简要介绍",
-                    body = "从设定的区间范围直接从地下生成僵尸。参数配置和自然出怪基本一致。"
+                    body = "从设定的区间范围直接从地下生成僵尸。参数配置和自然出怪基本一致。0阶表示随地图阶级，庭院模式下即为1阶。"
                 )
                 HelpSection(
                     title = "等级设置",
@@ -359,6 +360,7 @@ fun SpawnZombiesFromGroundEventEP(
                         addingToRowIndex = rowNum
                         handleAddZombie()
                     },
+                    objectMap = objectMap,
                     onZombieClick = { zombie ->
                         editingZombie = zombie
                         showBottomSheet = true
@@ -366,7 +368,6 @@ fun SpawnZombiesFromGroundEventEP(
                 )
             }
 
-            // 随机行
             item {
                 val randomZombies =
                     actionDataState.value.zombies.filter { it.row == null || it.row == 0 }
@@ -378,6 +379,7 @@ fun SpawnZombiesFromGroundEventEP(
                         addingToRowIndex = null
                         handleAddZombie()
                     },
+                    objectMap = objectMap,
                     onZombieClick = { zombie ->
                         editingZombie = zombie
                         showBottomSheet = true
@@ -394,7 +396,6 @@ fun SpawnZombiesFromGroundEventEP(
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        // 标题行
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
@@ -413,7 +414,6 @@ fun SpawnZombiesFromGroundEventEP(
                                 color = Color(0xFF936457)
                             )
                             Spacer(Modifier.weight(1f))
-                            // 当前值显示
                             Text(
                                 text = "${batchLevelFloat.roundToInt()} 阶",
                                 fontWeight = FontWeight.Bold,
@@ -424,12 +424,10 @@ fun SpawnZombiesFromGroundEventEP(
 
                         Spacer(Modifier.height(12.dp))
 
-                        // 操作行
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            // 拖动条
                             Slider(
                                 value = batchLevelFloat,
                                 onValueChange = { batchLevelFloat = it },
@@ -440,14 +438,9 @@ fun SpawnZombiesFromGroundEventEP(
 
                             Spacer(Modifier.width(16.dp))
 
-                            // 确认按钮
                             Button(
                                 onClick = { showBatchConfirmDialog = true },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(
-                                        0xFF936457
-                                    )
-                                ),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF936457)),
                                 contentPadding = PaddingValues(horizontal = 12.dp),
                                 modifier = Modifier.height(36.dp)
                             ) {
