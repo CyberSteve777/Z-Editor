@@ -276,7 +276,7 @@ fun SeedBankPropertiesEP(
             } else {
                 // 1. 预设植物
                 ResourceListEditor(
-                    title = "预设植物 (PresetPlantList)",
+                    title = "预选植物 (PresetPlantList)",
                     description = "开局自带的植物",
                     items = seedBankDataState.value.presetPlantList,
                     accentColor = Color(0xFF1976D2),
@@ -294,7 +294,7 @@ fun SeedBankPropertiesEP(
                     title = "白名单 (WhiteList)",
                     description = "仅允许选择这些植物 (空则不限制)",
                     items = seedBankDataState.value.plantWhiteList,
-                    accentColor = Color(0xFF388E3C), // 绿
+                    accentColor = Color(0xFF388E3C),
                     isZombie = false,
                     onListChanged = { newList ->
                         seedBankDataState.value =
@@ -309,7 +309,7 @@ fun SeedBankPropertiesEP(
                     title = "黑名单 (BlackList)",
                     description = "禁止选择这些植物",
                     items = seedBankDataState.value.plantBlackList,
-                    accentColor = Color(0xFFD32F2F), // 红
+                    accentColor = Color(0xFFD32F2F),
                     isZombie = false,
                     onListChanged = { newList ->
                         seedBankDataState.value =

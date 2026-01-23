@@ -69,35 +69,35 @@
         "WaveCount": 10,
         "Waves": [
           [
-            "RTID(Wave1@CurrentLevel)"
+            "RTID(Wave1Jittered0@CurrentLevel)"
           ],
           [
-            "RTID(Wave2@CurrentLevel)"
+            "RTID(Wave2Jittered0@CurrentLevel)"
           ],
           [
-            "RTID(Wave3@CurrentLevel)"
+            "RTID(Wave3Jittered0@CurrentLevel)"
           ],
           [
-            "RTID(Wave4@CurrentLevel)"
+            "RTID(Wave4Jittered0@CurrentLevel)"
           ],
           [
-            "RTID(Wave5@CurrentLevel)"
+            "RTID(Wave5Jittered0@CurrentLevel)"
           ],
           [
-            "RTID(Wave6@CurrentLevel)"
+            "RTID(Wave6Jittered0@CurrentLevel)"
           ],
           [
-            "RTID(Wave7@CurrentLevel)"
+            "RTID(Wave7Jittered0@CurrentLevel)"
           ],
           [
-            "RTID(Wave8@CurrentLevel)",
+            "RTID(Wave8Jittered0@CurrentLevel)",
             "RTID(Wave8PortalsEvent0@CurrentLevel)"
           ],
           [
-            "RTID(Wave9@CurrentLevel)"
+            "RTID(Wave9Jittered0@CurrentLevel)"
           ],
           [
-            "RTID(Wave10@CurrentLevel)"
+            "RTID(Wave10Jittered0@CurrentLevel)"
           ]
         ],
         "ZombieCountDownFirstWaveConveyorSecs": 5,
@@ -107,7 +107,7 @@
     },
     {
       "aliases": [
-        "Wave1"
+        "Wave1Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
@@ -121,7 +121,7 @@
     },
     {
       "aliases": [
-        "Wave2"
+        "Wave2Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
@@ -137,7 +137,7 @@
     },
     {
       "aliases": [
-        "Wave3"
+        "Wave3Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
@@ -154,7 +154,7 @@
     },
     {
       "aliases": [
-        "Wave4"
+        "Wave4Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
@@ -172,7 +172,7 @@
     },
     {
       "aliases": [
-        "Wave5"
+        "Wave5Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
@@ -199,7 +199,7 @@
     },
     {
       "aliases": [
-        "Wave6"
+        "Wave6Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
@@ -221,7 +221,7 @@
     },
     {
       "aliases": [
-        "Wave7"
+        "Wave7Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
@@ -243,7 +243,7 @@
     },
     {
       "aliases": [
-        "Wave8"
+        "Wave8Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
@@ -270,7 +270,7 @@
     },
     {
       "aliases": [
-        "Wave9"
+        "Wave9Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {
@@ -296,7 +296,7 @@
     },
     {
       "aliases": [
-        "Wave10"
+        "Wave10Jittered0"
       ],
       "objclass": "SpawnZombiesJitteredWaveActionProps",
       "objdata": {

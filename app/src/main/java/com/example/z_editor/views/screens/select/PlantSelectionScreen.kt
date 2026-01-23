@@ -1,9 +1,12 @@
 package com.example.z_editor.views.screens.select
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +31,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -36,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -53,6 +58,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -74,25 +80,36 @@ fun PlantSelectionScreen(
 ) {
     BackHandler(onBack = onBack)
     var searchQuery by remember { mutableStateOf("") }
-    var selectedTag by remember { mutableStateOf(PlantTag.All) }
+    // 默认进入“按品质”
     var selectedCategory by remember { mutableStateOf(PlantCategory.Quality) }
+    var selectedTag by remember { mutableStateOf(PlantTag.All) }
+
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
     var selectedIds by remember { mutableStateOf(setOf<String>()) }
 
+    val favoriteIds = PlantRepository.favoriteIds
+
     val currentVisibleTags = remember(selectedCategory) {
-        listOf(PlantTag.All) + PlantTag.entries.filter {
-            it.category == selectedCategory && it != PlantTag.All
+        if (selectedCategory == PlantCategory.Collection) {
+            emptyList()
+        } else {
+            listOf(PlantTag.All) + PlantTag.entries.filter {
+                it.category == selectedCategory && it != PlantTag.All
+            }
         }
     }
 
-    val displayList = remember(searchQuery, selectedTag) {
-        PlantRepository.search(searchQuery, selectedTag)
+    val displayList = remember(searchQuery, selectedTag, selectedCategory, favoriteIds.size) {
+        PlantRepository.search(searchQuery, selectedTag, selectedCategory)
     }
 
     LaunchedEffect(selectedCategory) {
-        if (!currentVisibleTags.contains(selectedTag)) {
-            selectedTag = currentVisibleTags.first()
+        if (selectedCategory != PlantCategory.Collection) {
+            if (!currentVisibleTags.contains(selectedTag)) {
+                selectedTag = currentVisibleTags.firstOrNull() ?: PlantTag.All
+            }
         }
     }
 
@@ -128,7 +145,11 @@ fun PlantSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text(if (isMultiSelect) "已选择 ${selectedIds.size} 项，点击搜索" else "搜索植物名称或代码", fontSize = 16.sp, color = Color.Gray)
+                                Text(
+                                    if (isMultiSelect) "已选择 ${selectedIds.size} 项，点击搜索" else "搜索植物名称或代码",
+                                    fontSize = 16.sp,
+                                    color = Color.Gray
+                                )
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -153,50 +174,13 @@ fun PlantSelectionScreen(
                             textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
                         )
                     }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        PlantCategory.entries.forEach { category ->
-                            val isSelected = selectedCategory == category
-
-                            Box(
-                                modifier = Modifier
-                                    .padding(horizontal = 4.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .clickable {
-                                        if (selectedCategory != category) {
-                                            selectedCategory = category
-                                            selectedTag = PlantTag.All
-                                        }
-                                    }
-                                    .background(
-                                        if (isSelected) Color.White.copy(alpha = 0.2f) else Color.Transparent
-                                    )
-                                    .padding(horizontal = 16.dp, vertical = 6.dp)
-                            ) {
-                                Text(
-                                    text = category.label,
-                                    color = if (isSelected) Color.White else Color.White.copy(alpha = 0.7f),
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                    fontSize = 14.sp
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(Modifier.height(4.dp))
-
                     ScrollableTabRow(
-                        selectedTabIndex = currentVisibleTags.indexOf(selectedTag).coerceAtLeast(0),
+                        selectedTabIndex = PlantCategory.entries.indexOf(selectedCategory),
                         containerColor = Color.Transparent,
                         contentColor = Color.White,
                         edgePadding = 16.dp,
                         indicator = { tabPositions ->
-                            val index = currentVisibleTags.indexOf(selectedTag).coerceAtLeast(0)
+                            val index = PlantCategory.entries.indexOf(selectedCategory)
                             if (index < tabPositions.size) {
                                 SecondaryIndicator(
                                     Modifier.tabIndicatorOffset(tabPositions[index]),
@@ -207,30 +191,82 @@ fun PlantSelectionScreen(
                         },
                         divider = {}
                     ) {
-                        currentVisibleTags.forEach { tag ->
+                        PlantCategory.entries.forEach { category ->
+                            val isSelected = selectedCategory == category
                             Tab(
-                                selected = selectedTag == tag,
-                                onClick = { selectedTag = tag },
+                                selected = isSelected,
+                                onClick = { selectedCategory = category },
                                 text = {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        if (tag.iconName != null) {
-                                            AssetImage(
-                                                path = "images/tags/${tag.iconName}",
-                                                contentDescription = null,
-                                                modifier = Modifier.size(20.dp),
-                                                placeholder = {}
+                                        if (category == PlantCategory.Collection) {
+                                            Icon(
+                                                Icons.Default.Star,
+                                                null,
+                                                modifier = Modifier.size(16.dp),
+                                                tint = if(isSelected) Color.White else Color.White.copy(0.6f)
                                             )
-                                            Spacer(Modifier.width(6.dp))
+                                            Spacer(Modifier.width(4.dp))
                                         }
                                         Text(
-                                            text = tag.label,
-                                            fontWeight = if (selectedTag == tag) FontWeight.Bold else FontWeight.Normal,
-                                            fontSize = 13.sp
+                                            text = category.label,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                            fontSize = 15.sp
                                         )
                                     }
                                 },
-                                unselectedContentColor = Color.White.copy(alpha = 0.7f)
+                                unselectedContentColor = Color.White.copy(alpha = 0.6f)
                             )
+                        }
+                    }
+                    if (selectedCategory != PlantCategory.Collection) {
+                        Spacer(Modifier.height(4.dp))
+                        ScrollableTabRow(
+                            selectedTabIndex = currentVisibleTags.indexOf(selectedTag).coerceAtLeast(0),
+                            containerColor = Color.Transparent,
+                            contentColor = Color.White,
+                            edgePadding = 16.dp,
+                            indicator = { tabPositions ->
+                                val index = currentVisibleTags.indexOf(selectedTag)
+                                if (index != -1 && index < tabPositions.size) {
+                                    Box(
+                                        Modifier
+                                            .tabIndicatorOffset(tabPositions[index])
+                                            .height(2.5.dp)
+                                            .padding(horizontal = 4.dp)
+                                            .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
+                                    )
+                                }
+                            },
+                            divider = {},
+                            modifier = Modifier.height(40.dp)
+                        ) {
+                            currentVisibleTags.forEach { tag ->
+                                val isTagSelected = selectedTag == tag
+                                Tab(
+                                    selected = isTagSelected,
+                                    onClick = { selectedTag = tag },
+                                    modifier = Modifier.height(40.dp),
+                                    text = {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            if (tag.iconName != null) {
+                                                AssetImage(
+                                                    path = "images/tags/${tag.iconName}",
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(20.dp),
+                                                    placeholder = {}
+                                                )
+                                                Spacer(Modifier.width(6.dp))
+                                            }
+                                            Text(
+                                                text = tag.label,
+                                                fontWeight = if (isTagSelected) FontWeight.Bold else FontWeight.Normal,
+                                                fontSize = 13.sp,
+                                                color = if (isTagSelected) Color.White else Color.White.copy(0.6f)
+                                            )
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -266,7 +302,10 @@ fun PlantSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(16.dp))
-                    Text("未找到相关植物", color = Color.Gray)
+                    Text(
+                        if (selectedCategory == PlantCategory.Collection) "暂无收藏植物，长按植物即可收藏" else "未找到相关植物",
+                        color = Color.Gray
+                    )
                 }
             } else {
                 LazyVerticalGrid(
@@ -276,11 +315,14 @@ fun PlantSelectionScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(displayList) { plant ->
+                    items(displayList, key = { it.id }) { plant ->
                         val isSelected = isMultiSelect && selectedIds.contains(plant.id)
+                        val isFavorite = favoriteIds.contains(plant.id)
+
                         PlantGridItem(
                             plant = plant,
                             isSelected = isSelected,
+                            isFavorite = isFavorite,
                             onClick = {
                                 if (isMultiSelect) {
                                     selectedIds = if (isSelected) {
@@ -291,6 +333,11 @@ fun PlantSelectionScreen(
                                 } else {
                                     onPlantSelected(plant.id)
                                 }
+                            },
+                            onLongClick = {
+                                PlantRepository.toggleFavorite(context, plant.id)
+                                val msg = if (PlantRepository.isFavorite(plant.id)) "已加入收藏" else "已取消收藏"
+                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }
                         )
                     }
@@ -299,11 +346,15 @@ fun PlantSelectionScreen(
         }
     }
 }
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlantGridItem(
     plant: PlantInfo,
     isSelected: Boolean = false,
-    onClick: () -> Unit
+    isFavorite: Boolean = false,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     val borderColor = if (isSelected) Color(0xFF8BC34A) else Color.Transparent
     val borderWidth = if (isSelected) 2.dp else 0.dp
@@ -315,36 +366,56 @@ fun PlantGridItem(
             .clip(RoundedCornerShape(8.dp))
             .background(bgColor)
             .border(borderWidth, borderColor, RoundedCornerShape(8.dp))
-            .clickable(onClick = onClick)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .padding(vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AssetImage(
-            path = if (plant.icon != null) "images/plants/${plant.icon}" else null,
-            contentDescription = plant.name,
-            filterQuality = FilterQuality.High,
-            modifier = Modifier
-                .size(52.dp)
-                .clip(CircleShape)
-                .background(Color.White)
-                .border(0.5.dp, Color.LightGray.copy(alpha = 0.5f), CircleShape),
-            placeholder = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0xFFE8F5E9)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = plant.name.take(1),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2E7D32)
-                    )
+        Box {
+            AssetImage(
+                path = if (plant.icon != null) "images/plants/${plant.icon}" else "images/others/unknown.jpg",
+                contentDescription = plant.name,
+                filterQuality = FilterQuality.High,
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .border(0.5.dp, Color.LightGray.copy(alpha = 0.5f), CircleShape),
+                placeholder = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFE8F5E9)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = plant.name.take(1),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2E7D32)
+                        )
+                    }
                 }
+            )
+
+            if (isFavorite) {
+                Icon(
+                    Icons.Default.Star,
+                    contentDescription = "Favorite",
+                    tint = Color(0xFFFFC107),
+                    modifier = Modifier
+                        .size(14.dp)
+                        .align(Alignment.TopEnd)
+                        .background(Color.White, CircleShape)
+                        .border(0.5.dp, Color(0xFFFFC107), CircleShape)
+                )
             }
-        )
+        }
+
         Spacer(Modifier.height(6.dp))
+
         Text(
             text = plant.name,
             style = MaterialTheme.typography.bodySmall,

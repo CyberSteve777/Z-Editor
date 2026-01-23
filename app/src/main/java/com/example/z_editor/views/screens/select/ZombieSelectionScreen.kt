@@ -1,9 +1,11 @@
 package com.example.z_editor.views.screens.select
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +30,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -36,6 +39,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -53,6 +57,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -76,23 +81,33 @@ fun ZombieSelectionScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(ZombieCategory.Main) }
     var selectedTag by remember { mutableStateOf(ZombieTag.All) }
+
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
     var selectedIds by remember { mutableStateOf(setOf<String>()) }
 
+    val favoriteIds = ZombieRepository.favoriteIds
+
     val currentVisibleTags = remember(selectedCategory) {
-        listOf(ZombieTag.All) + ZombieTag.entries.filter {
-            it.category == selectedCategory && it != ZombieTag.All
+        if (selectedCategory == ZombieCategory.Collection) {
+            emptyList()
+        } else {
+            listOf(ZombieTag.All) + ZombieTag.entries.filter {
+                it.category == selectedCategory && it != ZombieTag.All
+            }
         }
     }
 
-    val displayList = remember(searchQuery, selectedTag) {
-        ZombieRepository.search(searchQuery, selectedTag)
+    val displayList = remember(searchQuery, selectedTag, selectedCategory, favoriteIds.size) {
+        ZombieRepository.search(searchQuery, selectedTag, selectedCategory)
     }
 
     LaunchedEffect(selectedCategory) {
-        if (!currentVisibleTags.contains(selectedTag)) {
-            selectedTag = currentVisibleTags.first()
+        if (selectedCategory != ZombieCategory.Collection) {
+            if (!currentVisibleTags.contains(selectedTag)) {
+                selectedTag = currentVisibleTags.firstOrNull() ?: ZombieTag.All
+            }
         }
     }
 
@@ -153,49 +168,13 @@ fun ZombieSelectionScreen(
                         )
                     }
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        ZombieCategory.entries.forEach { category ->
-                            val isSelected = selectedCategory == category
-
-                            Box(
-                                modifier = Modifier
-                                    .padding(horizontal = 4.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .clickable {
-                                        if (selectedCategory != category) {
-                                            selectedCategory = category
-                                            selectedTag = ZombieTag.All
-                                        }
-                                    }
-                                    .background(
-                                        if (isSelected) Color.White.copy(alpha = 0.2f) else Color.Transparent
-                                    )
-                                    .padding(horizontal = 16.dp, vertical = 6.dp)
-                            ) {
-                                Text(
-                                    text = category.label,
-                                    color = if (isSelected) Color.White else Color.White.copy(alpha = 0.7f),
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                    fontSize = 14.sp
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(Modifier.height(4.dp))
-
                     ScrollableTabRow(
-                        selectedTabIndex = currentVisibleTags.indexOf(selectedTag).coerceAtLeast(0),
+                        selectedTabIndex = ZombieCategory.entries.indexOf(selectedCategory),
                         containerColor = Color.Transparent,
                         contentColor = Color.White,
                         edgePadding = 16.dp,
                         indicator = { tabPositions ->
-                            val index = currentVisibleTags.indexOf(selectedTag).coerceAtLeast(0)
+                            val index = ZombieCategory.entries.indexOf(selectedCategory)
                             if (index < tabPositions.size) {
                                 SecondaryIndicator(
                                     Modifier.tabIndicatorOffset(tabPositions[index]),
@@ -206,30 +185,82 @@ fun ZombieSelectionScreen(
                         },
                         divider = {}
                     ) {
-                        currentVisibleTags.forEach { tag ->
+                        ZombieCategory.entries.forEach { category ->
+                            val isSelected = selectedCategory == category
                             Tab(
-                                selected = selectedTag == tag,
-                                onClick = { selectedTag = tag },
+                                selected = isSelected,
+                                onClick = { selectedCategory = category },
                                 text = {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        if (tag.iconName != null) {
-                                            AssetImage(
-                                                path = "images/tags/${tag.iconName}",
-                                                contentDescription = null,
-                                                modifier = Modifier.size(20.dp),
-                                                placeholder = {}
+                                        if (category == ZombieCategory.Collection) {
+                                            Icon(
+                                                Icons.Default.Star,
+                                                null,
+                                                modifier = Modifier.size(16.dp),
+                                                tint = if(isSelected) Color.White else Color.White.copy(0.7f)
                                             )
-                                            Spacer(Modifier.width(6.dp))
+                                            Spacer(Modifier.width(4.dp))
                                         }
                                         Text(
-                                            text = tag.label,
-                                            fontWeight = if (selectedTag == tag) FontWeight.Bold else FontWeight.Normal,
-                                            fontSize = 13.sp
+                                            text = category.label,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                            fontSize = 15.sp
                                         )
                                     }
                                 },
                                 unselectedContentColor = Color.White.copy(alpha = 0.7f)
                             )
+                        }
+                    }
+                    if (selectedCategory != ZombieCategory.Collection) {
+                        Spacer(Modifier.height(4.dp))
+                        ScrollableTabRow(
+                            selectedTabIndex = currentVisibleTags.indexOf(selectedTag).coerceAtLeast(0),
+                            containerColor = Color.Transparent,
+                            contentColor = Color.White,
+                            edgePadding = 16.dp,
+                            indicator = { tabPositions ->
+                                val index = currentVisibleTags.indexOf(selectedTag)
+                                if (index != -1 && index < tabPositions.size) {
+                                    Box(
+                                        Modifier
+                                            .tabIndicatorOffset(tabPositions[index])
+                                            .height(2.5.dp)
+                                            .padding(horizontal = 4.dp)
+                                            .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
+                                    )
+                                }
+                            },
+                            divider = {},
+                            modifier = Modifier.height(40.dp)
+                        ) {
+                            currentVisibleTags.forEach { tag ->
+                                val isTagSelected = selectedTag == tag
+                                Tab(
+                                    selected = isTagSelected,
+                                    onClick = { selectedTag = tag },
+                                    modifier = Modifier.height(40.dp),
+                                    text = {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            if (tag.iconName != null) {
+                                                AssetImage(
+                                                    path = "images/tags/${tag.iconName}",
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(20.dp),
+                                                    placeholder = {}
+                                                )
+                                                Spacer(Modifier.width(6.dp))
+                                            }
+                                            Text(
+                                                text = tag.label,
+                                                fontWeight = if (isTagSelected) FontWeight.Bold else FontWeight.Normal,
+                                                fontSize = 13.sp,
+                                                color = if(isTagSelected) Color.White else Color.White.copy(0.6f)
+                                            )
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -265,7 +296,10 @@ fun ZombieSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(16.dp))
-                    Text("未找到相关僵尸", color = Color.Gray)
+                    Text(
+                        if (selectedCategory == ZombieCategory.Collection) "暂无收藏僵尸，长按僵尸即可收藏" else "未找到相关僵尸",
+                        color = Color.Gray
+                    )
                 }
             } else {
                 LazyVerticalGrid(
@@ -275,11 +309,14 @@ fun ZombieSelectionScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(displayList) { zombie ->
+                    items(displayList, key = { it.id }) { zombie ->
                         val isSelected = isMultiSelect && selectedIds.contains(zombie.id)
+                        val isFavorite = favoriteIds.contains(zombie.id)
+
                         ZombieGridItem(
                             zombie = zombie,
                             isSelected = isSelected,
+                            isFavorite = isFavorite,
                             onClick = {
                                 if (isMultiSelect) {
                                     selectedIds = if (isSelected) {
@@ -290,6 +327,11 @@ fun ZombieSelectionScreen(
                                 } else {
                                     onZombieSelected(zombie.id)
                                 }
+                            },
+                            onLongClick = {
+                                ZombieRepository.toggleFavorite(context, zombie.id)
+                                val msg = if (ZombieRepository.isFavorite(zombie.id)) "已加入收藏" else "已取消收藏"
+                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }
                         )
                     }
@@ -299,12 +341,16 @@ fun ZombieSelectionScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ZombieGridItem(
     zombie: ZombieInfo,
     isSelected: Boolean = false,
-    onClick: () -> Unit
+    isFavorite: Boolean = false,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
+    // 使用紫色主题色
     val borderColor = if (isSelected) Color(0xFF673AB7) else Color.Transparent
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val bgColor = if (isSelected) Color(0xFF673AB7).copy(alpha = 0.1f) else Color.Transparent
@@ -315,35 +361,54 @@ fun ZombieGridItem(
             .clip(RoundedCornerShape(8.dp))
             .background(bgColor)
             .border(borderWidth, borderColor, RoundedCornerShape(8.dp))
-            .clickable(onClick = onClick)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .padding(vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AssetImage(
-            path = if (zombie.icon != null) "images/zombies/${zombie.icon}" else null,
-            contentDescription = zombie.name,
-            filterQuality = FilterQuality.High,
-            modifier = Modifier
-                .size(52.dp)
-                .clip(CircleShape)
-                .background(Color.White)
-                .border(0.5.dp, Color.LightGray.copy(alpha = 0.5f), CircleShape),
-            placeholder = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0xFFEDE7F6)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = zombie.name.take(1),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF512DA8)
-                    )
+        Box {
+            AssetImage(
+                path = if (zombie.icon != null) "images/zombies/${zombie.icon}" else "images/others/unknown.jpg",
+                contentDescription = zombie.name,
+                filterQuality = FilterQuality.High,
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .border(0.5.dp, Color.LightGray.copy(alpha = 0.5f), CircleShape),
+                placeholder = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFEDE7F6)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = zombie.name.take(1),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF512DA8)
+                        )
+                    }
                 }
+            )
+
+            // 收藏星星
+            if (isFavorite) {
+                Icon(
+                    Icons.Default.Star,
+                    contentDescription = "Favorite",
+                    tint = Color(0xFFFFC107),
+                    modifier = Modifier
+                        .size(14.dp)
+                        .align(Alignment.TopEnd)
+                        .background(Color.White, CircleShape)
+                        .border(0.5.dp, Color(0xFFFFC107), CircleShape)
+                )
             }
-        )
+        }
 
         Spacer(Modifier.height(6.dp))
 

@@ -88,7 +88,7 @@ fun AboutScreen(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "PvZ 2 关卡可视化编辑器",
+                text = "PVZ2 关卡可视化编辑器",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
@@ -119,7 +119,7 @@ fun AboutScreen(
                             "2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n" +
                             "3. 模块管理：在编辑器中，可以通过“添加新模块”来扩展关卡功能。\n" +
                             "4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n" +
-                            "如果还有使用上的疑问，欢迎加入交流 QQ 群 562251204",
+                            "如果有使用上的疑问或反馈建议，欢迎加入交流 QQ 群 562251204 进行交流。",
                     lineHeight = 24.sp,
                     color = Color(0xFF424242)
                 )

@@ -1,15 +1,18 @@
 package com.example.z_editor.data.repository
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateListOf
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.InputStreamReader
+import androidx.core.content.edit
 
 
 enum class ZombieCategory(val label: String) {
     Main("按世界"),
     Size("按体型"),
-    Other("其他分类")
+    Other("其它分类"),
+    Collection("我的收藏"),
 }
 
 enum class ZombieTag(val label: String, val iconName: String?, val category: ZombieCategory) {
@@ -65,9 +68,14 @@ object ZombieRepository {
     private var allZombies = listOf<ZombieInfo>()
     private var isLoaded = false
 
+    val favoriteIds = mutableStateListOf<String>()
+    private const val PREF_NAME = "z_editor_prefs"
+    private const val KEY_ZOMBIE_FAVORITES = "favorite_zombies"
+
     private val uiConfiguredAliases = HashSet<String>()
 
     fun init(context: Context) {
+        loadFavorites(context)
         if (isLoaded) return
         try {
             val inputStream = context.assets.open("resources/Zombies.json")
@@ -95,16 +103,48 @@ object ZombieRepository {
         }
     }
 
-    fun search(query: String, tag: ZombieTag): List<ZombieInfo> {
-        if (!isLoaded) return emptyList()
-        val tagFiltered = if (tag == ZombieTag.All) {
-            allZombies
+    private fun loadFavorites(context: Context) {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val savedSet = prefs.getStringSet(KEY_ZOMBIE_FAVORITES, emptySet()) ?: emptySet()
+        favoriteIds.clear()
+        favoriteIds.addAll(savedSet)
+    }
+
+    fun toggleFavorite(context: Context, zombieId: String) {
+        if (favoriteIds.contains(zombieId)) {
+            favoriteIds.remove(zombieId)
         } else {
-            allZombies.filter { it.tags.contains(tag) }
+            favoriteIds.add(zombieId)
         }
-        if (query.isBlank()) return tagFiltered
+
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putStringSet(KEY_ZOMBIE_FAVORITES, favoriteIds.toSet()) }
+    }
+
+    fun isFavorite(zombieId: String): Boolean {
+        return favoriteIds.contains(zombieId)
+    }
+
+    fun search(query: String, tag: ZombieTag?, category: ZombieCategory = ZombieCategory.Main): List<ZombieInfo> {
+        if (!isLoaded) return emptyList()
+
+        val baseList = if (category == ZombieCategory.Collection) {
+            allZombies.filter { favoriteIds.contains(it.id) }
+        } else {
+            if (tag != null && tag != ZombieTag.All) {
+                allZombies.filter { it.tags.contains(tag) }
+            } else {
+                allZombies.filter { zombie ->
+                    zombie.tags.any { it.category == category } || tag == ZombieTag.All
+                }
+                allZombies.filter { zombie ->
+                    zombie.tags.any { it.category == category }
+                }
+            }
+        }
+        if (query.isBlank()) return baseList
         val lowerQ = query.lowercase()
-        return tagFiltered.filter {
+        return baseList.filter {
             it.id.lowercase().contains(lowerQ) || it.name.contains(lowerQ)
         }
     }

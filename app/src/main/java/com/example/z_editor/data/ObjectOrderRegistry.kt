@@ -7,10 +7,14 @@ object ObjectOrderRegistry {
 
         "SeedBankProperties",
         "ConveyorSeedBankProperties",
+        "PennyClassroomModuleProperties",
 
         "SunDropperProperties",
         "SunBombChallengeProperties",
         "LastStandMinigameProperties",
+        "BowlingMinigameProperties",
+        "NewBowlingMinigameProperties",
+        "SeedRainProperties",
 
         "PiratePlankProperties",
         "TideProperties",
@@ -23,6 +27,8 @@ object ObjectOrderRegistry {
         "IncreasedCostModuleProperties",
         "DeathHoleModuleProperties",
         "LevelScoringModuleProperties",
+        "LevelMutatorStartingPlantfoodProps",
+        "LevelMutatorMaxSunProps",
 
         "InitialPlantEntryProperties",
         "InitialZombieProperties",
@@ -54,9 +60,6 @@ object ObjectOrderRegistry {
         "StarChallengeUnfreezePlantsProps",
         "StarChallengeBlowZombieProps",
         "StarChallengeTargetScoreProps",
-
-        "LevelMutatorStartingPlantfoodProps",
-        "LevelMutatorMaxSunProps",
 
 
         "WaveManagerModuleProperties",
@@ -112,7 +115,6 @@ object ObjectOrderRegistry {
             if (c1.isDigit() && c2.isDigit()) {
                 var num1 = 0L
                 while (i < s1.length && s1[i].isDigit()) {
-                    // 防止 Long 溢出，只取前18位（足够处理Alias中的数字）
                     if (num1 < 100000000000000000L) {
                         num1 = num1 * 10 + (s1[i] - '0')
                     }
@@ -131,7 +133,6 @@ object ObjectOrderRegistry {
                     return@Comparator num1.compareTo(num2)
                 }
             } else {
-                // 如果不是数字，或者一个是数字一个不是，按普通字符比较
                 if (c1 != c2) {
                     return@Comparator c1.compareTo(c2)
                 }

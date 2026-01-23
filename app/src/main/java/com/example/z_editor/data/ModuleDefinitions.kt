@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.HourglassEmpty
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.LinearScale
 import androidx.compose.material.icons.filled.LocalFlorist
 import androidx.compose.material.icons.filled.MovieFilter
@@ -35,6 +36,7 @@ import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Storm
+import androidx.compose.material.icons.filled.Thunderstorm
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Transform
 import androidx.compose.material.icons.filled.TripOrigin
@@ -99,6 +101,8 @@ sealed class EditorSubScreen {
     data class MaxSunModule(val rtid: String) : EditorSubScreen()
     data class StartingPlantfoodModule(val rtid: String) : EditorSubScreen()
     data class BowlingMinigameModule(val rtid: String) : EditorSubScreen()
+    data class PennyClassroomModule(val rtid: String) : EditorSubScreen()
+    data class SeedRainModule(val rtid: String) : EditorSubScreen()
     data class StarChallenge(val rtid: String) : EditorSubScreen()
 
     // 波次事件页
@@ -624,15 +628,16 @@ object ModuleRegistry {
             defaultSource = "LevelModules",
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
-        "SunDropperProperties" to ModuleMetadata(
-            title = "阳光掉落",
-            description = "控制天上掉落阳光的频率",
-            icon = Icons.Default.WbSunny,
+        "PennyClassroomModuleProperties" to ModuleMetadata(
+            title = "阶级定义",
+            description = "全局定义植物阶级，能覆盖其他模块",
+            icon = Icons.Default.Layers,
             isCore = true,
             category = ModuleCategory.Base,
-            defaultAlias = "DefaultSunDropper",
-            defaultSource = "LevelModules",
-            navigationFactory = { rtid -> EditorSubScreen.SunDropper(rtid) }
+            defaultAlias = "PennyClassroom",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { PennyClassroomModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.PennyClassroomModule(rtid) }
         ),
         "SeedBankProperties" to ModuleMetadata(
             title = "种子库",
@@ -654,6 +659,16 @@ object ModuleRegistry {
             defaultAlias = "ConveyorBelt",
             initialDataFactory = { ConveyorBeltData() },
             navigationFactory = { rtid -> EditorSubScreen.ConveyorBelt(rtid) }
+        ),
+        "SunDropperProperties" to ModuleMetadata(
+            title = "阳光掉落",
+            description = "控制天上掉落阳光的频率",
+            icon = Icons.Default.WbSunny,
+            isCore = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "DefaultSunDropper",
+            defaultSource = "LevelModules",
+            navigationFactory = { rtid -> EditorSubScreen.SunDropper(rtid) }
         ),
         "LevelMutatorMaxSunProps" to ModuleMetadata(
             title = "阳光上限",
@@ -787,6 +802,17 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { ZombossBattleIntroData() },
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+        "SeedRainProperties" to ModuleMetadata(
+            title = "种子雨",
+            description = "控制植物、僵尸或能量豆从天而降",
+            icon = Icons.Default.Thunderstorm,
+            isCore = true,
+            category = ModuleCategory.Mode,
+            defaultAlias = "SeedRain",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { SeedRainPropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.SeedRainModule(rtid) }
         ),
         "LastStandMinigameProperties" to ModuleMetadata(
             title = "坚不可摧",

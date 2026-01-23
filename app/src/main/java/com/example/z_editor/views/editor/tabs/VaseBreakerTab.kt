@@ -420,7 +420,10 @@ fun VaseBreakerTab(
             onDismissRequest = { showAddDialog = false },
             title = { Text("添加罐子内容") },
             text = {
-                Column {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     ListItem(
                         headlineContent = { Text("植物 (Plant)") },
                         modifier = Modifier.clickable {
@@ -462,6 +465,7 @@ fun VaseBreakerTab(
                     )
                 }
             },
+            dismissButton = { TextButton(onClick = { showAddDialog = false }) { Text("取消") } },
             confirmButton = {}
         )
     }

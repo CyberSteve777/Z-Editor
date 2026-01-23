@@ -226,7 +226,7 @@ fun ProtectThePlantChallengePropertiesEP(
                         Spacer(Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = "此模块中的植物只能随玩家账号阶级，可以使用平行宇宙的植物统一等级。",
+                                text = "此模块中的植物随玩家账号阶级，可以使用全局阶级定义模块统一等级。",
                                 fontSize = 12.sp,
                                 color = themeColor,
                                 lineHeight = 16.sp

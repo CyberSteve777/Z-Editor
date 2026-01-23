@@ -253,7 +253,7 @@ fun LevelListScreen(
             itemToRename = null
             loadCurrentDirectory()
         } else {
-            Toast.makeText(context, "重命名失败", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "重命名失败，已有同名文件", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -345,7 +345,7 @@ fun LevelListScreen(
             showCreateNameDialog = false
             loadCurrentDirectory()
         } else {
-            Toast.makeText(context, "创建失败", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "创建失败，已有同名文件", Toast.LENGTH_SHORT).show()
         }
     }
 

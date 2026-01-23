@@ -45,6 +45,7 @@ import com.example.z_editor.views.editor.pages.module.LastStandMinigamePropertie
 import com.example.z_editor.views.editor.pages.module.LevelMutatorMaxSunPropsEP
 import com.example.z_editor.views.editor.pages.module.LevelMutatorStartingPlantfoodPropsEP
 import com.example.z_editor.views.editor.pages.module.ManholePipelinePropertiesEP
+import com.example.z_editor.views.editor.pages.module.PennyClassroomModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.PiratePlankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.PowerTilePropertiesEP
 import com.example.z_editor.views.editor.pages.module.ProtectTheGridItemChallengePropertiesEP
@@ -53,6 +54,7 @@ import com.example.z_editor.views.editor.pages.module.RailcartPropertiesEP
 import com.example.z_editor.views.editor.pages.module.RainDarkPropertiesEP
 import com.example.z_editor.views.editor.pages.module.RoofPropertiesEP
 import com.example.z_editor.views.editor.pages.module.SeedBankPropertiesEP
+import com.example.z_editor.views.editor.pages.module.SeedRainPropertiesEP
 import com.example.z_editor.views.editor.pages.module.StarChallengeModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.SunBombChallengePropertiesEP
 import com.example.z_editor.views.editor.pages.module.SunDropperPropertiesEP
@@ -513,6 +515,21 @@ fun EditorContentRouter(
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
             scrollState = getScrollState("BowlingMinigameModule")
+        )
+
+        is EditorSubScreen.PennyClassroomModule -> PennyClassroomModulePropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestPlantSelection = actions.onLaunchMultiPlantSelector
+        )
+
+        is EditorSubScreen.SeedRainModule -> SeedRainPropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestPlantSelection = actions.onLaunchMultiPlantSelector,
+            onRequestZombieSelection = actions.onLaunchMultiZombieSelector,
         )
 
         is EditorSubScreen.ManholePipelineModule -> ManholePipelinePropertiesEP(

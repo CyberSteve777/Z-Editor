@@ -395,6 +395,25 @@ data class PipelineData(
     @SerializedName("EndY") var endY: Int = 0
 )
 
+// === 全局阶级定义模块 ===
+data class PennyClassroomModuleData(
+    @SerializedName("PlantMap") var plantMap: MutableMap<String, Int> = mutableMapOf()
+)
+
+// === 种子雨模块 ===
+data class SeedRainPropertiesData(
+    @SerializedName("RainInterval") var rainInterval: Int = 5,
+    @SerializedName("SeedRains") var seedRains: MutableList<SeedRainItem> = mutableListOf()
+)
+
+data class SeedRainItem(
+    @SerializedName("SeedRainType") var seedRainType: Int = 0,
+    @SerializedName("PlantTypeName") var plantTypeName: String? = null,
+    @SerializedName("ZombieTypeName") var zombieTypeName: String? = null,
+    @SerializedName("MaxCount") var maxCount: Int = 5,
+    @SerializedName("Weight") var weight: Int = 100
+)
+
 // ======================== 2. 物体属性解析 ========================
 
 // === 通用僵尸数据 ===
