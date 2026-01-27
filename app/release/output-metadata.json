@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.example.pvz2leveleditor.evilhack28",
+  "applicationId": "team.international2c.pvz2c_level_editor",
   "variantName": "release",
   "elements": [
     {
@@ -12,7 +12,7 @@
       "filters": [],
       "attributes": [],
       "versionCode": 14,
-      "versionName": "1.1.3-evilhack28",
+      "versionName": "1.1.3+t.1",
       "outputFile": "app-release.apk"
     }
   ],

@@ -42,7 +42,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -850,7 +849,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                                     Icon(
                                         Icons.AutoMirrored.Filled.ArrowBack,
                                         "Back",
-                                        tint = Color.White
+                                        tint = MaterialTheme.colorScheme.onPrimary
                                     )
                                 }
                             },
@@ -859,18 +858,18 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                                     performSave(isExit = false)
                                     currentSubScreen = EditorSubScreen.JsonView(currentFileName)
                                 }) {
-                                    Icon(Icons.Default.Code, "查看代码", tint = Color.White)
+                                    Icon(Icons.Default.Code, "查看代码", tint = MaterialTheme.colorScheme.onPrimary)
                                 }
                                 IconButton(onClick = { performSave(isExit = false) }) {
                                     Icon(
                                         Icons.Default.Save,
                                         "保存",
-                                        tint = Color.White
+                                        tint = MaterialTheme.colorScheme.onPrimary
                                     )
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = Color(0xFF4CAF50), titleContentColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.primary, titleContentColor = MaterialTheme.colorScheme.onPrimary
                             )
                         )
                     }
@@ -883,15 +882,15 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                         if (availableTabs.size > 1) {
                             ScrollableTabRow(
                                 selectedTabIndex = selectedTabIndex,
-                                containerColor = Color.Transparent,
-                                contentColor = Color(0xFF1976D2),
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.primary,
                                 edgePadding = 0.dp,
                                 indicator = { tabPositions ->
                                     val index = selectedTabIndex
                                     if (index < tabPositions.size) {
                                         SecondaryIndicator(
                                             Modifier.tabIndicatorOffset(tabPositions[index]),
-                                            color = Color(0xFF1976D2),
+                                            color = MaterialTheme.colorScheme.primary,
                                             height = 3.dp
                                         )
                                     }

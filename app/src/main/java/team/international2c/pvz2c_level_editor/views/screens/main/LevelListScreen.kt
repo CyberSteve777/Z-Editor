@@ -58,6 +58,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -369,7 +370,7 @@ fun LevelListScreen(
                     }
                     Box {
                         IconButton(onClick = { showMenu = true }) {
-                            Icon(Icons.Default.MoreVert, "更多选项", tint = Color.White)
+                            Icon(Icons.Default.MoreVert, "更多选项", tint = MaterialTheme.colorScheme.onPrimary)
                         }
                         DropdownMenu(
                             expanded = showMenu,
@@ -387,7 +388,7 @@ fun LevelListScreen(
                                     ).show()
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Default.Delete, null, tint = Color.Gray)
+                                    Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             )
                             HorizontalDivider()
@@ -398,16 +399,16 @@ fun LevelListScreen(
                                     onAboutClick()
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Default.Info, null, tint = Color.Gray)
+                                    Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             )
                         }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF4CAF50),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
@@ -422,15 +423,15 @@ fun LevelListScreen(
                             itemToMove = null
                             moveSourceUri = null
                         },
-                        containerColor = Color(0xFFFFEBEE),
-                        contentColor = Color(0xFFD32F2F),
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
                         icon = { Icon(Icons.Default.Close, null) },
                         text = { Text("取消") }
                     )
                     ExtendedFloatingActionButton(
                         onClick = { handleMoveConfirm() },
-                        containerColor = Color(0xFF1976D2),
-                        contentColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         icon = { Icon(Icons.Default.ContentPaste, null) },
                         text = { Text("粘贴") }
                     )
@@ -442,8 +443,8 @@ fun LevelListScreen(
                 ) {
                     FloatingActionButton(
                         onClick = { showNewFolderDialog = true },
-                        containerColor = Color(0xFFE8F5E9),
-                        contentColor = Color(0xFF2E7D32),
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                         elevation = FloatingActionButtonDefaults.elevation(4.dp)
                     ) {
                         Icon(Icons.Default.CreateNewFolder, "新建文件夹")
@@ -451,8 +452,8 @@ fun LevelListScreen(
 
                     FloatingActionButton(
                         onClick = { openTemplateSelector() },
-                        containerColor = Color(0xFF4CAF50),
-                        contentColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         elevation = FloatingActionButtonDefaults.elevation(4.dp)
                     ) {
                         Icon(Icons.Default.Add, "新建关卡")
@@ -465,7 +466,7 @@ fun LevelListScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // --- 面包屑导航栏 ---
             BreadcrumbBar(
@@ -477,7 +478,7 @@ fun LevelListScreen(
             )
             if (isMovingMode) {
                 Surface(
-                    color = Color(0xFFE3F2FD),
+                    color = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.fillMaxWidth(),
                     shadowElevation = 2.dp
                 ) {
@@ -485,19 +486,19 @@ fun LevelListScreen(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.DriveFileMove, null, tint = Color(0xFF1976D2))
+                        Icon(Icons.Default.DriveFileMove, null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
                         Spacer(Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 "正在移动: ${itemToMove?.name}",
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF0D47A1),
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 fontSize = 14.sp
                             )
                             Text(
                                 "请导航至目标文件夹，然后点击右下角粘贴",
                                 fontSize = 12.sp,
-                                color = Color(0xFF1976D2)
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         }
                     }
@@ -505,7 +506,7 @@ fun LevelListScreen(
             }
             if (isLoading) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color(0xFF4CAF50))
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 LazyColumn(
@@ -516,7 +517,7 @@ fun LevelListScreen(
                     if (pathStack.size > 1) {
                         item {
                             Card(
-                                colors = CardDefaults.cardColors(containerColor = Color(0xFFE0E0E0)),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
@@ -532,13 +533,13 @@ fun LevelListScreen(
                                     Icon(
                                         Icons.Default.Folder,
                                         null,
-                                        tint = Color.Gray
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(Modifier.width(16.dp))
                                     Text(
                                         "返回上一级",
                                         fontWeight = FontWeight.Bold,
-                                        color = Color.Gray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -561,7 +562,7 @@ fun LevelListScreen(
                                         modifier = Modifier.size(64.dp)
                                     )
                                     Spacer(Modifier.height(16.dp))
-                                    Text("文件夹为空", color = Color.Gray)
+                                    Text("文件夹为空", color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
                         }
@@ -661,7 +662,7 @@ fun LevelListScreen(
                         Text(
                             if (itemToDelete!!.isDirectory) "我确定要永久删除此文件夹" else "我确定要永久删除此关卡",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -673,7 +674,7 @@ fun LevelListScreen(
                         confirmCheckbox = false
                     },
                     enabled = confirmCheckbox,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) { Text("确认删除") }
             },
             dismissButton = {
@@ -753,7 +754,7 @@ fun LevelListScreen(
                                 showTemplateDialog = false
                                 showCreateNameDialog = true
                             },
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
@@ -763,7 +764,7 @@ fun LevelListScreen(
                                 Icon(
                                     Icons.Default.Description,
                                     null,
-                                    tint = Color(0xFF4CAF50)
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(Modifier.width(16.dp))
                                 Text(
@@ -811,7 +812,7 @@ fun BreadcrumbBar(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(vertical = 6.dp, horizontal = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -821,7 +822,7 @@ fun BreadcrumbBar(
             val isLast = index == pathStack.size - 1
 
             Surface(
-                color = if (isLast) Color(0xFFE8F5E9) else Color.Transparent,
+                color = if (isLast) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
@@ -835,7 +836,7 @@ fun BreadcrumbBar(
                         Icon(
                             Icons.Default.FolderOpen,
                             null,
-                            tint = if (isLast) Color(0xFF2E7D32) else Color.Gray,
+                            tint = if (isLast) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(Modifier.width(4.dp))
@@ -843,7 +844,7 @@ fun BreadcrumbBar(
 
                     Text(
                         text = item.name,
-                        color = if (isLast) Color(0xFF2E7D32) else Color(0xFF424242),
+                        color = if (isLast) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface,
                         fontWeight = if (isLast) FontWeight.Bold else FontWeight.Medium,
                         fontSize = 15.sp
                     )
@@ -854,7 +855,7 @@ fun BreadcrumbBar(
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
-                    tint = Color.LightGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(14.dp)
                 )
             }
@@ -874,7 +875,7 @@ fun FileItemRow(
     onMove: () -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(1.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -887,7 +888,7 @@ fun FileItemRow(
             Icon(
                 imageVector = if (item.isDirectory) Icons.Default.Folder else Icons.Default.Description,
                 contentDescription = null,
-                tint = if (item.isDirectory) Color(0xFFFFC107) else Color(0xFF4CAF50),
+                tint = if (item.isDirectory) Color(0xFFFFC107) else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(28.dp)
             )
 
@@ -900,7 +901,7 @@ fun FileItemRow(
                     fontSize = 16.sp
                 )
                 if (!item.isDirectory) {
-                    Text("JSON 文件", fontSize = 12.sp, color = Color.Gray)
+                    Text("JSON 文件", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -910,7 +911,7 @@ fun FileItemRow(
                         Icon(
                             Icons.Default.Edit,
                             null,
-                            tint = Color.Gray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -920,7 +921,7 @@ fun FileItemRow(
                             Icon(
                                 Icons.Default.ContentCopy,
                                 null,
-                                tint = Color.Gray,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -928,7 +929,7 @@ fun FileItemRow(
                             Icon(
                                 Icons.AutoMirrored.Filled.DriveFileMove,
                                 null,
-                                tint = Color.Gray,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -938,7 +939,7 @@ fun FileItemRow(
                         Icon(
                             Icons.Default.Delete,
                             null,
-                            tint = Color.Red.copy(alpha = 0.7f),
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(20.dp)
                         )
                     }

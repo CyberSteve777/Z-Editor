@@ -16,10 +16,12 @@
     <string name="bullet_custom_injection">Custom Injection: Inject and manage custom zombies, edit their base properties.</string>
     <string name="bullet_auto_check">Auto Check: Detect missing dependencies and broken references to prevent crashes.</string>
     <string name="bullet_preview">Resource Preview: Built-in plant, zombie, obstacle icons; WYSIWYG editing experience.</string>
-    <string name="intro_text">\tZ-Editor is a visual level editor designed specifically for PVZ2. It solves the cumbersome and error-prone process of directly editing JSON files, providing an intuitive interface for level configuration.</string>
+    <string name="intro_text">	Z-Editor is a visual level editor designed specifically for PVZ2. It solves the cumbersome and error-prone process of directly editing JSON files, providing an intuitive interface for level configuration.</string>
     <string name="usage_text">1. Directory setup: On first launch, click the folder icon in the top-right corner to select the JSON level files directory.\n2. Import/New: Click a list item to edit an existing level, or use the bottom-right button to create a new level from a template.\n3. Module management: In the editor, use "Add New Module" to extend level features.\n4. Save: After editing, click the save button in the top-right corner to automatically write changes back to the original JSON file.\nFor questions or feedback, join the QQ group 562251204.</string>
     <string name="author">Author:</string>
     <string name="author_name">降维打击</string>
     <string name="special_thanks">Special Thanks:</string>
     <string name="thanks_names">星寻, metal海枣, 超越自我3333, 桃酱, 凉沈, 小小师, 顾小言, PhiLia093, 咖啡, Anonymous</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="language">Language</string>
 </resources>
