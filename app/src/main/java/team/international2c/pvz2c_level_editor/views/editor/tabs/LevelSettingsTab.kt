@@ -49,13 +49,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.LevelDefinitionData
-import com.example.z_editor.data.ModuleMetadata
-import com.example.z_editor.data.ModuleRegistry
-import com.example.z_editor.data.PvzObject
-import com.example.z_editor.data.repository.ReferenceRepository
-import com.example.z_editor.data.RtidParser
-import com.example.z_editor.views.editor.pages.others.SettingEntryCard
+import team.international2c.pvz2c_level_editor.data.LevelDefinitionData
+import team.international2c.pvz2c_level_editor.data.ModuleMetadata
+import team.international2c.pvz2c_level_editor.data.ModuleRegistry
+import team.international2c.pvz2c_level_editor.data.PvzObject
+import team.international2c.pvz2c_level_editor.data.repository.ReferenceRepository
+import team.international2c.pvz2c_level_editor.data.RtidParser
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.SettingEntryCard
 
 data class ModuleUIInfo(
     val rtid: String,

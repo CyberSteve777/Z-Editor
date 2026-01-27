@@ -59,11 +59,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.RtidParser
-import com.example.z_editor.data.repository.StageItem
-import com.example.z_editor.data.repository.StageRepository
-import com.example.z_editor.data.repository.StageType
-import com.example.z_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.data.RtidParser
+import team.international2c.pvz2c_level_editor.data.repository.StageItem
+import team.international2c.pvz2c_level_editor.data.repository.StageRepository
+import team.international2c.pvz2c_level_editor.data.repository.StageType
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

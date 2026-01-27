@@ -1,8 +1,8 @@
 package team.international2c.pvz2c_level_editor.data.repository
 
 import android.content.Context
-import com.example.z_editor.data.PvzLevelFile
-import com.example.z_editor.data.PvzObject
+import team.international2c.pvz2c_level_editor.data.PvzLevelFile
+import team.international2c.pvz2c_level_editor.data.PvzObject
 import com.google.gson.Gson
 import java.io.InputStreamReader
 

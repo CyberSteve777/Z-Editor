@@ -40,9 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.LevelParser
-import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
-import com.example.z_editor.views.editor.pages.others.HelpSection
+import team.international2c.pvz2c_level_editor.data.LevelParser
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.EditorHelpDialog
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.HelpSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

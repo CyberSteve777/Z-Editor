@@ -70,14 +70,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.Point2D
-import com.example.z_editor.data.Point3DDouble
-import com.example.z_editor.data.PvzLevelFile
-import com.example.z_editor.data.RectData
-import com.example.z_editor.data.RtidParser
-import com.example.z_editor.data.ZombiePropertySheetData
-import com.example.z_editor.data.ZombieTypeData
-import com.example.z_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.data.Point2D
+import team.international2c.pvz2c_level_editor.data.Point3DDouble
+import team.international2c.pvz2c_level_editor.data.PvzLevelFile
+import team.international2c.pvz2c_level_editor.data.RectData
+import team.international2c.pvz2c_level_editor.data.RtidParser
+import team.international2c.pvz2c_level_editor.data.ZombiePropertySheetData
+import team.international2c.pvz2c_level_editor.data.ZombieTypeData
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
 import rememberJsonSync
 
 @OptIn(ExperimentalMaterial3Api::class)

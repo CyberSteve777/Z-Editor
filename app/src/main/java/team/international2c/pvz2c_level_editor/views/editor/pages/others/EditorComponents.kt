@@ -65,13 +65,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.EventRegistry
-import com.example.z_editor.data.LevelParser
-import com.example.z_editor.data.PvzObject
-import com.example.z_editor.data.RtidParser
-import com.example.z_editor.data.ZombieSpawnData
-import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.data.EventRegistry
+import team.international2c.pvz2c_level_editor.data.LevelParser
+import team.international2c.pvz2c_level_editor.data.PvzObject
+import team.international2c.pvz2c_level_editor.data.RtidParser
+import team.international2c.pvz2c_level_editor.data.ZombieSpawnData
+import team.international2c.pvz2c_level_editor.data.repository.ZombieRepository
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
 
 @Composable
 fun EventChip(rtid: String, objectMap: Map<String, PvzObject>, onClick: () -> Unit) {

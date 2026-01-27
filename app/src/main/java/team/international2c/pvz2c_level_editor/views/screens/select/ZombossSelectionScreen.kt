@@ -24,10 +24,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.repository.ZombossInfo
-import com.example.z_editor.data.repository.ZombossRepository
-import com.example.z_editor.data.repository.ZombossTag
-import com.example.z_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.data.repository.ZombossInfo
+import team.international2c.pvz2c_level_editor.data.repository.ZombossRepository
+import team.international2c.pvz2c_level_editor.data.repository.ZombossTag
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
 
 @Composable
 fun ZombossSelectionScreen(

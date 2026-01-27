@@ -62,11 +62,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.repository.ZombieCategory
-import com.example.z_editor.data.repository.ZombieInfo
-import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.data.repository.ZombieTag
-import com.example.z_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.data.repository.ZombieCategory
+import team.international2c.pvz2c_level_editor.data.repository.ZombieInfo
+import team.international2c.pvz2c_level_editor.data.repository.ZombieRepository
+import team.international2c.pvz2c_level_editor.data.repository.ZombieTag
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
 
 @Composable
 fun ZombieSelectionScreen(

@@ -63,17 +63,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.ModifyConveyorPlantData
-import com.example.z_editor.data.ModifyConveyorRemoveData
-import com.example.z_editor.data.ModifyConveyorWaveActionData
-import com.example.z_editor.data.PvzLevelFile
-import com.example.z_editor.data.RtidParser
-import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.views.components.AssetImage
-import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
-import com.example.z_editor.views.editor.pages.others.HelpSection
-import com.example.z_editor.views.editor.pages.others.NumberInputDouble
-import com.example.z_editor.views.editor.pages.others.NumberInputInt
+import team.international2c.pvz2c_level_editor.data.ModifyConveyorPlantData
+import team.international2c.pvz2c_level_editor.data.ModifyConveyorRemoveData
+import team.international2c.pvz2c_level_editor.data.ModifyConveyorWaveActionData
+import team.international2c.pvz2c_level_editor.data.PvzLevelFile
+import team.international2c.pvz2c_level_editor.data.RtidParser
+import team.international2c.pvz2c_level_editor.data.repository.PlantRepository
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.EditorHelpDialog
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.HelpSection
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.NumberInputDouble
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.NumberInputInt
 import rememberJsonSync
 
 @OptIn(ExperimentalMaterial3Api::class)

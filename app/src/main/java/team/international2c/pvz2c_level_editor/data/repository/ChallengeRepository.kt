@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.z_editor.Translator
-import com.example.z_editor.data.*
+import team.international2c.pvz2c_level_editor.Translator
+import team.international2c.pvz2c_level_editor.data.*
 
 /**
  * 挑战元数据模型

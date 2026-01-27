@@ -7,11 +7,11 @@ import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.z_editor.data.EditorSubScreen
-import com.example.z_editor.data.EventMetadata
-import com.example.z_editor.data.ModuleMetadata
-import com.example.z_editor.data.SunDropperPropertiesData
-import com.example.z_editor.data.repository.ChallengeTypeInfo
+import team.international2c.pvz2c_level_editor.data.EditorSubScreen
+import team.international2c.pvz2c_level_editor.data.EventMetadata
+import team.international2c.pvz2c_level_editor.data.ModuleMetadata
+import team.international2c.pvz2c_level_editor.data.SunDropperPropertiesData
+import team.international2c.pvz2c_level_editor.data.repository.ChallengeTypeInfo
 
 /**
  * 编辑器的一级 Tab 类型定义

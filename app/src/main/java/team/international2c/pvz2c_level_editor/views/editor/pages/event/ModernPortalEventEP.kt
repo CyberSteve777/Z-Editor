@@ -63,15 +63,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.PortalEventData
-import com.example.z_editor.data.PvzLevelFile
-import com.example.z_editor.data.RtidParser
-import com.example.z_editor.data.repository.PortalRepository
-import com.example.z_editor.data.repository.PortalWorldDef
-import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.views.components.AssetImage
-import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
-import com.example.z_editor.views.editor.pages.others.HelpSection
+import team.international2c.pvz2c_level_editor.data.PortalEventData
+import team.international2c.pvz2c_level_editor.data.PvzLevelFile
+import team.international2c.pvz2c_level_editor.data.RtidParser
+import team.international2c.pvz2c_level_editor.data.repository.PortalRepository
+import team.international2c.pvz2c_level_editor.data.repository.PortalWorldDef
+import team.international2c.pvz2c_level_editor.data.repository.ZombieRepository
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.EditorHelpDialog
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
 
 @OptIn(ExperimentalMaterial3Api::class)

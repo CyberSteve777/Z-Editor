@@ -1,6 +1,6 @@
 package team.international2c.pvz2c_level_editor.data
 
-import com.example.z_editor.data.repository.ZombiePropertiesRepository
+import team.international2c.pvz2c_level_editor.data.repository.ZombiePropertiesRepository
 
 object WavePointAnalysis {
 

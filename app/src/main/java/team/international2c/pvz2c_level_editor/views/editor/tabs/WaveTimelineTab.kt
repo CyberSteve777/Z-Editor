@@ -87,20 +87,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.EventRegistry
-import com.example.z_editor.data.LevelParser
-import com.example.z_editor.data.ParsedLevelData
-import com.example.z_editor.data.PvzLevelFile
-import com.example.z_editor.data.PvzObject
-import com.example.z_editor.data.RtidParser
-import com.example.z_editor.data.WaveManagerData
-import com.example.z_editor.data.WaveManagerModuleData
-import com.example.z_editor.data.WavePointAnalysis
-import com.example.z_editor.data.repository.ZombiePropertiesRepository
-import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.views.components.AssetImage
-import com.example.z_editor.views.editor.pages.others.EventChip
-import com.example.z_editor.views.editor.pages.others.SettingEntryCard
+import team.international2c.pvz2c_level_editor.data.EventRegistry
+import team.international2c.pvz2c_level_editor.data.LevelParser
+import team.international2c.pvz2c_level_editor.data.ParsedLevelData
+import team.international2c.pvz2c_level_editor.data.PvzLevelFile
+import team.international2c.pvz2c_level_editor.data.PvzObject
+import team.international2c.pvz2c_level_editor.data.RtidParser
+import team.international2c.pvz2c_level_editor.data.WaveManagerData
+import team.international2c.pvz2c_level_editor.data.WaveManagerModuleData
+import team.international2c.pvz2c_level_editor.data.WavePointAnalysis
+import team.international2c.pvz2c_level_editor.data.repository.ZombiePropertiesRepository
+import team.international2c.pvz2c_level_editor.data.repository.ZombieRepository
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.EventChip
+import team.international2c.pvz2c_level_editor.views.editor.pages.others.SettingEntryCard
 
 data class ZombieUsageInfo(
     val rtid: String,

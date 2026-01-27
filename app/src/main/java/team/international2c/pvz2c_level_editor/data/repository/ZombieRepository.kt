@@ -174,8 +174,8 @@ object ZombieRepository {
         else id
     }
 
-    fun resolveZombieType(rtid: String, objectMap: Map<String, com.example.z_editor.data.PvzObject>? = null): Pair<String, Boolean> {
-        val parsed = com.example.z_editor.data.RtidParser.parse(rtid) ?: return Pair("", false)
+    fun resolveZombieType(rtid: String, objectMap: Map<String, team.international2c.pvz2c_level_editor.data.PvzObject>? = null): Pair<String, Boolean> {
+        val parsed = team.international2c.pvz2c_level_editor.data.RtidParser.parse(rtid) ?: return Pair("", false)
         val alias = parsed.alias
         if (parsed.source == "ZombieTypes") {
             val typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
@@ -189,7 +189,7 @@ object ZombieRepository {
                 try {
                     val gson = Gson()
                     if (customZombieObj.objClass == "ZombieType") {
-                        val data = gson.fromJson(customZombieObj.objData, com.example.z_editor.data.ZombieTypeData::class.java)
+                        val data = gson.fromJson(customZombieObj.objData, team.international2c.pvz2c_level_editor.data.ZombieTypeData::class.java)
                         val baseType = data.typeName
                         val isValidBase = uiConfiguredAliases.contains(baseType) || ZombiePropertiesRepository.isValidAlias(baseType)
                         return Pair(baseType, isValidBase)

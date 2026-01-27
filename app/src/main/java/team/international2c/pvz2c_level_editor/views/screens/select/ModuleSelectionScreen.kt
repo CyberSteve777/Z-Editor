@@ -56,9 +56,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.ModuleCategory
-import com.example.z_editor.data.ModuleMetadata
-import com.example.z_editor.data.ModuleRegistry
+import team.international2c.pvz2c_level_editor.data.ModuleCategory
+import team.international2c.pvz2c_level_editor.data.ModuleMetadata
+import team.international2c.pvz2c_level_editor.data.ModuleRegistry
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

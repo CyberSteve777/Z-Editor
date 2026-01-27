@@ -21,9 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.repository.ToolCardInfo
-import com.example.z_editor.data.repository.ToolRepository
-import com.example.z_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.data.repository.ToolCardInfo
+import team.international2c.pvz2c_level_editor.data.repository.ToolRepository
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
 
 
 @OptIn(ExperimentalMaterial3Api::class)

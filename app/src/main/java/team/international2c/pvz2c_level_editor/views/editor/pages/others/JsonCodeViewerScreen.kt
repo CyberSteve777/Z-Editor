@@ -63,8 +63,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.PvzLevelFile
-import com.example.z_editor.data.PvzObject
+import team.international2c.pvz2c_level_editor.data.PvzLevelFile
+import team.international2c.pvz2c_level_editor.data.PvzObject
 import com.google.gson.GsonBuilder
 
 private enum class JsonViewMode {

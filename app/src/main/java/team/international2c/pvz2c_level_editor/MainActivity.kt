@@ -15,10 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.example.z_editor.ui.theme.PVZ2LevelEditorTheme
-import com.example.z_editor.views.screens.main.AboutScreen
-import com.example.z_editor.views.screens.main.EditorScreen
-import com.example.z_editor.views.screens.main.LevelListScreen
+import team.international2c.pvz2c_level_editor.ui.theme.PVZ2LevelEditorTheme
+import team.international2c.pvz2c_level_editor.views.screens.main.AboutScreen
+import team.international2c.pvz2c_level_editor.views.screens.main.EditorScreen
+import team.international2c.pvz2c_level_editor.views.screens.main.LevelListScreen
 
 class MainActivity : ComponentActivity() {
 

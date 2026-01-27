@@ -32,8 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.EventMetadata
-import com.example.z_editor.data.EventRegistry
+import team.international2c.pvz2c_level_editor.data.EventMetadata
+import team.international2c.pvz2c_level_editor.data.EventRegistry
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

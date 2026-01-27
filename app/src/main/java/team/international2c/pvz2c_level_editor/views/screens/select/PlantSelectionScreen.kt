@@ -62,11 +62,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.repository.PlantCategory
-import com.example.z_editor.data.repository.PlantInfo
-import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.data.repository.PlantTag
-import com.example.z_editor.views.components.AssetImage
+import team.international2c.pvz2c_level_editor.data.repository.PlantCategory
+import team.international2c.pvz2c_level_editor.data.repository.PlantInfo
+import team.international2c.pvz2c_level_editor.data.repository.PlantRepository
+import team.international2c.pvz2c_level_editor.data.repository.PlantTag
+import team.international2c.pvz2c_level_editor.views.components.AssetImage
 
 @Composable
 fun PlantSelectionScreen(
