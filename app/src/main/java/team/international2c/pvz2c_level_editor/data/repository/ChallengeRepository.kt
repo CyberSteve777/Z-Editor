@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import team.international2c.pvz2c_level_editor.Translator
+import team.international2c.pvz2c_level_editor.R
 import team.international2c.pvz2c_level_editor.data.*
 
 /**
@@ -28,10 +28,10 @@ object ChallengeRepository {
         return listOf(
             // First challenge uses Translator + context
             ChallengeTypeInfo(
-                title = Translator.t(context, "challenge_title_beat_level"),
+                title = context.getString(R.string.challenge_title_beat_level),
                 objClass = "StarChallengeBeatTheLevelProps",
-                defaultAlias = Translator.t(context, "challenge_alias_beat_level"),
-                description = Translator.t(context, "challenge_description_beat_level"),
+                defaultAlias = context.getString(R.string.challenge_alias_beat_level),
+                description = context.getString(R.string.challenge_description_beat_level),
                 icon = Icons.Default.Campaign,
                 initialDataFactory = { StarChallengeBeatTheLevelData() }
             ),
