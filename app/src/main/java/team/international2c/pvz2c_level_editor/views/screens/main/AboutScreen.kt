@@ -1,6 +1,7 @@
 package team.international2c.pvz2c_level_editor.views.screens.main
 
-import android.content.Context
+import android.app.Activity
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -12,32 +13,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import team.international2c.pvz2c_level_editor.MainActivity
 import team.international2c.pvz2c_level_editor.R
-import androidx.compose.material3.CardDefaults
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.filled.* // optional, for more icons
+import team.international2c.pvz2c_level_editor.viewmodels.ThemeViewModel
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutScreen(onBack: () -> Unit) {
-    val themeColor = Color(0xFF4CAF50)
-    val context = LocalContext.current
+fun AboutScreen(onBack: () -> Unit, themeViewModel: ThemeViewModel) {
     BackHandler(onBack = onBack)
 
     Scaffold(
@@ -45,7 +36,7 @@ fun AboutScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = {
                     Text(
-                        text = context.getString(R.string.about_title),
+                        text = stringResource(R.string.about_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp
                     )
@@ -54,15 +45,15 @@ fun AboutScreen(onBack: () -> Unit) {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = context.getString(R.string.back),
-                            tint = Color.White
+                            contentDescription = stringResource(R.string.back),
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         }
@@ -71,24 +62,21 @@ fun AboutScreen(onBack: () -> Unit) {
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // Language selector UI
-            LanguageSelector()
-
             Text(
-                text = context.getString(R.string.app_name),
+                text = stringResource(R.string.app_name),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
-                color = themeColor
+                color = MaterialTheme.colorScheme.primary
             )
 
             Text(
-                text = context.getString(R.string.subtitle),
+                text = stringResource(R.string.subtitle),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
@@ -97,49 +85,49 @@ fun AboutScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(18.dp))
 
-            InfoSectionCard(title = context.getString(R.string.section_intro)) {
+            InfoSectionCard(title = stringResource(R.string.section_intro)) {
                 Text(
-                    text = context.getString(R.string.intro_text),
+                    text = stringResource(R.string.intro_text),
                     lineHeight = 24.sp,
-                    color = Color(0xFF424242)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            InfoSectionCard(title = context.getString(R.string.section_core_features)) {
-                BulletPoint(context.getString(R.string.bullet_modular_editing))
-                BulletPoint(context.getString(R.string.bullet_multimode_support))
-                BulletPoint(context.getString(R.string.bullet_custom_injection))
-                BulletPoint(context.getString(R.string.bullet_auto_check))
-                BulletPoint(context.getString(R.string.bullet_preview))
+            InfoSectionCard(title = stringResource(R.string.section_core_features)) {
+                BulletPoint(stringResource(R.string.bullet_modular_editing))
+                BulletPoint(stringResource(R.string.bullet_multimode_support))
+                BulletPoint(stringResource(R.string.bullet_custom_injection))
+                BulletPoint(stringResource(R.string.bullet_auto_check))
+                BulletPoint(stringResource(R.string.bullet_preview))
             }
 
-            InfoSectionCard(title = context.getString(R.string.section_usage)) {
+            InfoSectionCard(title = stringResource(R.string.section_usage)) {
                 Text(
-                    text = context.getString(R.string.usage_text),
+                    text = stringResource(R.string.usage_text),
                     lineHeight = 24.sp,
-                    color = Color(0xFF424242)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            InfoSectionCard(title = context.getString(R.string.section_acknowledgements)) {
-                BulletPoint(context.getString(R.string.author))
+            InfoSectionCard(title = stringResource(R.string.section_acknowledgements)) {
+                BulletPoint(stringResource(R.string.author))
                 Text(
-                    context.getString(R.string.author_name),
+                    stringResource(R.string.author_name),
                     lineHeight = 24.sp,
-                    color = Color(0xFF424242)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                BulletPoint(context.getString(R.string.special_thanks))
+                BulletPoint(stringResource(R.string.special_thanks))
                 Text(
-                    context.getString(R.string.thanks_names),
+                    stringResource(R.string.thanks_names),
                     lineHeight = 24.sp,
-                    color = Color(0xFF424242)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
             Spacer(Modifier.height(20.dp))
 
             Text(
-                text = context.getString(R.string.tagline),
+                text = stringResource(R.string.tagline),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 color = Color.Gray,
@@ -149,7 +137,7 @@ fun AboutScreen(onBack: () -> Unit) {
             Spacer(Modifier.height(20.dp))
 
             Text(
-                text = context.getString(R.string.version),
+                text = stringResource(R.string.version),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 color = Color.LightGray,
@@ -162,59 +150,12 @@ fun AboutScreen(onBack: () -> Unit) {
 }
 
 @Composable
-fun LanguageSelector() {
-    val context = LocalContext.current
-    var selectedLang by remember { mutableStateOf("zh") }
-
-    Row(modifier = Modifier.padding(16.dp)) {
-        Text(
-            text = context.getString(R.string.chinese),
-            color = if (selectedLang == "zh") Color(0xFF4CAF50) else Color.Gray,
-            modifier = Modifier
-                .clickable {
-                    selectedLang = "zh"
-                    updateLocale(context, "zh")
-                }
-                .padding(end = 16.dp)
-        )
-        Text(
-            text = context.getString(R.string.english),
-            color = if (selectedLang == "en") Color(0xFF4CAF50) else Color.Gray,
-            modifier = Modifier
-                .clickable {
-                    selectedLang = "en"
-                    updateLocale(context, "en")
-                }
-                .padding(end = 16.dp)
-        )
-        Text(
-            text = context.getString(R.string.russian),
-            color = if (selectedLang == "ru") Color(0xFF4CAF50) else Color.Gray,
-            modifier = Modifier
-                .clickable {
-                    selectedLang = "ru"
-                    updateLocale(context, "ru")
-                }
-        )
-    }
-}
-
-// Function to change language at runtime
-fun updateLocale(context: Context, lang: String) {
-    val locale = Locale(lang)
-    Locale.setDefault(locale)
-    val config = Configuration(context.resources.configuration)
-    config.setLocale(locale)
-    context.resources.updateConfiguration(config, context.resources.displayMetrics)
-}
-
-@Composable
 fun InfoSectionCard(title: String, content: @Composable () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -222,7 +163,7 @@ fun InfoSectionCard(title: String, content: @Composable () -> Unit) {
                 text = title,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF388E3C)
+                color = MaterialTheme.colorScheme.primary
             )
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
@@ -237,7 +178,7 @@ fun InfoSectionCard(title: String, content: @Composable () -> Unit) {
 @Composable
 fun BulletPoint(text: String) {
     Row(modifier = Modifier.padding(vertical = 2.dp)) {
-        Text("• ", fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))
-        Text(text, lineHeight = 24.sp, color = Color(0xFF424242))
+        Text("• ", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Text(text, lineHeight = 24.sp, color = MaterialTheme.colorScheme.onSurface)
     }
 }
