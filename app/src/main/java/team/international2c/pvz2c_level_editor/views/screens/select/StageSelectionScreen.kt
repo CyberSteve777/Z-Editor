@@ -55,12 +55,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import team.international2c.pvz2c_level_editor.data.RtidParser
+import team.international2c.pvz2c_level_editor.R
 import team.international2c.pvz2c_level_editor.data.repository.StageItem
 import team.international2c.pvz2c_level_editor.data.repository.StageRepository
 import team.international2c.pvz2c_level_editor.data.repository.StageType
@@ -76,13 +78,14 @@ fun StageSelectionScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedTab by remember { mutableIntStateOf(0) }
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
     val tabs = listOf(
-        StageType.All to "全部地图",
-        StageType.Main to "主线世界",
-        StageType.Extra to "活动/秘境",
-        StageType.Seasons to "一代/季节",
-        StageType.Special to "小游戏"
+        StageType.All to R.string.all_stages,
+        StageType.Main to R.string.main_world,
+        StageType.Extra to R.string.activities_secret,
+        StageType.Seasons to R.string.pvz1_seasons,
+        StageType.Special to R.string.minigames
     )
 
     val displayStages = remember(searchQuery, selectedTab) {
@@ -118,7 +121,7 @@ fun StageSelectionScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, context.getString(R.string.back), tint = Color.White)
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -126,7 +129,7 @@ fun StageSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text("搜索地图名称或代号", fontSize = 16.sp, color = Color.Gray)
+                                Text(context.getString(R.string.search_stage_name_or_alias), fontSize = 16.sp, color = Color.Gray)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -167,14 +170,14 @@ fun StageSelectionScreen(
                             }
                         }
                     ) {
-                        tabs.forEachIndexed { index, (_, title) ->
+                        tabs.forEachIndexed { index, (_, titleRes) ->
                             val isSelected = selectedTab == index
                             Tab(
                                 selected = isSelected,
                                 onClick = { selectedTab = index },
                                 text = {
                                     Text(
-                                        text = title,
+                                        text = context.getString(titleRes),
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         fontSize = 13.sp
                                     )
@@ -223,7 +226,7 @@ fun StageSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(8.dp))
-                    Text("未找到相关地图", color = Color.Gray)
+                    Text(context.getString(R.string.not_found_stages), color = Color.Gray)
                 }
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import team.international2c.pvz2c_level_editor.R
 import team.international2c.pvz2c_level_editor.data.EditorSubScreen
 import team.international2c.pvz2c_level_editor.data.EventMetadata
 import team.international2c.pvz2c_level_editor.data.ModuleMetadata
@@ -16,12 +17,12 @@ import team.international2c.pvz2c_level_editor.data.repository.ChallengeTypeInfo
 /**
  * 编辑器的一级 Tab 类型定义
  */
-enum class EditorTabType(val title: String, val icon: ImageVector) {
-    Settings("关卡设置", Icons.Default.Settings),
-    Timeline("波次容器", Icons.Default.Inbox),
-    IZombie("我是僵尸", Icons.Default.EmojiPeople),
-    VaseBreaker("罐子布局", Icons.Default.Grid4x4),
-    BossFight("僵王属性", Icons.Default.Dangerous),
+enum class EditorTabType(val titleResId: Int, val icon: ImageVector) {
+    Settings(R.string.level_settings, Icons.Default.Settings),
+    Timeline(R.string.wave_containers, Icons.Default.Inbox),
+    IZombie(R.string.i_zombie, Icons.Default.EmojiPeople),
+    VaseBreaker(R.string.vase_layout, Icons.Default.Grid4x4),
+    BossFight(R.string.zomboss_properties, Icons.Default.Dangerous),
 }
 
 /**

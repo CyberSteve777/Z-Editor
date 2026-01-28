@@ -135,7 +135,7 @@ fun PlantSelectionScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, context.getString(team.international2c.pvz2c_level_editor.R.string.back), tint = Color.White)
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -144,7 +144,7 @@ fun PlantSelectionScreen(
                             onValueChange = { searchQuery = it },
                             placeholder = {
                                 Text(
-                                    if (isMultiSelect) "已选择 ${selectedIds.size} 项，点击搜索" else "搜索植物名称或代码",
+                                    if (isMultiSelect) context.getString(team.international2c.pvz2c_level_editor.R.string.selected_count_click_search, selectedIds.size) else context.getString(team.international2c.pvz2c_level_editor.R.string.search_plant_name_or_code),
                                     fontSize = 16.sp,
                                     color = Color.Gray
                                 )
@@ -277,7 +277,7 @@ fun PlantSelectionScreen(
                     containerColor = themeColor,
                     contentColor = Color.White
                 ) {
-                    Icon(Icons.Default.Check, "完成")
+                    Icon(Icons.Default.Check, context.getString(team.international2c.pvz2c_level_editor.R.string.done))
                 }
             }
         }
@@ -301,7 +301,7 @@ fun PlantSelectionScreen(
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        if (selectedCategory == PlantCategory.Collection) "暂无收藏植物，长按植物即可收藏" else "未找到相关植物",
+                        if (selectedCategory == PlantCategory.Collection) context.getString(team.international2c.pvz2c_level_editor.R.string.no_favorite_plants_hint) else context.getString(team.international2c.pvz2c_level_editor.R.string.no_related_plants),
                         color = Color.Gray
                     )
                 }
@@ -334,7 +334,7 @@ fun PlantSelectionScreen(
                             },
                             onLongClick = {
                                 PlantRepository.toggleFavorite(context, plant.id)
-                                val msg = if (PlantRepository.isFavorite(plant.id)) "已加入收藏" else "已取消收藏"
+                                val msg = if (PlantRepository.isFavorite(plant.id)) context.getString(team.international2c.pvz2c_level_editor.R.string.added_to_favorites) else context.getString(team.international2c.pvz2c_level_editor.R.string.removed_from_favorites)
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }
                         )
@@ -354,6 +354,7 @@ fun PlantGridItem(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val borderColor = if (isSelected) Color(0xFF8BC34A) else Color.Transparent
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val bgColor = if (isSelected) Color(0xFF8BC34A).copy(alpha = 0.1f) else Color.Transparent
@@ -401,7 +402,7 @@ fun PlantGridItem(
             if (isFavorite) {
                 Icon(
                     Icons.Default.Star,
-                    contentDescription = "Favorite",
+                    contentDescription = context.getString(team.international2c.pvz2c_level_editor.R.string.favorite),
                     tint = Color(0xFFFFC107),
                     modifier = Modifier
                         .size(14.dp)

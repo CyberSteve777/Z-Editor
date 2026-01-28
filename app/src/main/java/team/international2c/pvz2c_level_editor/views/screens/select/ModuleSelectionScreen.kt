@@ -54,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,6 +75,7 @@ fun ModuleSelectionScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(ModuleCategory.Base) }
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
     val filteredModules = remember(selectedCategory, searchQuery) {
         allModules.entries
@@ -113,7 +115,7 @@ fun ModuleSelectionScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, context.getString(team.international2c.pvz2c_level_editor.R.string.back), tint = Color.White)
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -121,7 +123,7 @@ fun ModuleSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text("搜索模块名称或描述", fontSize = 16.sp, color = Color.Gray)
+                                Text(context.getString(team.international2c.pvz2c_level_editor.R.string.search_module_name_or_description), fontSize = 16.sp, color = Color.Gray)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -202,7 +204,7 @@ fun ModuleSelectionScreen(
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        text = if (searchQuery.isNotEmpty()) "未找到匹配 \"$searchQuery\" 的模块" else "该分类下暂无模块",
+                        text = if (searchQuery.isNotEmpty()) context.getString(team.international2c.pvz2c_level_editor.R.string.no_modules_match_query, searchQuery) else context.getString(team.international2c.pvz2c_level_editor.R.string.no_modules_in_category),
                         color = Color.Gray
                     )
                 }
@@ -238,7 +240,7 @@ fun ModuleSelectionCard(
     onClick: () -> Unit
 ) {
     val isEnabled = !isAlreadyAdded || meta.allowMultiple
-
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -296,14 +298,14 @@ fun ModuleSelectionCard(
                 if (meta.allowMultiple) {
                     Icon(
                         Icons.Default.AddCircle,
-                        contentDescription = "可重复添加",
+                        contentDescription = context.getString(team.international2c.pvz2c_level_editor.R.string.can_add_multiple),
                         tint = Color(0xFF4CAF50),
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
                     Icon(
                         Icons.Default.CheckCircle,
-                        contentDescription = "已添加",
+                        contentDescription = context.getString(team.international2c.pvz2c_level_editor.R.string.already_added),
                         tint = Color(0xFF4CAF50),
                         modifier = Modifier.size(24.dp)
                     )

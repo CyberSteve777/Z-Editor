@@ -42,11 +42,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import team.international2c.pvz2c_level_editor.R
 import team.international2c.pvz2c_level_editor.data.EditorSubScreen
 import team.international2c.pvz2c_level_editor.data.LevelParser
 import team.international2c.pvz2c_level_editor.data.ModuleMetadata
@@ -174,7 +176,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
 
         missingModules = missingList.mapNotNull { objClass ->
             val meta = ModuleRegistry.getMetadata(objClass)
-            if (meta.title == "未知模块" && objClass != "Unknown") null else meta
+            if (meta.title == context.getString(R.string.unknown_module) && objClass != "Unknown") null else meta
         }
     }
 
@@ -182,7 +184,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
         val typeName = ZombiePropertiesRepository.getTypeNameByAlias(originalAlias)
         val template = ZombiePropertiesRepository.getTemplateJson(typeName)
         if (template == null) {
-            Toast.makeText(context, "无法获取 $typeName 的原始数据模板", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.cannot_get_template, typeName), Toast.LENGTH_SHORT).show()
             return null
         }
 
@@ -230,7 +232,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
         parsedData = parsedData!!.copy(objectMap = newObjectMap)
         refreshTrigger++
 
-        Toast.makeText(context, "已注入自定义僵尸: $newTypeAlias", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.custom_zombie_injected, newTypeAlias), Toast.LENGTH_SHORT).show()
         return RtidParser.build(newTypeAlias, "CurrentLevel")
     }
 
@@ -246,7 +248,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
             recalculateLevelState()
             selectedTabIndex = 0
         } else {
-            Toast.makeText(context, "文件加载失败", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.file_load_failed), Toast.LENGTH_SHORT).show()
             onBack()
         }
     }
@@ -257,10 +259,10 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
         if (rootLevelFile == null || parsedData == null) return
         try {
             LevelRepository.saveAndExport(context, fileUri!!, currentFileName, rootLevelFile!!)
-            val msg = if (isExit) "已自动保存并退出" else "保存成功"
+            val msg = if (isExit) context.getString(R.string.auto_saved_and_exit) else context.getString(R.string.save_success)
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(context, "保存出错: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.save_error, e.message ?: ""), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -359,7 +361,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                                 }
                                 if (deletedCount > 0) Toast.makeText(
                                     context,
-                                    "移除了 $deletedCount 个关联挑战",
+                                    context.getString(R.string.removed_related_challenges, deletedCount),
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } catch (e: Exception) {
@@ -394,7 +396,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                     )
 
                     refreshTrigger++
-                    Toast.makeText(context, "已移除模块", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.removed_module), Toast.LENGTH_SHORT).show()
                 }
             },
 
@@ -404,7 +406,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                 if (!meta.allowMultiple && isDefaultExist) {
                     Toast.makeText(
                         context,
-                        "${meta.title} 模块已存在，不可重复添加",
+                        context.getString(R.string.module_exists_no_repeat, meta.title),
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
@@ -471,7 +473,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                     )
 
                     refreshTrigger++
-                    Toast.makeText(context, "已添加 ${meta.title}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.added_module, meta.title), Toast.LENGTH_SHORT).show()
                     currentSubScreen = EditorSubScreen.None
                 }
             },
@@ -568,7 +570,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                         waveModule = parsedData?.waveModule
                     )
                     refreshTrigger++
-                    Toast.makeText(context, "已初始化波次容器 ($newAlias)", Toast.LENGTH_SHORT)
+                    Toast.makeText(context, context.getString(R.string.initialized_wave_container, newAlias), Toast.LENGTH_SHORT)
                         .show()
                 }
             },
@@ -591,7 +593,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                     }
 
                     if (removed) {
-                        Toast.makeText(context, "已删除波次容器", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.deleted_wave_container), Toast.LENGTH_SHORT).show()
                         val newObjectMap = rootLevelFile!!.objects.associateBy {
                             it.aliases?.firstOrNull() ?: "unknown"
                         }
@@ -848,8 +850,8 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                                 IconButton(onClick = { handleExit() }) {
                                     Icon(
                                         Icons.AutoMirrored.Filled.ArrowBack,
-                                        "Back",
-                                        tint = MaterialTheme.colorScheme.onPrimary
+                                        context.getString(R.string.back),
+                                        tint = Color.White
                                     )
                                 }
                             },
@@ -858,18 +860,18 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                                     performSave(isExit = false)
                                     currentSubScreen = EditorSubScreen.JsonView(currentFileName)
                                 }) {
-                                    Icon(Icons.Default.Code, "查看代码", tint = MaterialTheme.colorScheme.onPrimary)
+                                    Icon(Icons.Default.Code, context.getString(R.string.view_code), tint = Color.White)
                                 }
                                 IconButton(onClick = { performSave(isExit = false) }) {
                                     Icon(
                                         Icons.Default.Save,
-                                        "保存",
-                                        tint = MaterialTheme.colorScheme.onPrimary
+                                        context.getString(R.string.save),
+                                        tint = Color.White
                                     )
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary, titleContentColor = MaterialTheme.colorScheme.onPrimary
+                                containerColor = Color(0xFF4CAF50), titleContentColor = Color.White
                             )
                         )
                     }
@@ -882,15 +884,15 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                         if (availableTabs.size > 1) {
                             ScrollableTabRow(
                                 selectedTabIndex = selectedTabIndex,
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.primary,
+                                containerColor = Color.Transparent,
+                                contentColor = Color(0xFF1976D2),
                                 edgePadding = 0.dp,
                                 indicator = { tabPositions ->
                                     val index = selectedTabIndex
                                     if (index < tabPositions.size) {
                                         SecondaryIndicator(
                                             Modifier.tabIndicatorOffset(tabPositions[index]),
-                                            color = MaterialTheme.colorScheme.primary,
+                                            color = Color(0xFF1976D2),
                                             height = 3.dp
                                         )
                                     }
@@ -904,7 +906,7 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                                         else Modifier.width(screenWidth / 3),
                                         selected = selectedTabIndex == index,
                                         onClick = { selectedTabIndex = index },
-                                        text = { Text(tabType.title) },
+                                        text = { Text(context.getString(tabType.titleResId)) },
                                         icon = { Icon(tabType.icon, null) }
                                     )
                                 }
