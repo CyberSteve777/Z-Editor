@@ -40,12 +40,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import team.international2c.pvz2c_level_editor.MainActivity
 import team.international2c.pvz2c_level_editor.R
+import team.international2c.pvz2c_level_editor.viewmodels.LocaleViewModel
 import team.international2c.pvz2c_level_editor.viewmodels.ThemeViewModel
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onBack: () -> Unit, themeViewModel: ThemeViewModel) {
+fun SettingsScreen(onBack: () -> Unit, themeViewModel: ThemeViewModel,
+                   localeViewModel: LocaleViewModel) {
     BackHandler(onBack = onBack)
 
     Scaffold(
@@ -80,16 +82,17 @@ fun SettingsScreen(onBack: () -> Unit, themeViewModel: ThemeViewModel) {
                 .padding(padding)
                 .fillMaxSize()
         ) {
-            Settings(themeViewModel)
+            Settings(themeViewModel, localeViewModel)
         }
     }
 }
 
 @Composable
-fun Settings(themeViewModel: ThemeViewModel) {
+fun Settings(themeViewModel: ThemeViewModel,
+             localeViewModel: LocaleViewModel) {
     Column {
         DarkModeSwitch(themeViewModel)
-        LanguageSelector()
+        LanguageSelector(localeViewModel)
     }
 }
 
@@ -111,12 +114,10 @@ fun DarkModeSwitch(themeViewModel: ThemeViewModel) {
 }
 
 @Composable
-fun LanguageSelector() {
-    val context = LocalContext.current
+fun LanguageSelector(localeViewModel: LocaleViewModel) {
     var expanded by remember { mutableStateOf(false) }
-    val languages = listOf("en", "zh", "ru")
     var selectedLanguage by remember { mutableStateOf(Locale.getDefault().language) }
-
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,12 +134,13 @@ fun LanguageSelector() {
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                languages.forEach { language ->
+                localeViewModel.supportedLocales.forEach { locale ->
                     DropdownMenuItem(
-                        text = { Text(text = language) },
+                        text = { Text(text = localeViewModel.getDisplayName(locale)) },
                         onClick = {
-                            selectedLanguage = language
-                            updateLocale(context, language)
+                            selectedLanguage = locale.language
+                            localeViewModel.changeLocale(locale)
+                            updateLocale(context, locale)
                             expanded = false
                         }
                     )
@@ -148,8 +150,7 @@ fun LanguageSelector() {
     }
 }
 
-fun updateLocale(context: Context, lang: String) {
-    val locale = Locale.forLanguageTag(lang)
+fun updateLocale(context: Context, locale: Locale) {
     Locale.setDefault(locale)
     val configuration = context.resources.configuration
     configuration.setLocale(locale)

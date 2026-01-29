@@ -16,7 +16,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 14
-        versionName = "1.1.3+t.1"
+        versionName = "1.1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,12 +28,11 @@ android {
             if (keystorePropertiesFile.exists()) {
                 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
             }
-
             keyAlias = keystoreProperties.getProperty("signing.key.alias")
             keyPassword = keystoreProperties.getProperty("signing.key.password")
             storePassword = keystoreProperties.getProperty("signing.store.password")
-
             val storeFilePath = keystoreProperties.getProperty("signing.store.file")
+            storeFile = file(keystoreProperties.getProperty("signing.store.file"))
             if (storeFilePath != null) {
                 storeFile = rootProject.file(storeFilePath)
             }
@@ -68,6 +67,7 @@ configurations.forEach {
 }
 
 dependencies {
+    val koin_version = "4.1.1"
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -82,6 +82,11 @@ dependencies {
     implementation(libs.androidx.remote.creation.core)
     implementation(libs.gson)
     implementation("androidx.datastore:datastore-preferences:1.2.0")
+    implementation(platform("io.insert-koin:koin-bom:$koin_version"))
+    implementation("io.insert-koin:koin-android")
+    implementation("io.insert-koin:koin-compose")
+    implementation("io.insert-koin:koin-androidx-compose")
+    implementation("io.insert-koin:koin-compose-viewmodel")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

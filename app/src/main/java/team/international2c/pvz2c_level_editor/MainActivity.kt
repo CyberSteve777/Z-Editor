@@ -17,6 +17,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import team.international2c.pvz2c_level_editor.locale.LocaleManager
+import team.international2c.pvz2c_level_editor.viewmodels.LocaleViewModel
 import team.international2c.pvz2c_level_editor.ui.theme.PVZ2LevelEditorTheme
 import team.international2c.pvz2c_level_editor.viewmodels.ThemeViewModel
 import team.international2c.pvz2c_level_editor.views.screens.main.AboutScreen
@@ -25,14 +35,26 @@ import team.international2c.pvz2c_level_editor.views.screens.main.LevelListScree
 import team.international2c.pvz2c_level_editor.views.screens.main.SettingsScreen
 
 class MainActivity : ComponentActivity() {
-
+    private val localeManager: LocaleManager by inject()
     private val themeViewModel: ThemeViewModel by viewModels()
+    private val localeViewModel: LocaleViewModel by inject()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
-            PVZ2LevelEditorTheme(darkTheme = isDarkTheme) {
-                AppNavigation(themeViewModel)
+        startKoin {
+            androidContext(this@MainActivity)
+            modules(koinModule)
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                localeViewModel.currentLocale.collect { locale ->
+                    // Update the activity's context with the new locale
+                    setContent {
+                        val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
+                        PVZ2LevelEditorTheme(darkTheme = isDarkTheme) {
+                            AppNavigation(themeViewModel, localeViewModel)
+                        }
+                    }
+                }
             }
         }
     }
@@ -46,7 +68,8 @@ enum class ScreenState {
 }
 
 @Composable
-fun AppNavigation(themeViewModel: ThemeViewModel) {
+fun AppNavigation(themeViewModel: ThemeViewModel,
+                  localeViewModel: LocaleViewModel) {
     var currentScreen by remember { mutableStateOf(ScreenState.LevelList) }
     var currentFileUri by remember { mutableStateOf<Uri?>(null) }
     var currentFileName by remember { mutableStateOf("") }
@@ -109,7 +132,8 @@ fun AppNavigation(themeViewModel: ThemeViewModel) {
                     onBack = {
                         currentScreen = ScreenState.LevelList
                     },
-                    themeViewModel = themeViewModel
+                    themeViewModel = themeViewModel,
+                    localeViewModel = localeViewModel
                 )
             }
         }
